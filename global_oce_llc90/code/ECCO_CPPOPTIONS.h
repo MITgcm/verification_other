@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.1 2012/08/24 16:33:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.2 2012/08/28 19:40:11 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -75,8 +75,8 @@ c so that the uncertainty fieldss are read in regardless:
 C       >>> Surface fluxes.
 # undef ALLOW_HFLUX_COST_CONTRIBUTION
 # undef ALLOW_SFLUX_COST_CONTRIBUTION
-# undef ALLOW_USTRESS_COST_CONTRIBUTION
-# undef ALLOW_VSTRESS_COST_CONTRIBUTION
+#define ALLOW_USTRESS_COST_CONTRIBUTION
+#define ALLOW_VSTRESS_COST_CONTRIBUTION
 
 C       >>> Atmospheric state and radiation.
 #define ALLOW_ATEMP_COST_CONTRIBUTION
@@ -120,6 +120,14 @@ C       > It requires providing a specific cost function routine, and editing co
 
 #define COST_GENERIC_ASSUME_CYCLIC
 
+#define ALLOW_GENCOST_SSHV4
+#define ALLOW_GENCOST_SSHV4_OUTPUT
+# undef ALLOW_PSBAR_MEAN
+#define ALLOW_GENCOST_SSTV4
+#define ALLOW_GENCOST_SSTV4_OUTPUT
+
+#define ALLOW_GENCOST_SEAICE
+
 C       >>> User Cost Function Terms.
 #define ALLOW_USERCOST_CONTRIBUTION
 # undef ALLOW_USERCOST_TSUV_CONTRIBUTION
@@ -127,6 +135,45 @@ C       >>> User Cost Function Terms.
 
 C       >>> In-Situ Profiles.
 #define ALLOW_PROFILES_CONTRIBUTION
+
+C       >>> GRACE Bottom Pressure.
+#define ALLOW_BP_COST_CONTRIBUTION
+#define ALLOW_BP_COST_OUTPUT
+
+C       >>> Surface Observations.
+# undef ALLOW_DRIFTER_COST_CONTRIBUTION
+#define ALLOW_SST_COST_CONTRIBUTION
+#define ALLOW_TMI_SST_COST_CONTRIBUTION
+#define ALLOW_DAILYSST_COST_CONTRIBUTION
+# undef ALLOW_SSS_COST_CONTRIBUTION
+# undef ALLOW_SEAICE_COST_SMR_AREA
+#define ALLOW_DAILYSCAT_COST_CONTRIBUTION
+
+C       >>> Sea Surface Height Observation/Estimates.
+#define ALLOW_EGM96_ERROR_DIAG
+#define ALLOW_SSH_MEAN_COST_CONTRIBUTION
+#define ALLOW_SSH_TPANOM_COST_CONTRIBUTION
+#define ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
+#define ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
+# if (defined (ALLOW_SSH_MEAN_COST_CONTRIBUTION) || \
+      defined (ALLOW_SSH_TPANOM_COST_CONTRIBUTION) || \
+      defined (ALLOW_SSH_ERSANOM_COST_CONTRIBUTION))
+#  define ALLOW_SSH_COST_CONTRIBUTION
+# endif
+# undef ALLOW_NEW_SSH_COST
+#define ALLOW_SSH_TOT
+# ifndef ALLOW_EGM96_ERROR_DIAG
+#  undef ALLOW_SSH_TOT
+# endif
+
+c until I link more of the data
+# undef ALLOW_SSH_COST_CONTRIBUTION
+# undef ALLOW_BP_COST_CONTRIBUTION
+# undef ALLOW_DAILYSST_COST_CONTRIBUTION
+# undef ALLOW_DAILYSCAT_COST_CONTRIBUTION
+# undef ALLOW_SST_COST_CONTRIBUTION
+# undef ALLOW_TMI_SST_COST_CONTRIBUTION
+# undef ALLOW_EGM96_ERROR_DIAG
 
 c
 #endif /* ALLOW_COST */
@@ -156,8 +203,8 @@ C       >>> Initial values.
 C       >>> Surface fluxes.
 # undef ALLOW_HFLUX_CONTROL
 # undef ALLOW_SFLUX_CONTROL
-# undef ALLOW_USTRESS_CONTROL
-# undef ALLOW_VSTRESS_CONTROL
+#define ALLOW_USTRESS_CONTROL
+#define ALLOW_VSTRESS_CONTROL
 
 C       >>> Atmospheric state and radiation.
 #define  ALLOW_ATEMP_CONTROL
