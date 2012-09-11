@@ -1,3 +1,5 @@
+! $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/gcm_params_mod.F90,v 1.2 2012/09/11 20:51:36 jmc Exp $
+! $Name:  $
 
 module gcm_params_mod
 
