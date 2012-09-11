@@ -56,7 +56,7 @@ end interface
 
 !--------------------- version number ---------------------------------
 
-character(len=128) :: version = '$Id: monin_obukhov_mod.F90,v 1.1 2012/09/11 03:53:05 jmc Exp $'
+character(len=128) :: version = '$Id: monin_obukhov_mod.F90,v 1.2 2012/09/11 20:51:57 jmc Exp $'
 character(len=128) :: tagname = '$Name:  $'
 
 !=======================================================================
@@ -275,9 +275,9 @@ real, dimension(size(z)) :: zeta, zeta_0, zeta_t, zeta_q, zeta_ref, zeta_ref_t, 
                             ln_z_z0, ln_z_zt, ln_z_zq, ln_z_zref, ln_z_zref_t,  &
                             f_m_ref, f_m, f_t_ref, f_t, f_q_ref, f_q,           &
                             mo_length_inv
-			
+
 logical, dimension(size(z)) :: mask
-		
+
 if(.not.init) call monin_obukhov_init(myThid)
 
 mask = .true.
@@ -314,7 +314,7 @@ else
     zeta_ref   = zref  *mo_length_inv
     zeta_ref_t = zref_t*mo_length_inv
   endwhere
-		
+
   call mo_integral_m(f_m,     zeta, zeta_0,   ln_z_z0,   mask, myThid)
   call mo_integral_m(f_m_ref, zeta, zeta_ref, ln_z_zref, mask, myThid)
 
@@ -434,10 +434,10 @@ integer :: iter
 
 real, dimension(size(rich)) ::   &
           d_rich, rich_1, correction, corr, z_z0, z_zt, z_zq, &
-	  ln_z_z0, ln_z_zt, ln_z_zq, zeta,                    &
-	  phi_m, phi_m_0, phi_t, phi_t_0, rzeta,              &
-	  zeta_0, zeta_t, zeta_q, df_m, df_t
-	
+          ln_z_z0, ln_z_zt, ln_z_zq, zeta,                    &
+          phi_m, phi_m_0, phi_t, phi_t_0, rzeta,              &
+          zeta_0, zeta_t, zeta_q, df_m, df_t
+
 logical, dimension(size(rich)) :: mask_1
 
 
@@ -488,7 +488,7 @@ iter_loop: do iter = 1, max_iter
   call mo_derivative_m(phi_m_0, zeta_0, mask_1, myThid)
   call mo_derivative_t(phi_t  , zeta  , mask_1, myThid)
   call mo_derivative_t(phi_t_0, zeta_t, mask_1, myThid)
-		
+
   call mo_integral_m(f_m, zeta, zeta_0, ln_z_z0, mask_1, myThid)
   call mo_integral_tq(f_t, f_q, zeta, zeta_t, zeta_q, ln_z_zt, ln_z_zq, mask_1, myThid)
 
@@ -618,7 +618,7 @@ logical , intent(in),  dimension(:) :: mask
 integer, intent(in)                 :: myThid
 
 real, dimension(size(zeta)) :: x, x_t, x_q
-			
+
 logical, dimension(size(zeta)) :: stable, unstable, &
                                   weakly_stable, strongly_stable
 
@@ -692,7 +692,7 @@ logical , intent(in),  dimension(:) :: mask
 integer, intent(in)                 :: myThid
 
 real, dimension(size(zeta)) :: x, x_0, x1, x1_0, num, denom, y
-			
+
 logical, dimension(size(zeta)) :: stable, unstable, &
                                   weakly_stable, strongly_stable
 
@@ -770,7 +770,7 @@ integer :: j
 do j = 1, size(pt,2)
   call mo_drag_1d (pt(:,j), pt0(:,j), z(:,j), z0(:,j), zt(:,j), zq(:,j), &
                    speed(:,j), drag_m(:,j), drag_t(:,j), drag_q(:,j), &
-		   u_star(:,j), b_star(:,j), myThid )
+                   u_star(:,j), b_star(:,j), myThid )
 end do
 
 
@@ -852,11 +852,11 @@ q_star_1(1) = q_star
 call mo_profile_1d (zref, zref_t, z_1, z0_1, zt_1, zq_1, &
                     u_star_1, b_star_1, q_star_1,        &
                     del_m_1, del_h_1, del_q_1, myThid )
-		
+
 del_m = del_m_1(1)
 del_h = del_h_1(1)
 del_q = del_q_1(1)
-		
+
 
 return
 end subroutine mo_profile_0d

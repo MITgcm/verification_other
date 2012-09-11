@@ -43,7 +43,7 @@ public   vert_turb_driver_init, vert_turb_driver_end, vert_turb_driver
 !-----------------------------------------------------------------------
 !--------------------- version number ----------------------------------
 
-character(len=128) :: version = '$Id: vert_turb_driver_mod.F90,v 1.1 2012/09/11 03:53:05 jmc Exp $'
+character(len=128) :: version = '$Id: vert_turb_driver_mod.F90,v 1.2 2012/09/11 20:51:57 jmc Exp $'
 character(len=128) :: tag = '$Name:  $'
 
 !-----------------------------------------------------------------------
@@ -447,12 +447,12 @@ CHARACTER*(gcm_LEN_MBUF) :: msgBuf
 !  id_z_full = &
 !  register_diag_field ( mod_name, 'z_full', axes(full), Time,    &
 !       'geopotential height relative to surface at full levels', &
-!		'meters' , missing_value=missing_value    )
+!               'meters' , missing_value=missing_value    )
 
 !  id_z_half = &
 !  register_diag_field ( mod_name, 'z_half', axes(half), Time,    &
 !       'geopotential height relative to surface at half levels', &
-!		'meters' , missing_value=missing_value    )
+!               'meters' , missing_value=missing_value    )
 
 if (do_mellor_yamada) then
 
