@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_calc_rhs.F,v 1.1 2012/09/11 03:53:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_calc_rhs.F,v 1.2 2012/10/01 10:12:24 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -157,7 +157,7 @@ C--   Loops on tile indices bi,bj
       snow2d(:,:) = 0.
       DO k=1,Nr
         kc = Nr-k+1
-        pFull3d(:,:,k) = rF(kc)
+        pFull3d(:,:,k) = rC(kc)
         zFull3d(:,:,k) = ( phiRef(2*kc)
      &                   + totPhiHyd(1:sNx,1:sNy,kc,bi,bj)
      &                   )/gravity
