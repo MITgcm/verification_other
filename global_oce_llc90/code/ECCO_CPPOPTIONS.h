@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.2 2012/08/28 19:40:11 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.3 2012/10/02 13:46:59 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -165,15 +165,6 @@ C       >>> Sea Surface Height Observation/Estimates.
 # ifndef ALLOW_EGM96_ERROR_DIAG
 #  undef ALLOW_SSH_TOT
 # endif
-
-c until I link more of the data
-# undef ALLOW_SSH_COST_CONTRIBUTION
-# undef ALLOW_BP_COST_CONTRIBUTION
-# undef ALLOW_DAILYSST_COST_CONTRIBUTION
-# undef ALLOW_DAILYSCAT_COST_CONTRIBUTION
-# undef ALLOW_SST_COST_CONTRIBUTION
-# undef ALLOW_TMI_SST_COST_CONTRIBUTION
-# undef ALLOW_EGM96_ERROR_DIAG
 
 c
 #endif /* ALLOW_COST */
