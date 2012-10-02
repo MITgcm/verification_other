@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_calc_rhs.F,v 1.2 2012/10/01 10:12:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_calc_rhs.F,v 1.3 2012/10/02 13:26:40 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -212,7 +212,7 @@ C----- test
       rain2d = rain2d / deltaT
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL( rain2d , 'MYPaCprc',
+         CALL DIAGNOSTICS_FILL( rain2d , 'AtPhCnvP',
      &                          0, 1, 3, bi, bj, myThid )
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
@@ -228,7 +228,7 @@ C----- test
       rain2d = rain2d / deltaT
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL( rain2d , 'MYPaLprc',
+         CALL DIAGNOSTICS_FILL( rain2d , 'AtPhLscP',
      &                          0, 1, 3, bi, bj, myThid )
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
@@ -361,33 +361,33 @@ c     STOP ' after GCM_VERT_DIFF_DOWN'
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL( myPa_TendScal1 , 'MYPadTdt',
+         CALL DIAGNOSTICS_FILL( myPa_TendScal1 , 'AtPhdTdt',
      &                          0, Nr, 1, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( myPa_TendScal2 , 'MYPadSdt',
+         CALL DIAGNOSTICS_FILL( myPa_TendScal2 , 'AtPhdQdt',
      &                          0, Nr, 1, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( myPa_TendVelU , 'MYPadUdt',
+         CALL DIAGNOSTICS_FILL( myPa_TendVelU , 'AtPhdUdt',
      &                          0, Nr, 1, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( myPa_TendVelV , 'MYPadVdt',
+         CALL DIAGNOSTICS_FILL( myPa_TendVelV , 'AtPhdVdt',
      &                          0, Nr, 1, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( diff_t , 'MYPaDifT',
+         CALL DIAGNOSTICS_FILL( diff_t , 'AtPhDifT',
      &                          -1, Nr, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( diff_m , 'MYPaDifM',
+         CALL DIAGNOSTICS_FILL( diff_m , 'AtPhDifM',
      &                          -1, Nr, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( flux_t , 'MYPaflut',
+         CALL DIAGNOSTICS_FILL( flux_t , 'AtPhSens',
      &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( flux_q , 'MYPafluq',
+         CALL DIAGNOSTICS_FILL( flux_q , 'AtPhEvap',
      &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( flux_u , 'MYPafluu',
+         CALL DIAGNOSTICS_FILL( flux_u , 'AtPhTauX',
      &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( flux_v , 'MYPafluv',
+         CALL DIAGNOSTICS_FILL( flux_v , 'AtPhTauY',
      &                          0, 1, 3, bi, bj, myThid )
-c        CALL DIAGNOSTICS_FILL( diff_dt_ug , 'MYPadtug',
+c        CALL DIAGNOSTICS_FILL( diff_dt_ug , 'AtPhdtUg',
 c    &                          -1, Nr, 3, bi, bj, myThid )
-c        CALL DIAGNOSTICS_FILL( diff_dt_vg , 'MYPadtvg',
+c        CALL DIAGNOSTICS_FILL( diff_dt_vg , 'AtPhdtVg',
 c    &                          -1, Nr, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( diff_dt_tg , 'MYPadttg',
+         CALL DIAGNOSTICS_FILL( diff_dt_tg , 'AtPhdtTg',
      &                          -1, Nr, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( diff_dt_qg  , 'MYPadtqg',
+         CALL DIAGNOSTICS_FILL( diff_dt_qg  , 'AtPhdtQg',
      &                          -1, Nr, 3, bi, bj, myThid )
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */

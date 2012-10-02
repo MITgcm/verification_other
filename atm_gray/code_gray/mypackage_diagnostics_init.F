@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_diagnostics_init.F,v 1.1 2012/09/11 03:53:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_diagnostics_init.F,v 1.2 2012/10/02 13:26:40 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -133,79 +133,111 @@ C--     an example of how to set "free levels option" diagnostics
         CALL DIAGNOSTICS_SETKLEV( diagName, 3, myThid )
 
 C-- Added:
-        diagName  = 'MYPaDifT'
-        diagTitle = 'ATM_GRAY: Vertical Diffusion of Temp & Q'
+        diagName  = 'AtPhdTdt'
+        diagTitle = ' Pot.Temp. tendency from package ATM_PHYS'
+        diagUnits = 'K/s             '
+        diagCode  = 'SMR     MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'AtPhdQdt'
+        diagTitle = ' Spec.Humid tendency from package ATM_PHYS'
+        diagUnits = 'psu/s           '
+        diagCode  = 'SMR     MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'AtPhdUdt'
+        diagTitle = 'u-Velocity tendency from package ATM_PHYS'
+        diagUnits = 'm/s^2           '
+        diagCode  = 'UMR     MR      '
+        diagMate  = diagNum + 2
+        IF ( myPa_Tend_Cgrid ) diagCode(2:2) = 'U'
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+        diagName  = 'AtPhdVdt'
+        diagTitle = 'v-Velocity tendency from package ATM_PHYS'
+        diagUnits = 'm/s^2           '
+        diagCode  = 'VMR     MR      '
+        diagMate  = diagNum
+        IF ( myPa_Tend_Cgrid ) diagCode(2:2) = 'V'
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+        diagName  = 'AtPhDifT'
+        diagTitle = 'ATM_PHYS: Vertical Diffusion for Temp & Q'
         diagUnits = 'unit            '
         diagCode  = 'WM      LR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-        diagName  = 'MYPaDifM'
-        diagTitle = 'ATM_GRAY: Vertical Diffusion of Momentum'
+        diagName  = 'AtPhDifM'
+        diagTitle = 'ATM_PHYS: Vertical Diffusion for Momentum'
         diagUnits = 'unit            '
         diagCode  = 'WM      LR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-        diagName  = 'MYPaCprc'
-        diagTitle = 'ATM_GRAY: Convective Precip'
+        diagName  = 'AtPhCnvP'
+        diagTitle = 'ATM_PHYS: Convective Precip'
         diagUnits = 'unit            '
         diagCode  = 'SM      L1      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-        diagName  = 'MYPaLprc'
-        diagTitle = 'ATM_GRAY: Large-Scale Precip'
-        diagUnits = 'unit            '
-        diagCode  = 'SM      L1      '
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-        diagName  = 'MYPaflut'
-        diagTitle = 'ATM_GRAY: Flux of sensible heat'
-        diagUnits = 'unit            '
-        diagCode  = 'SM      L1      '
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-        diagName  = 'MYPafluq'
-        diagTitle = 'ATM_GRAY: Flux of water vapor'
-        diagUnits = 'unit            '
-        diagCode  = 'SM      L1      '
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-        diagName  = 'MYPafluu'
-        diagTitle = 'ATM_GRAY: Zonal comp if stress'
-        diagUnits = 'unit            '
-        diagCode  = 'SM      L1      '
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-        diagName  = 'MYPafluv'
-        diagTitle = 'ATM_GRAY: Meridional comp of stress'
+        diagName  = 'AtPhLscP'
+        diagTitle = 'ATM_PHYS: Large-Scale Precip'
         diagUnits = 'unit            '
         diagCode  = 'SM      L1      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-c       diagName  = 'MYPadtug'
-c       diagTitle = 'ATM_GRAY: diff dt ug'
+        diagName  = 'AtPhSens'
+        diagTitle = 'ATM_PHYS: surface sensible heat flux'
+        diagUnits = 'unit            '
+        diagCode  = 'SM      L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPhEvap'
+        diagTitle = 'ATM_PHYS: surface evaporation'
+        diagUnits = 'unit            '
+        diagCode  = 'SM      L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPhTauX'
+        diagTitle = 'ATM_PHYS: Zonal comp of surface stress'
+        diagUnits = 'unit            '
+        diagCode  = 'SM      L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPhTauY'
+        diagTitle = 'ATM_PHYS: Meridional comp of surface stress'
+        diagUnits = 'unit            '
+        diagCode  = 'SM      L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+c       diagName  = 'AtPhdtUg'
+c       diagTitle = 'ATM_PHYS: vertical diff. tendency of U.momentum'
 c       diagUnits = 'unit            '
 c       diagCode  = 'UMR     MR      '
 c       diagMate  = diagNum + 2
 c       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
 c    I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-c       diagName  = 'MYPadtvg'
-c       diagTitle = 'ATM_GRAY: diff dt vg'
+c       diagName  = 'AtPhdtVg'
+c       diagTitle = 'ATM_PHYS: vertical diff. tendency of V.momentum'
 c       diagUnits = 'unit            '
 c       diagCode  = 'VMR     MR      '
 c       diagMate  = diagNum
 c       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
 c    I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        diagName  = 'MYPadttg'
-        diagTitle = 'ATM_GRAY: diff dt tg'
+        diagName  = 'AtPhdtTg'
+        diagTitle = 'ATM_PHYS: vertical diff. tendency of temp.'
         diagUnits = 'unit            '
         diagCode  = 'SMR     MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-                        diagName  = 'MYPadtqg'
-        diagTitle = 'ATM_GRAY: diff dt qg'
+        diagName  = 'AtPhdtQg'
+        diagTitle = 'ATM_PHYS: vertical diff. tendency of spec.humid'
         diagUnits = 'unit            '
         diagCode  = 'SMR     MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
