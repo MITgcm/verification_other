@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/SIZE.h,v 1.2 2012/08/28 19:40:11 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/SIZE.h,v 1.3 2012/10/03 20:26:37 gforget Exp $
 C $Name:  $
 
 CBOP
@@ -47,9 +47,9 @@ C     Nr  :: No. points in Z for full process domain.
      &           sNy =  30,
      &           OLx =   4,
      &           OLy =   4,
-     &           nSx =  96,
+     &           nSx =   1,
      &           nSy =   1,
-     &           nPx =   1,
+     &           nPx =  96,
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
