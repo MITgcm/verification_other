@@ -1,89 +1,73 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/autodiff_inadmode_unset_ad.F,v 1.1 2012/08/24 16:33:53 gforget Exp $
-
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
-#if (defined (ALLOW_GMREDI))
-# include "GMREDI_OPTIONS.h"
-#endif
-
-#ifdef ALLOW_AUTODIFF
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/autodiff_inadmode_unset_ad.F,v 1.2 2012/10/03 02:34:25 gforget Exp $
+C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 
-      subroutine adautodiff_inadmode_unset( myThid )
-      IMPLICIT NONE
-C     /==========================================================\
-C     | SUBROUTINE autodiff_inadmode_unset                       |
-C     |==========================================================|
-C     == Global variables ===
+      SUBROUTINE ADAUTODIFF_INADMODE_UNSET( myThid )
+C     *==========================================================*
+C     | SUBROUTINE ADAUTODIFF_INADMODE_UNSET
+C     *==========================================================*
 
+      IMPLICIT NONE
+C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "AUTODIFF_PARAMS.h"
 #ifdef ALLOW_SEAICE
-# include "SEAICE_SIZE.h"
-# include "SEAICE.h"
-# include "SEAICE_PARAMS.h"
+#include "SEAICE_PARAMS.h"
 #endif
 
 C     == Routine arguments ==
-C     myThid - Thread number for this instance of the routine.
-      integer myThid
-      integer k
+C     myThid :: my Thread Id number
+      INTEGER myThid
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      inAdMode = inAdFALSE
+      inAdMode  = inAdFalse
 
-#ifdef ALLOW_GMREDI
-# ifndef GMREDI_WITH_STABLE_ADJOINT
-      useGMREDI = .TRUE.
-# endif
-#endif
-#ifdef ALLOW_GGL90
-      useGGL90  = .TRUE.
-#endif
-#ifdef ALLOW_KPP
-      useKPP    = .TRUE.
-#endif
-#ifdef ALLOW_SALT_PLUME  
-      useSALT_PLUME = .TRUE.
-#endif
-#ifdef ALLOW_SEAICE
-      useSEAICE = .TRUE.
-      SEAICEuseDYNAMICS=.TRUE.
-c      SEAICEuseFREEDRIFT = .FALSE.
-      SEAICEadjMODE=0
-      SEAICEadvHeff=.TRUE.
-      SEAICEadvArea=.TRUE.
-      SEAICEadvSnow=.TRUE.
-#endif
+      useKPP    = useKPPinFwdMode
+      useGMRedi = useGMRediInFwdMode
+      useSEAICE = useSEAICEinFwdMode
+      useGGL90    = useGGL90inFwdMode
+      useSALT_PLUME    = useSALT_PLUMEinFwdMode
 
       viscFacAdj=1. _d 0
 
-#ifdef ALLOW_VISC_OLD_FIXES
-c remarks:
-c 1) the following seems un-necessary as long
-c as the implicit verctical advection is used
-c 2) the values that are coded hereafter suit
-c the case of deltaTmom<=1800 but not the case
-c of deltaTmom=3600
-
-      viscAhGrid=2. _d -2
-
-      DO k=1,Nr
-       viscArNr(k)  = 1. _d -3
-      ENDDO
-      viscFacAdj=1. _d 0
-#endif
+      IF ( debugLevel.GE.debLevC ) THEN
+       WRITE(msgBuf,'(A,L5)')
+     &      'S/R ADAUTODIFF_INADMODE_UNSET: useKPP    =', useKPP
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A,L5)')
+     &      'S/R ADAUTODIFF_INADMODE_UNSET: useGMRedi =', useGMRedi
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A,L5)')
+     &      'S/R ADAUTODIFF_INADMODE_UNSET: useSEAICE =', useSEAICE
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A,L5)')
+     &      'S/R ADAUTODIFF_INADMODE_UNSET: useGGL90    =', useGGL90
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A,L5)')
+     &      'S/R ADAUTODIFF_INADMODE_UNSET: useSALT_PLUME    =', 
+     &      useSALT_PLUME
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
 
 #ifdef ALLOW_SEAICE
-# ifdef ALLOW_SEAICE_OLD_FIXES
-      epsArea=0. _d 0
-      epsHeff=0. _d 0
-# endif
-#endif 
+      IF ( turnFreeDriftInAdMode ) THEN
+        SEAICEuseFREEDRIFT = .FALSE.
+        IF ( debugLevel.GE.debLevC ) THEN
+          WRITE(msgBuf,'(2A,L5)') 'S/R ADAUTODIFF_INADMODE_UNSET: ',
+     &         'SEAICEuseFREEDRIFT =', SEAICEuseFREEDRIFT
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+        ENDIF
+      ENDIF
+#endif /* ALLOW_SEAICE */
 
-      end
-
-#endif /* ALLOW_AUTODIFF */
-
+      RETURN
+      END
