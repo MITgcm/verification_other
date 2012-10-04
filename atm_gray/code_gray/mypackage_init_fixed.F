@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_init_fixed.F,v 1.1 2012/09/11 03:53:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_init_fixed.F,v 1.2 2012/10/04 16:57:34 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -39,10 +39,11 @@ C     === Local variables ===
 C     msgBuf     :: Informational/error message buffer
 C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
       INTEGER iUnit
-
       INTEGER axes(4)
+#ifdef MYPACKAGE_TENDENCY
+      INTEGER i,j,bi,bj
+#endif
 
       namelist / atmosphere_nml /
      &   turb, ldry_convection, lwet_convection, do_virtual,
@@ -117,6 +118,23 @@ c    I                        lat2d, ocean_qflux,
       ENDIF
 
       module_is_initialized = .true.
+
+#ifdef MYPACKAGE_TENDENCY
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-Oly,sNy+OLy
+          DO i=1-Olx,sNx+Olx
+            myPa_SurfFlux1(i,j,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+       ENDDO
+      ENDDO
+      IF ( myPa_Surf2File .NE. ' ' ) THEN
+        CALL READ_FLD_XY_RL( myPa_Surf2File,' ',
+     &                       myPa_SurfFlux1, 0, myThid )
+        CALL EXCH_XY_RL( myPa_SurfFlux1, myThid )
+      ENDIF
+#endif /* MYPACKAGE_TENDENCY */
 
 #ifdef ALLOW_MNC
       IF (useMNC) THEN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_calc_rhs.F,v 1.3 2012/10/02 13:26:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_calc_rhs.F,v 1.4 2012/10/04 16:57:34 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -151,7 +151,11 @@ C--   Loops on tile indices bi,bj
      I                       'RL', sNx*sNy, t_surf, dummyRS,
      I                       bi, bj, 1, myIter, myThid )
       ENDIF
+#ifdef MYPACKAGE_TENDENCY
+      ocean_qflux(:,:) = myPa_SurfFlux1(1:sNx,1:sNy,bi,bj)
+#else
       ocean_qflux(:,:) = 0.
+#endif
 
       rain2d(:,:) = 0.
       snow2d(:,:) = 0.
@@ -358,6 +362,11 @@ c     STOP ' after GCM_VERT_DIFF_DOWN'
         myPa_TendVelU(1:sNx,1:sNy,kc,bi,bj) = diff_dt_ug(:,:,k)
         myPa_TendVelV(1:sNx,1:sNy,kc,bi,bj) = diff_dt_vg(:,:,k)
       ENDDO
+
+C--   Update SST
+      IF ( myPa_doSwitch1 ) THEN
+        myPa_Surf1(1:sNx,1:sNy,bi,bj) = t_surf(:,:)
+      ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN

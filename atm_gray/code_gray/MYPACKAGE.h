@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/MYPACKAGE.h,v 1.1 2012/09/11 03:53:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/MYPACKAGE.h,v 1.2 2012/10/04 16:57:34 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_MYPACKAGE
@@ -70,9 +70,11 @@ C     MYPA 2-dim. fields
       _RL myPa_TendScal2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL myPa_TendVelU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL myPa_TendVelV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL myPa_SurfFlux1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       COMMON /MYPA_TENDENCY/
      &    myPa_TendScal1, mypa_TendScal2,
      &    myPa_TendVelU,  mypa_TendVelV
+     &  , myPa_SurfFlux1
 #endif /* MYPACKAGE_TENDENCY */
 
 C-- from driver-atmosphere module:
