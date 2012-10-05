@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_calc_rhs.F,v 1.4 2012/10/04 16:57:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_calc_rhs.F,v 1.5 2012/10/05 14:28:15 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -62,12 +62,14 @@ CEOP
       _RL cond_dt_qg(sNx,sNy,Nr)
       _RL rain2d    (sNx,sNy)
       _RL snow2d    (sNx,sNy)
-      _RL albedo_3d (sNx,sNy)
+C-- radiation fields:
+      _RL albedo_2d (sNx,sNy)
 c     _RL dtrans_3d (    sNy,Nr)
       _RL dtrans_3d (sNx,sNy,Nr)
       _RL b_3d      (sNx,sNy,Nr)
       _RL lw_down_3d(sNx,sNy,Nr+1)
       _RL sw_down_3d(sNx,sNy,Nr+1)
+      _RL olr_2d    (sNx,sNy)
       LOGICAL coldT (sNx,sNy)
 C-- output from convection:
       _RL conv_dt_tg (sNx,sNy,Nr)
@@ -241,7 +243,7 @@ C----- test
       CALL RADIATION_DOWN(
      I                     sNx,sNy, myTime, lat2d, pHalf3d, t3d,
      O                     s_sw_dwn, s_lw_dwn,
-     O                     albedo_3d, dtrans_3d, b_3d,
+     O                     albedo_2d, dtrans_3d, b_3d,
      O                     lw_down_3d, sw_down_3d, myThid )
 
 c     write(errorMessageUnit,'(A,I5,I3,4F9.3)')'it,bj,sw,lw:',myIter,bj,
@@ -276,8 +278,8 @@ c    &      lw_down_3d(1,1,15), lw_down_3d(1,sNy,15)
       IF ( two_stream ) THEN
         CALL RADIATION_UP(
      I                     sNx,sNy, myTime, lat2d, pHalf3d, t_surf, t3d,
-     U                     tdt3d,
-     I                     albedo_3d, dtrans_3d, b_3d,
+     U                     tdt3d, olr_2d,
+     I                     albedo_2d, dtrans_3d, b_3d,
      I                     lw_down_3d, sw_down_3d, myThid )
 
 c     write(errorMessageUnit,'(A,I5,I3,4F9.3)')'it,bj,t,tdt:',myIter,bj,
@@ -382,9 +384,19 @@ C--   Update SST
      &                          -1, Nr, 3, bi, bj, myThid )
          CALL DIAGNOSTICS_FILL( diff_m , 'AtPhDifM',
      &                          -1, Nr, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( flux_t , 'AtPhSens',
+         CALL DIAGNOSTICS_FILL( sw_down_3d,'AtPhInSR',
      &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( flux_q , 'AtPhEvap',
+         CALL DIAGNOSTICS_FILL( olr_2d ,   'AtPhOLR ',
+     &                          0, 1, 3, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( s_sw_dwn,  'AtPhNSSR',
+     &                          0, 1, 3, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( s_lw_dwn,  'AtPhDSLR',
+     &                          0, 1, 3, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( flux_r ,   'AtPhUSLR',
+     &                          0, 1, 3, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( flux_t ,   'AtPhSens',
+     &                          0, 1, 3, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( flux_q ,   'AtPhEvap',
      &                          0, 1, 3, bi, bj, myThid )
          CALL DIAGNOSTICS_FILL( flux_u , 'AtPhTauX',
      &                          0, 1, 3, bi, bj, myThid )

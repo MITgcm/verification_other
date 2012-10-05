@@ -21,7 +21,7 @@ private
 
 ! version information
 
-character(len=128) :: version='$Id: radiation_mod.F90,v 1.1 2012/09/11 03:53:05 jmc Exp $'
+character(len=128) :: version='$Id: radiation_mod.F90,v 1.2 2012/10/05 14:28:15 jmc Exp $'
 character(len=128) :: tag='homemade'
 
 !==================================================================================
@@ -368,8 +368,8 @@ end subroutine radiation_down
 ! ==================================================================================
 
 !subroutine radiation_up (is, js, Time_diag, lat, p_half, t_surf, t, tdt)
-subroutine radiation_up (is, js, Time_diag, lat, p_half, t_surf, t, tdt, &
-                           albedo, dtrans, b, down, solar_down,          &
+subroutine radiation_up ( is, js, Time_diag, lat, p_half, t_surf, t, tdt, olr, &
+                           albedo, dtrans, b, down, solar_down,                &
                            myThid )
 
 ! Now complete the radiation calculation by computing the upward and net fluxes.
@@ -381,6 +381,7 @@ real, intent(in) , dimension(:,:)   :: lat
 real, intent(in) , dimension(:,:)   :: t_surf
 real, intent(in) , dimension(:,:,:) :: t, p_half
 real, intent(inout), dimension(:,:,:) :: tdt
+real, intent(out), dimension(:,:)   :: olr
 real, intent(in),  dimension(:,:)   :: albedo
 !real, intent(in),  dimension(:,:)   :: dtrans
 real, intent(in),  dimension(:,:,:) :: dtrans
@@ -398,7 +399,6 @@ logical :: used
 real, allocatable, dimension(:,:)     :: b_surf
 real, allocatable, dimension(:,:,:)   :: tdt_rad, entrop_rad, tdt_sw
 real, allocatable, dimension(:,:,:) :: up, net, flux_rad, flux_sw
-real, allocatable, dimension(:,:)   :: olr
 ! -------------------------------------------------------------------------
 
 n = size(t,3)
@@ -414,7 +414,6 @@ allocate (net              (im, jm, n+1))
 allocate (flux_rad         (im, jm, n+1))
 allocate (flux_sw          (im, jm, n+1))
 allocate (b_surf           (im, jm))
-allocate (olr              (im, jm))
 ! -------------------------------------------------------------------------
 
 ! total flux from surface
@@ -487,7 +486,7 @@ olr = up(:,:,1)
 
 ! -------------------------------------------------------------------------
 deallocate (tdt_rad, tdt_sw, entrop_rad)
-deallocate (up, net, flux_rad, flux_sw, olr)
+deallocate (up, net, flux_rad, flux_sw)
 deallocate (b_surf)
 ! -------------------------------------------------------------------------
 

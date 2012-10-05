@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_diagnostics_init.F,v 1.2 2012/10/02 13:26:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_diagnostics_init.F,v 1.3 2012/10/05 14:28:15 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -180,20 +180,51 @@ C-- Added:
 
         diagName  = 'AtPhCnvP'
         diagTitle = 'ATM_PHYS: Convective Precip'
-        diagUnits = 'unit            '
+        diagUnits = 'kg/m^2/s        '
         diagCode  = 'SM      L1      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
         diagName  = 'AtPhLscP'
         diagTitle = 'ATM_PHYS: Large-Scale Precip'
-        diagUnits = 'unit            '
+        diagUnits = 'kg/m^2/s        '
         diagCode  = 'SM      L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'AtPhInSR'
+        diagTitle = 'ATM_PHYS: Incoming Shortwave Radiation (+=dw)'
+        diagUnits = 'W/m^2           '
+        diagCode  = 'SM P    U1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPhOLR '
+        diagTitle = 'ATM_PHYS: Outgoing Longwave  Radiation (+=up)'
+        diagUnits = 'W/m^2           '
+        diagCode  = 'SM P    U1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPhNSSR'
+        diagTitle = 'ATM_PHYS: Net Surface Shortwave Radiation (+=dw)'
+        diagUnits = 'W/m^2           '
+        diagCode  = 'SM P    L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPhDSLR'
+        diagTitle = 'ATM_PHYS: Downward Surface Longwave Rad. (+=dw)'
+        diagUnits = 'W/m^2           '
+        diagCode  = 'SM P    L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPhUSLR'
+        diagTitle = 'ATM_PHYS: Upward Surface Longwave Rad. (+=up)'
+        diagUnits = 'W/m^2           '
+        diagCode  = 'SM P    L1      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'AtPhSens'
         diagTitle = 'ATM_PHYS: surface sensible heat flux'
-        diagUnits = 'unit            '
+        diagUnits = 'W/m^2           '
         diagCode  = 'SM      L1      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
