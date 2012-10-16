@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_calc_rhs.F,v 1.5 2012/10/05 14:28:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_calc_rhs.F,v 1.6 2012/10/16 15:21:39 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -241,7 +241,7 @@ C----- test
 
       IF ( two_stream ) THEN
       CALL RADIATION_DOWN(
-     I                     sNx,sNy, myTime, lat2d, pHalf3d, t3d,
+     I                     sNx,sNy, myTime, lat2d, pHalf3d, t3d, q3d,
      O                     s_sw_dwn, s_lw_dwn,
      O                     albedo_2d, dtrans_3d, b_3d,
      O                     lw_down_3d, sw_down_3d, myThid )
