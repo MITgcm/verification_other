@@ -12,18 +12,29 @@ ccB=[0 0]; shift=-1; cbV=1; AxBx=[-180 180 -90 90]; kEnv=0;
 %colorbar
 
 %-- make SST field (cos shape, no noise) from grid-output file YC:
-yy=yc*pi/90;
-sst=273.15+9+19*cos(yy);
+%yy=yc*pi/90;
+%sst=273.15+9+19*cos(yy);
+%fname='SST_cos0.bin';
+
+yy=yc*pi/180;
+sst=sin(1.5*yy); sst=1.-sst.*sst; 
+sst(find(abs(yc) > 60.))=0.;
+sst=273.15+27*sst;
+fname='SST_APE_1.bin';
+
+%fid=fopen(fname,'w','b'); fwrite(fid,sst,'real*8'); fclose(fid);
+%fprintf(['write file: ',fname,'\n']);
 
 figure(1);clf;
 var=sst;
 grph_CS(var,xc,yc,xg,yg,ccB(1),ccB(2),shift,cbV,AxBx,kEnv);
 
-%fname='SST_cos0.bin';
-%fid=fopen(fname,'w','b'); fwrite(fid,sst,'real*8'); fclose(fid);
-%fprintf(['write file: ',fname,'\n']);
+%figure(2);clf;
+%yy=[-90:1:90]*pi/180;
+%var=sin(1.5*yy); var=1.-var.*var; var(find(abs(yy) > pi/3))=0.; var=27*var;
+%plot(yy*180/pi,var,'r-'); axis([-90 90 -1 28]); grid
+return
 
-%return
 %-- make initial pot-temp field by adding noise to T(iter=0) output file:
 
 rDir=gDir;
