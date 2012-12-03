@@ -26,7 +26,7 @@ implicit none
 private
 !===================================================================================================
 
-character(len=128) :: version = '$Id: mixed_layer_mod.F90,v 1.2 2012/09/11 20:52:42 jmc Exp $'
+character(len=128) :: version = '$Id: mixed_layer_mod.F90,v 1.3 2012/12/03 03:52:32 jmc Exp $'
 character(len=128) :: tagname = '$Name:  $'
 character(len=128), parameter :: mod_name='mixed_layer'
 
@@ -231,6 +231,7 @@ subroutine mixed_layer (                                &
      dhdt_atm,                                          &
      dedq_atm,                                          &
      ocean_qflux,                                       &
+     delta_t_surf, &               ! Increment in surface temperature
      myThid )
 
 ! ---- arguments -----------------------------------------------------------
@@ -238,7 +239,7 @@ subroutine mixed_layer (                                &
 real, intent(in)                  :: Time
 real, intent(in),  dimension(:,:) :: &
      net_surf_sw_down, surf_lw_down
-real, intent(in), dimension(:,:) :: &
+real, intent(inout), dimension(:,:) :: &
      flux_t,    flux_q,     flux_r
 real, intent(inout), dimension(:,:) :: t_surf
 real, intent(in), dimension(:,:) :: &
@@ -250,6 +251,7 @@ real, intent(inout), dimension(:,:)  :: tri_surf_dtmass
 real, intent(inout), dimension(:,:)  :: tri_surf_dflux_t, tri_surf_dflux_q
 real, intent(inout), dimension(:,:)  :: tri_surf_delta_t, tri_surf_delta_q
 real, intent(in),    dimension(:,:)  :: ocean_qflux
+real, intent(out),   dimension(:,:)  :: delta_t_surf
 integer, intent(in) :: myThid
 
 ! ---- local variables --------------------------------------------------
@@ -268,8 +270,9 @@ real, allocatable, dimension(:,:)   ::                                        &
      beta_lw,               &   !
      t_surf_dependence,     &   !
      corrected_flux,        &   !
-     eff_heat_capacity,     &   ! Effective heat capacity
-     delta_t_surf               ! Increment in surface temperature
+     eff_heat_capacity          ! Effective heat capacity
+!    eff_heat_capacity,     &   ! Effective heat capacity
+!    delta_t_surf               ! Increment in surface temperature
 integer :: im, jm
 !----------------------------------------------------------------
 
@@ -290,7 +293,7 @@ allocate(beta_lw            (im,jm) )
 allocate(eff_heat_capacity  (im,jm) )
 allocate(corrected_flux     (im,jm) )
 allocate(t_surf_dependence  (im,jm) )
-allocate(delta_t_surf       (im,jm) )
+!allocate(delta_t_surf       (im,jm) )
 
 if(.not.module_is_initialized) then
 ! call error_mesg('mixed_layer','mixed_layer module is not initialized',FATAL)
@@ -353,16 +356,19 @@ delta_t_surf = - corrected_flux  * dt / eff_heat_capacity
 
 t_surf = t_surf + delta_t_surf
 
-!
 ! Finally calculate the increments for the lowest atmospheric layer
 !
 Tri_surf_delta_t = fn_t + en_t * delta_t_surf
 Tri_surf_delta_q = fn_q + en_q * delta_t_surf
 
-!
 ! Note:
 ! When using an implicit step there is not a clearly defined flux for a given timestep
-!
+
+! Final flux values (match mixed layer heat content variations)
+  flux_t = ( alpha_t  + delta_t_surf*beta_t )*CP_AIR
+  flux_r =   alpha_lw + delta_t_surf*beta_lw
+  flux_q =   alpha_q  + delta_t_surf*beta_q
+
 !if(id_t_surf > 0) used = send_data(id_t_surf, t_surf, Time)
 !if(id_flux_t > 0) used = send_data(id_flux_t, flux_t, Time)
 !if(id_flux_lhe > 0) used = send_data(id_flux_lhe, HLV * flux_q, Time)
@@ -383,7 +389,7 @@ deallocate(beta_lw            )
 deallocate(eff_heat_capacity  )
 deallocate(corrected_flux     )
 deallocate(t_surf_dependence  )
-deallocate(delta_t_surf       )
+!deallocate(delta_t_surf       )
 
 end subroutine mixed_layer
 
