@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_diagnostics_init.F,v 1.3 2012/10/05 14:28:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_diagnostics_init.F,v 1.4 2012/12/03 03:53:30 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -142,7 +142,7 @@ C-- Added:
 
         diagName  = 'AtPhdQdt'
         diagTitle = ' Spec.Humid tendency from package ATM_PHYS'
-        diagUnits = 'psu/s           '
+        diagUnits = '1/s             '
         diagCode  = 'SMR     MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -223,14 +223,14 @@ C-- Added:
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'AtPhSens'
-        diagTitle = 'ATM_PHYS: surface sensible heat flux'
+        diagTitle = 'ATM_PHYS: surface sensible heat flux (+=up)'
         diagUnits = 'W/m^2           '
         diagCode  = 'SM      L1      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
         diagName  = 'AtPhEvap'
         diagTitle = 'ATM_PHYS: surface evaporation'
-        diagUnits = 'unit            '
+        diagUnits = 'kg/m^2/s        '
         diagCode  = 'SM      L1      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -247,29 +247,21 @@ C-- Added:
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-c       diagName  = 'AtPhdtUg'
-c       diagTitle = 'ATM_PHYS: vertical diff. tendency of U.momentum'
-c       diagUnits = 'unit            '
-c       diagCode  = 'UMR     MR      '
-c       diagMate  = diagNum + 2
-c       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-c    I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-c       diagName  = 'AtPhdtVg'
-c       diagTitle = 'ATM_PHYS: vertical diff. tendency of V.momentum'
-c       diagUnits = 'unit            '
-c       diagCode  = 'VMR     MR      '
-c       diagMate  = diagNum
-c       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-c    I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
         diagName  = 'AtPhdtTg'
         diagTitle = 'ATM_PHYS: vertical diff. tendency of temp.'
-        diagUnits = 'unit            '
+        diagUnits = 'K/s             '
         diagCode  = 'SMR     MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
         diagName  = 'AtPhdtQg'
         diagTitle = 'ATM_PHYS: vertical diff. tendency of spec.humid'
-        diagUnits = 'unit            '
+        diagUnits = '1/s             '
+        diagCode  = 'SMR     MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPhDisH'
+        diagTitle = 'ATM_PHYS: heating from dissipation'
+        diagUnits = 'K/s             '
         diagCode  = 'SMR     MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
