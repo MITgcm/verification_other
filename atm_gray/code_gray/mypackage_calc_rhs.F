@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_calc_rhs.F,v 1.6 2012/10/16 15:21:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_calc_rhs.F,v 1.7 2012/12/03 03:53:08 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -30,6 +30,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#include "SURFACE.h"
 #include "MYPACKAGE.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -116,27 +117,13 @@ c     TYPE(surf_diff_type) :: tri_surf ! used by gcm_vert_diff
       _RL f_t_global(sNx,sNy,Nr-1), f_q_global(sNx,sNy,Nr-1)
 C-- Mixed Layer fields:
       _RL ocean_qflux(sNx,sNy)
+      _RL delta_t_surf(sNx,sNy)
 C--
       _RL conv_theta2T, conv_T2theta
       INTEGER j, k, kc, ki, kp
-      INTEGER ioUnit
-      _RS     dummyRS(1)
-      CHARACTER*40 namFile
-c     _RL t_surf1d  (Ny)
-
-C--   t_surf(:,:) = 300.
-c     DATA t_surf1d /  258, 258, 258, 258, 258, 259.86, 261.72,
-c    &                 263.59, 265.45, 267.32, 269.18, 271.05,
-c    &                 272.91, 274.77, 276.64, 278.5, 280.36,
-c    &                 282.23, 284.09, 285.95, 287.82, 289.68,
-c    &                 291.55, 293.41, 295.27, 297.12,
-c    &                 300, 300, 300, 300, 300, 300,
-c    &                 300, 300, 300, 300, 300, 300, 297.13,
-c    &                 295.27, 293.41, 291.55,
-c    &                 289.68, 287.82, 285.95, 284.09, 282.23,
-c    &                 280.36, 278.5, 276.64, 274.77, 272.91,
-c    &                 271.05, 269.18, 267.32, 265.45, 263.59,
-c    &                 261.72, 259.86, 258, 258, 258, 258, 258 /
+c     INTEGER ioUnit
+c     _RS     dummyRS(1)
+c     CHARACTER*40 namFile
 
 C--   Loops on tile indices bi,bj
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -146,13 +133,13 @@ C--   Loops on tile indices bi,bj
       coldT(:,:) = .FALSE.
 
       t_surf(:,:) = myPa_Surf1(1:sNx,1:sNy,bi,bj)
-      IF ( myIter.EQ.nIter0 ) THEN
-        ioUnit = 0
-        CALL MDS_WRITEVEC_LOC(
-     I                       'SST.check', writeBinaryPrec, ioUnit,
-     I                       'RL', sNx*sNy, t_surf, dummyRS,
-     I                       bi, bj, 1, myIter, myThid )
-      ENDIF
+c     IF ( myIter.EQ.nIter0 ) THEN
+c       ioUnit = 0
+c       CALL MDS_WRITEVEC_LOC(
+c    I                       'SST.check', writeBinaryPrec, ioUnit,
+c    I                       'RL', sNx*sNy, t_surf, dummyRS,
+c    I                       bi, bj, 1, myIter, myThid )
+c     ENDIF
 #ifdef MYPACKAGE_TENDENCY
       ocean_qflux(:,:) = myPa_SurfFlux1(1:sNx,1:sNy,bi,bj)
 #else
@@ -161,12 +148,41 @@ C--   Loops on tile indices bi,bj
 
       rain2d(:,:) = 0.
       snow2d(:,:) = 0.
-      DO k=1,Nr
+#ifdef NONLIN_FRSURF
+      IF ( nonlinFreeSurf.GT.0 ) THEN
+       IF ( staggerTimeStep.AND.select_rStar.GT.0 ) THEN
+         DO k=1,Nr
+          kc = Nr-k+1
+          pFull3d(:,:,k) = rF(Nr+1) + ( rC(kc) - rF(Nr+1) )
+     &                               *rStarFacC(1:sNx,1:sNy,bi,bj)
+         ENDDO
+         DO k=1,Nr+1
+          ki = Nr-k+2
+          pHalf3d(:,:,k) = rF(Nr+1) + ( rF(ki) - rF(Nr+1) )
+     &                               *rStarFacC(1:sNx,1:sNy,bi,bj)
+         ENDDO
+       ELSE
+         STOP 'CALC_RHS: misssing code - 1 -'
+       ENDIF
+      ELSE
+#else /* ndef NONLIN_FRSURF */
+      IF (.TRUE.) THEN
+#endif /* NONLIN_FRSURF */
+       DO k=1,Nr
         kc = Nr-k+1
         pFull3d(:,:,k) = rC(kc)
+       ENDDO
+       DO k=1,Nr+1
+        ki = Nr-k+2
+        pHalf3d(:,:,k) = rF(ki)
+       ENDDO
+      ENDIF
+
+      DO k=1,Nr
+        kc = Nr-k+1
         zFull3d(:,:,k) = ( phiRef(2*kc)
      &                   + totPhiHyd(1:sNx,1:sNy,kc,bi,bj)
-     &                   )/gravity
+     &                   )*recip_gravity
         conv_theta2T = (rC(kc)/atm_po)**atm_kappa
         t3d(:,:,k) = theta(1:sNx,1:sNy,kc,bi,bj)*conv_theta2T
         q3d(:,:,k) = MAX( salt(1:sNx,1:sNy,kc,bi,bj), 0. _d 0 )
@@ -183,8 +199,7 @@ c    I                       'RL', sNx*sNy, zFull3d(1,1,Nr), dummyRS,
 c    I                       bi, bj, 1, myIter, myThid )
       DO k=1,Nr+1
         ki = Nr-k+2
-        pHalf3d(:,:,k) = rF(ki)
-        zHalf3d(:,:,k) = phiRef(2*ki-1)/gravity
+        zHalf3d(:,:,k) = phiRef(2*ki-1)*recip_gravity
       ENDDO
       DO k=1,Nr
         kc = Nr-k+1
@@ -192,7 +207,7 @@ c    I                       bi, bj, 1, myIter, myThid )
         zHalf3d(:,:,k) = zHalf3d(:,:,k)
      &                 + ( totPhiHyd(1:sNx,1:sNy,kp,bi,bj)
      &                    +totPhiHyd(1:sNx,1:sNy,kc,bi,bj) )*0.5
-     &                    /gravity
+     &                  *recip_gravity
       ENDDO
 
 C----- test
@@ -305,7 +320,6 @@ c    &      tdt3d(1,1,15)*86400., tdt3d(1,sNy,15)*86400.
       diff_dt_tg = 0.
       diff_dt_qg = 0.
 
-c     STOP 'before GCM_VERT_DIFF_DOWN'
       CALL GCM_VERT_DIFF_DOWN( 1, 1, deltaT,
      I           u3d, v3d, t3d, q3d,
      I           diff_m(:,:,:), diff_t(:,:,:),
@@ -319,7 +333,6 @@ c     STOP 'before GCM_VERT_DIFF_DOWN'
      U           tri_surf_delta_t, tri_surf_delta_q,
      O           e_global, f_t_global, f_q_global,
      I           myThid )
-c     STOP ' after GCM_VERT_DIFF_DOWN'
 
       CALL MIXED_LAYER(
      I                   myTime,
@@ -339,13 +352,18 @@ c     STOP ' after GCM_VERT_DIFF_DOWN'
      I                   drdt_surf(:,:),
      I                   dhdt_atm(:,:),
      I                   dedq_atm(:,:),
-     I                   ocean_qflux(:,:), myThid )
+     I                   ocean_qflux(:,:),
+     O                   delta_t_surf(:,:),
+     I                   myThid )
 
       CALL GCM_VERT_DIFF_UP ( 1, 1, deltat,
      I           tri_surf_delta_t, tri_surf_delta_q,
      I           e_global, f_t_global, f_q_global,
      O           diff_dt_tg, diff_dt_qg,
      I           myThid )
+
+C--- update OLR (assume adjustment of surf LW emission goes directly to space):
+      olr_2d = olr_2d + drdt_surf*delta_t_surf
 
       DO k=1,Nr
         kc = Nr-k+1
@@ -402,13 +420,11 @@ C--   Update SST
      &                          0, 1, 3, bi, bj, myThid )
          CALL DIAGNOSTICS_FILL( flux_v , 'AtPhTauY',
      &                          0, 1, 3, bi, bj, myThid )
-c        CALL DIAGNOSTICS_FILL( diff_dt_ug , 'AtPhdtUg',
-c    &                          -1, Nr, 3, bi, bj, myThid )
-c        CALL DIAGNOSTICS_FILL( diff_dt_vg , 'AtPhdtVg',
-c    &                          -1, Nr, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( diff_dt_tg , 'AtPhdtTg',
+         CALL DIAGNOSTICS_FILL( diff_dt_tg, 'AtPhdtTg',
      &                          -1, Nr, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( diff_dt_qg  , 'AtPhdtQg',
+         CALL DIAGNOSTICS_FILL( diff_dt_qg, 'AtPhdtQg',
+     &                          -1, Nr, 3, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( diss_heat,  'AtPhDisH',
      &                          -1, Nr, 3, bi, bj, myThid )
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
