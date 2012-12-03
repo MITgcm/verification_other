@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_cs/CPP_OPTIONS.h,v 1.1 2012/09/11 03:50:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_cs/CPP_OPTIONS.h,v 1.2 2012/12/03 03:51:31 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -45,6 +45,9 @@ C o Include/exclude AdamsBashforth-3rd-Order code
 
 C o Include/exclude nonHydrostatic code
 #undef ALLOW_NONHYDROSTATIC
+
+C o Allow to account for heating due to friction (and momentum dissipation)
+#define ALLOW_FRICTION_HEATING
 
 C o Allow mass source or sink of Fluid in the interior
 C   (3-D generalisation of oceanic real-fresh water flux)
