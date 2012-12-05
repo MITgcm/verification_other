@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/autodiff_inadmode_unset_ad.F,v 1.2 2012/10/03 02:34:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/autodiff_inadmode_unset_ad.F,v 1.3 2012/12/05 20:03:05 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -15,6 +15,7 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "AUTODIFF_PARAMS.h"
 #ifdef ALLOW_SEAICE
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #endif
 
@@ -30,6 +31,14 @@ C     myThid :: my Thread Id number
       useSEAICE = useSEAICEinFwdMode
       useGGL90    = useGGL90inFwdMode
       useSALT_PLUME    = useSALT_PLUMEinFwdMode
+#ifdef ALLOW_SEAICE
+      IF ( SEAICEuseFREEDRIFTswitchInAd ) THEN
+        SEAICEuseFREEDRIFT = SEAICEuseFREEDRIFTinFwdMode
+      ENDIF
+      IF ( SEAICEuseDYNAMICSswitchInAd ) THEN
+        SEAICEuseDYNAMICS  = SEAICEuseDYNAMICSinFwdMode
+      ENDIF
+#endif /* ALLOW_SEAICE */
 
       viscFacAdj=1. _d 0
 
@@ -51,23 +60,27 @@ C     myThid :: my Thread Id number
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,L5)')
-     &      'S/R ADAUTODIFF_INADMODE_UNSET: useSALT_PLUME    =', 
+     &      'S/R ADAUTODIFF_INADMODE_UNSET: useSALT_PLUME    =',
      &      useSALT_PLUME
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
-      ENDIF
 
 #ifdef ALLOW_SEAICE
-      IF ( turnFreeDriftInAdMode ) THEN
-        SEAICEuseFREEDRIFT = .FALSE.
-        IF ( debugLevel.GE.debLevC ) THEN
-          WRITE(msgBuf,'(2A,L5)') 'S/R ADAUTODIFF_INADMODE_UNSET: ',
-     &         'SEAICEuseFREEDRIFT =', SEAICEuseFREEDRIFT
-          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                        SQUEEZE_RIGHT, myThid )
-        ENDIF
-      ENDIF
+       IF ( SEAICEuseFREEDRIFTswitchInAd ) THEN
+         WRITE(msgBuf,'(2A,L5)') 'S/R ADAUTODIFF_INADMODE_UNSET: ',
+     &        'SEAICEuseFREEDRIFT =', SEAICEuseFREEDRIFT
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+       ENDIF
+       IF ( SEAICEuseDYNAMICSswitchInAd ) THEN
+         WRITE(msgBuf,'(2A,L5)') 'S/R ADAUTODIFF_INADMODE_UNSET: ',
+     &        'SEAICEuseDYNAMICS =', SEAICEuseDYNAMICS
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+       ENDIF
 #endif /* ALLOW_SEAICE */
+
+      ENDIF
 
       RETURN
       END

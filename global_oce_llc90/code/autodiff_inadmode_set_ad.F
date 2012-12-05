@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/autodiff_inadmode_set_ad.F,v 1.2 2012/10/03 02:34:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/autodiff_inadmode_set_ad.F,v 1.3 2012/12/05 20:03:05 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -15,6 +15,7 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "AUTODIFF_PARAMS.h"
 #ifdef ALLOW_SEAICE
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #endif
 
@@ -28,8 +29,16 @@ C     myThid :: my Thread Id number
       useKPP    = useKPPinAdMode
       useGMRedi = useGMRediInAdMode
       useSEAICE = useSEAICEinAdMode
-      useGGL90    = useGGL90inAdMode
-      useSALT_PLUME    = useSALT_PLUMEinAdMode
+      useGGL90  = useGGL90inAdMode
+      useSALT_PLUME = useSALT_PLUMEinAdMode
+#ifdef ALLOW_SEAICE
+      IF ( SEAICEuseFREEDRIFTswitchInAd ) THEN
+        SEAICEuseFREEDRIFT = .NOT.SEAICEuseFREEDRIFTinFwdMode
+      ENDIF
+      IF ( SEAICEuseDYNAMICSswitchInAd ) THEN
+        SEAICEuseDYNAMICS  = .NOT.SEAICEuseDYNAMICSinFwdMode
+      ENDIF
+#endif /* ALLOW_SEAICE */
 
       viscFacAdj=2. _d 0
 
@@ -51,23 +60,27 @@ C     myThid :: my Thread Id number
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,L5)')
-     &      'S/R ADAUTODIFF_INADMODE_SET: useSALT_PLUME    =', 
+     &      'S/R ADAUTODIFF_INADMODE_SET: useSALT_PLUME    =',
      &      useSALT_PLUME
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
-      ENDIF
 
 #ifdef ALLOW_SEAICE
-      IF ( turnFreeDriftInAdMode ) THEN
-        SEAICEuseFREEDRIFT = .TRUE.
-        IF ( debugLevel.GE.debLevC ) THEN
-          WRITE(msgBuf,'(2A,L5)') 'S/R ADAUTODIFF_INADMODE_SET: ',
-     &         'SEAICEuseFREEDRIFT =', SEAICEuseFREEDRIFT
-          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                        SQUEEZE_RIGHT, myThid )
-        ENDIF
+       IF ( SEAICEuseFREEDRIFTswitchInAd ) THEN
+         WRITE(msgBuf,'(2A,L5)') 'S/R ADAUTODIFF_INADMODE_SET: ',
+     &        'SEAICEuseFREEDRIFT =', SEAICEuseFREEDRIFT
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+       ENDIF
+       IF ( SEAICEuseDYNAMICSswitchInAd ) THEN
+         WRITE(msgBuf,'(2A,L5)') 'S/R ADAUTODIFF_INADMODE_SET: ',
+     &        'SEAICEuseDYNAMICS =', SEAICEuseDYNAMICS
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
        ENDIF
 #endif /* ALLOW_SEAICE */
+
+      ENDIF
 
       RETURN
       END
