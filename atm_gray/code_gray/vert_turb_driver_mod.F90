@@ -43,7 +43,7 @@ public   vert_turb_driver_init, vert_turb_driver_end, vert_turb_driver
 !-----------------------------------------------------------------------
 !--------------------- version number ----------------------------------
 
-character(len=128) :: version = '$Id: vert_turb_driver_mod.F90,v 1.2 2012/09/11 20:51:57 jmc Exp $'
+character(len=128) :: version = '$Id: vert_turb_driver_mod.F90,v 1.3 2013/01/31 13:05:43 jmc Exp $'
 character(len=128) :: tag = '$Name:  $'
 
 !-----------------------------------------------------------------------
@@ -95,9 +95,11 @@ contains
 subroutine vert_turb_driver (is, js, Time, Time_next, dt, frac_land,   &
                              p_half, p_full, z_half, z_full,           &
                              u_star, b_star, rough,                    &
-                             u, v, t, q, um, vm, tm, qm,               &
-                             udt, vdt, tdt, qdt, diff_t, diff_m, gust, &
+                             uu, vv, tt, qq,                           &
+                             diff_t, diff_m, gust,                     &
                              myThid, mask, kbot                                )
+!                            u, v, t, q, um, vm, tm, qm,               &
+!                            udt, vdt, tdt, qdt,                       &
 
 !-----------------------------------------------------------------------
 integer,         intent(in)         :: is, js
@@ -108,21 +110,23 @@ integer,         intent(in)         :: is, js
                                        u_star, b_star, rough
    real, intent(in), dimension(:,:,:) :: p_half, p_full, &
                                          z_half, z_full, &
-                                         u, v, t, q, um, vm, tm, qm, &
-                                         udt, vdt, tdt, qdt
+                                         uu, vv, tt, qq
+!                                        u, v, t, q, um, vm, tm, qm, &
+!                                        udt, vdt, tdt, qdt
    real, intent(out),   dimension(:,:,:) :: diff_t, diff_m
    real, intent(out),   dimension(:,:)   :: gust
    integer, intent(in)                   :: myThid
    real, intent(in),optional, dimension(:,:,:) :: mask
 integer, intent(in),optional, dimension(:,:) :: kbot
 !-----------------------------------------------------------------------
-real   , dimension(size(t,1),size(t,2),size(t,3))   :: ape, thv
-logical, dimension(size(t,1),size(t,2),size(t,3)+1) :: lmask
-real   , dimension(size(t,1),size(t,2),size(t,3)+1) :: el, diag3
-real   , dimension(size(t,1),size(t,2))             :: el0, z_pbl
+real   , dimension(size(tt,1),size(tt,2),size(tt,3))   :: ape, thv
+!logical, dimension(size(tt,1),size(tt,2),size(tt,3)+1) :: lmask
+!real   , dimension(size(tt,1),size(tt,2),size(tt,3)+1) :: diag3
+real   , dimension(size(tt,1),size(tt,2),size(tt,3)+1) :: el
+real   , dimension(size(tt,1),size(tt,2))             :: el0, z_pbl
 real   , dimension(size(diff_t,1),size(diff_t,2), &
                                   size(diff_t,3))   :: diff_sc
-real   , dimension(size(t,1),size(t,2),size(t,3))   :: tt, qq, uu, vv
+!real   , dimension(size(t,1),size(t,2),size(t,3))   :: tt, qq, uu, vv
 real    :: dt_tke
 integer :: ie, je, nlev, sec, day
 logical :: used
@@ -144,19 +148,19 @@ logical :: used
 !-----------------------------------------------------------------------
 !---- set up state variable used by this module ----
 
-      if (use_tau) then
-      !-- variables at time tau
-          uu = u
-          vv = v
-          tt = t
-          qq = q
-      else
-      !-- variables at time tau+1
-          uu = um + dt*udt
-          vv = vm + dt*vdt
-          tt = tm + dt*tdt
-          qq = qm + dt*qdt
-      endif
+!     if (use_tau) then
+!     !-- variables at time tau
+!         uu = u
+!         vv = v
+!         tt = t
+!         qq = q
+!     else
+!     !-- variables at time tau+1
+!         uu = um + dt*udt
+!         vv = vm + dt*vdt
+!         tt = tm + dt*tdt
+!         qq = qm + dt*qdt
+!     endif
 
 !-----------------------------------------------------------------------
 
@@ -167,8 +171,7 @@ logical :: used
 !    ----- time step for prognostic tke calculation -----
 !    call get_time (Time_next-Time, sec, day)
 !    dt_tke = real(sec+day*86400)
-     dt_tke = 120.
-!    dt_tke = deltaTClock
+     dt_tke = dt
 
 !    ----- virtual temp ----------
      ape(:,:,:)=(p_full(:,:,:)*p00inv)**(-kappa)
@@ -211,7 +214,6 @@ logical :: used
 !---------------------------
 !------------------- non-local K scheme --------------
 
-
     call diffusivity ( tt, qq, uu, vv, p_full, p_half, z_full, z_half,   &
                        u_star, b_star, z_pbl, diff_m, diff_t, myThid, &
                        kbot = kbot)
@@ -247,10 +249,10 @@ if (do_mellor_yamada) then
 
 !     --- set up local mask for fields with surface data ---
       if ( present(mask) ) then
-         lmask(:,:,1)        = .true.
-         lmask(:,:,2:nlev+1) = mask(:,:,1:nlev) > 0.5
+!        lmask(:,:,1)        = .true.
+!        lmask(:,:,2:nlev+1) = mask(:,:,1:nlev) > 0.5
       else
-         lmask = .true.
+!        lmask = .true.
       endif
 
 !------- tke --------------------------------
@@ -288,32 +290,32 @@ end if
   if ( id_diff_t > 0 .or. id_diff_m > 0 .or. id_diff_sc > 0 ) then
 !       --- set up local mask for fields without surface data ---
         if (present(mask)) then
-            lmask(:,:,1:nlev) = mask(:,:,1:nlev) > 0.5
-            lmask(:,:,nlev+1) = .false.
+!           lmask(:,:,1:nlev) = mask(:,:,1:nlev) > 0.5
+!           lmask(:,:,nlev+1) = .false.
         else
-            lmask(:,:,1:nlev) = .true.
-            lmask(:,:,nlev+1) = .false.
+!           lmask(:,:,1:nlev) = .true.
+!           lmask(:,:,nlev+1) = .false.
         endif
 !       -- dummy data at surface --
-        diag3(:,:,nlev+1)=0.0
+!       diag3(:,:,nlev+1)=0.0
   endif
 
 !------- diffusion coefficient for heat/moisture -------
    if ( id_diff_t > 0 ) then
-      diag3(:,:,1:nlev) = diff_t(:,:,1:nlev)
+!     diag3(:,:,1:nlev) = diff_t(:,:,1:nlev)
 !     used = send_data ( id_diff_t, diag3, Time_next, is, js, 1, mask=lmask )
    endif
 
 !------- diffusion coefficient for momentum -------
    if ( id_diff_m > 0 ) then
-      diag3(:,:,1:nlev) = diff_m(:,:,1:nlev)
+!     diag3(:,:,1:nlev) = diff_m(:,:,1:nlev)
 !     used = send_data ( id_diff_m, diag3, Time_next, is, js, 1, mask=lmask )
    endif
 
 !------- diffusion coefficient for shallow conv -------
  if (do_shallow_conv) then
    if ( id_diff_sc > 0 ) then
-      diag3(:,:,1:nlev) = diff_sc(:,:,1:nlev)
+!     diag3(:,:,1:nlev) = diff_sc(:,:,1:nlev)
 !     used = send_data ( id_diff_sc, diag3, Time_next, is, js, 1, mask=lmask)
    endif
  endif
@@ -323,10 +325,10 @@ end if
    if ( id_z_half > 0 ) then
       !--- set up local mask for fields with surface data ---
       if ( present(mask) ) then
-         lmask(:,:,1)        = .true.
-         lmask(:,:,2:nlev+1) = mask(:,:,1:nlev) > 0.5
+!        lmask(:,:,1)        = .true.
+!        lmask(:,:,2:nlev+1) = mask(:,:,1:nlev) > 0.5
       else
-         lmask = .true.
+!        lmask = .true.
       endif
 !     used = send_data ( id_z_half, z_half, Time_next, is, js, 1, mask=lmask )
    endif
@@ -344,8 +346,6 @@ end if
    if ( id_vwnd > 0 ) then
 !     used = send_data ( id_vwnd, vv, Time_next, is, js, 1, rmask=mask)
    endif
-
-
 
 !-----------------------------------------------------------------------
 
@@ -436,6 +436,18 @@ CHARACTER*(gcm_LEN_MBUF) :: msgBuf
 !-----------------------------------------------------------------------
 !----- initialize diagnostic fields -----
 
+       id_tke      = 0
+       id_lscale   = 0
+       id_lscale_0 = 0
+       id_z_pbl    = 0
+       id_gust     = 0
+       id_diff_t   = 0
+       id_diff_m   = 0
+       id_diff_sc  = 0
+       id_z_full   = 0
+       id_z_half   = 0
+       id_uwnd     = 0
+       id_vwnd     = 0
 !  id_uwnd = register_diag_field ( mod_name, 'uwnd', axes(full), Time, &
 !       'zonal wind on mass grid', 'meters/second' ,                   &
 !missing_value=missing_value    )
@@ -524,4 +536,3 @@ end subroutine vert_turb_driver_end
 !#######################################################################
 
 end module vert_turb_driver_mod
-
