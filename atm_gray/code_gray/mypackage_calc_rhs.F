@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_calc_rhs.F,v 1.7 2012/12/03 03:53:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_calc_rhs.F,v 1.8 2013/01/31 13:06:12 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -55,26 +55,28 @@ CEOP
       _RL q3d     (sNx,sNy,Nr)
       _RL u3d     (sNx,sNy,Nr)
       _RL v3d     (sNx,sNy,Nr)
+      _RL tdt3d   (sNx,sNy,Nr)
+      _RL qdt3d   (sNx,sNy,Nr)
+      _RL udt3d   (sNx,sNy,Nr)
+      _RL vdt3d   (sNx,sNy,Nr)
       _RL s_sw_dwn(sNx,sNy)
       _RL s_lw_dwn(sNx,sNy)
       _RL t_surf  (sNx,sNy)
-      _RL tdt3d     (sNx,sNy,Nr)
-      _RL cond_dt_tg(sNx,sNy,Nr)
-      _RL cond_dt_qg(sNx,sNy,Nr)
-      _RL rain2d    (sNx,sNy)
-      _RL snow2d    (sNx,sNy)
 C-- radiation fields:
       _RL albedo_2d (sNx,sNy)
-c     _RL dtrans_3d (    sNy,Nr)
       _RL dtrans_3d (sNx,sNy,Nr)
       _RL b_3d      (sNx,sNy,Nr)
       _RL lw_down_3d(sNx,sNy,Nr+1)
       _RL sw_down_3d(sNx,sNy,Nr+1)
       _RL olr_2d    (sNx,sNy)
       LOGICAL coldT (sNx,sNy)
-C-- output from convection:
-      _RL conv_dt_tg (sNx,sNy,Nr)
-      _RL conv_dt_qg (sNx,sNy,Nr)
+C-- output from convection & LSC :
+      _RL t3d_tmp    (sNx,sNy,Nr)
+      _RL q3d_tmp    (sNx,sNy,Nr)
+      _RL cond_dt_tg (sNx,sNy,Nr)
+      _RL cond_dt_qg (sNx,sNy,Nr)
+      _RL rain2d     (sNx,sNy)
+      _RL snow2d     (sNx,sNy)
       _RL q_ref      (sNx,sNy,Nr)
       _RL t_ref      (sNx,sNy,Nr)
       _RL bmflag     (sNx,sNy)
@@ -104,8 +106,6 @@ C-- Input for turb:
 C-- Output from turbulence driver:
       _RL  diff_t(sNx,sNy,Nr), diff_m(sNx,sNy,Nr)
 c     _RL  gust(sNx,sNy)
-      _RL diff_dt_ug (sNx,sNy,Nr)
-      _RL diff_dt_vg (sNx,sNy,Nr)
       _RL diff_dt_tg (sNx,sNy,Nr)
       _RL diff_dt_qg (sNx,sNy,Nr)
       _RL diss_heat  (sNx,sNy,Nr)
@@ -210,17 +210,18 @@ c    I                       bi, bj, 1, myIter, myThid )
      &                  *recip_gravity
       ENDDO
 
-C----- test
+C--   initialise tendency
       tdt3d = 0.
-      conv_dt_tg = 0.
-      conv_dt_qg = 0.
+      qdt3d = 0.
+      udt3d = 0.
+      vdt3d = 0.
       cond_dt_tg = 0.
       cond_dt_qg = 0.
 
       IF (lwet_convection) THEN
         CALL DARGAN_BETTSMILLER(
      I                   deltaT, t3d, q3d, pFull3d, pHalf3d, coldT,
-     O                   rain2d, snow2d, conv_dt_tg, conv_dt_qg,
+     O                   rain2d, snow2d, cond_dt_tg, cond_dt_qg,
      O                   q_ref,      bmflag,
      O                   klzbs,        cape,
      O                   cin,         t_ref,
@@ -228,25 +229,42 @@ C----- test
      O                   capeflag,
      I                   bi,bj,myIter,myThid )
 
-      conv_dt_tg = conv_dt_tg / deltaT
-      conv_dt_qg = conv_dt_qg / deltaT
-      rain2d = rain2d / deltaT
+C-    store updated state to pass to LSC (addition from POG)
+        t3d_tmp = t3d + cond_dt_tg
+        q3d_tmp = q3d + cond_dt_qg
+
+        cond_dt_tg = cond_dt_tg / deltaT
+        cond_dt_qg = cond_dt_qg / deltaT
+        rain2d = rain2d / deltaT
+
+        tdt3d = tdt3d + cond_dt_tg
+        qdt3d = qdt3d + cond_dt_qg
+
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics ) THEN
+        IF ( useDiagnostics ) THEN
          CALL DIAGNOSTICS_FILL( rain2d , 'AtPhCnvP',
      &                          0, 1, 3, bi, bj, myThid )
-      ENDIF
+        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
+      ELSE
+        t3d_tmp = t3d
+        q3d_tmp = q3d
       ENDIF
 
+      cond_dt_tg = 0.
+      cond_dt_qg = 0.
       rain2d(:,:) = 0.
       CALL LSCALE_COND (
-     I                   t3d, q3d, pFull3d, pHalf3d, coldT,
+     I                   t3d_tmp, q3d_tmp, pFull3d, pHalf3d, coldT,
      O                   rain2d, snow2d, cond_dt_tg, cond_dt_qg,
      I                   myThid )
       cond_dt_tg = cond_dt_tg / deltaT
       cond_dt_qg = cond_dt_qg / deltaT
       rain2d = rain2d / deltaT
+
+      tdt3d = tdt3d + cond_dt_tg
+      qdt3d = qdt3d + cond_dt_qg
+
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
          CALL DIAGNOSTICS_FILL( rain2d , 'AtPhLscP',
@@ -309,24 +327,20 @@ c    &      tdt3d(1,1,15)*86400., tdt3d(1,sNy,15)*86400.
      I           fracland(:,:), pHalf3d, pFull3d, zHalf3d, zFull3d,
      I           ustar, bstar, rough,
      I           u3d, v3d, t3d, q3d,
-     I           u3d, v3d, t3d, q3d,
-     I           u3d, v3d, t3d, q3d,
      O           diff_t(:,:,:), diff_m(:,:,:), gust(:,:),
      I           myThid )
       ENDIF
 
-      diff_dt_ug = 0.
-      diff_dt_vg = 0.
-      diff_dt_tg = 0.
-      diff_dt_qg = 0.
+      diff_dt_tg = tdt3d
+      diff_dt_qg = qdt3d
 
       CALL GCM_VERT_DIFF_DOWN( 1, 1, deltaT,
      I           u3d, v3d, t3d, q3d,
      I           diff_m(:,:,:), diff_t(:,:,:),
      I           pHalf3d, pFull3d, zFull3d,
      U           flux_u(:,:),  flux_v(:,:),  dtaudv_atm,
-     U           diff_dt_ug, diff_dt_vg, diff_dt_tg,
-     I           diff_dt_qg,
+     U           udt3d, vdt3d, tdt3d,
+     I           qdt3d,
      O           diss_heat(:,:,:),
      U           tri_surf_dtmass,
      U           tri_surf_dflux_t, tri_surf_dflux_q,
@@ -359,8 +373,11 @@ c    &      tdt3d(1,1,15)*86400., tdt3d(1,sNy,15)*86400.
       CALL GCM_VERT_DIFF_UP ( 1, 1, deltat,
      I           tri_surf_delta_t, tri_surf_delta_q,
      I           e_global, f_t_global, f_q_global,
-     O           diff_dt_tg, diff_dt_qg,
+     O           tdt3d, qdt3d,
      I           myThid )
+
+      diff_dt_tg = tdt3d - diff_dt_tg
+      diff_dt_qg = qdt3d - diff_dt_qg
 
 C--- update OLR (assume adjustment of surf LW emission goes directly to space):
       olr_2d = olr_2d + drdt_surf*delta_t_surf
@@ -368,19 +385,11 @@ C--- update OLR (assume adjustment of surf LW emission goes directly to space):
       DO k=1,Nr
         kc = Nr-k+1
         conv_T2theta = (atm_po/rC(kc))**atm_kappa
-        myPa_TendScal1(1:sNx,1:sNy,kc,bi,bj) =
-     &      ( 0.
-     &        + tdt3d(:,:,k)
-     &        + conv_dt_tg(:,:,k)
-     &        + cond_dt_tg(:,:,k)
-     &        + diff_dt_tg(:,:,k)
-     &      )*conv_T2theta
-        myPa_TendScal2(1:sNx,1:sNy,kc,bi,bj) = 0.
-     &        + conv_dt_qg(:,:,k)
-     &        + cond_dt_qg(:,:,k)
-     &        + diff_dt_qg(:,:,k)
-        myPa_TendVelU(1:sNx,1:sNy,kc,bi,bj) = diff_dt_ug(:,:,k)
-        myPa_TendVelV(1:sNx,1:sNy,kc,bi,bj) = diff_dt_vg(:,:,k)
+        myPa_TendScal1(1:sNx,1:sNy,kc,bi,bj) = tdt3d(:,:,k)
+     &                                       * conv_T2theta
+        myPa_TendScal2(1:sNx,1:sNy,kc,bi,bj) = qdt3d(:,:,k)
+        myPa_TendVelU (1:sNx,1:sNy,kc,bi,bj) = udt3d(:,:,k)
+        myPa_TendVelV (1:sNx,1:sNy,kc,bi,bj) = vdt3d(:,:,k)
       ENDDO
 
 C--   Update SST
