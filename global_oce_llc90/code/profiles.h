@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/profiles.h,v 1.1 2012/10/03 20:27:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/profiles.h,v 1.2 2013/02/05 15:14:01 gforget Exp $
 C $Name:  $
 
 C============================================================
@@ -102,7 +102,7 @@ C===========================================================
       COMMON /profiles_cost_c/
      &        profilesDir, profilesfiles
       character*(MAX_LEN_FNAM) profilesDir
-      character*(MAX_LEN_FNAM) profilesfiles(50)
+      character*(MAX_LEN_FNAM) profilesfiles(NFILESPROFMAX)
 
       COMMON /profiles_ctrl_dummy/
      &                profiles_dummy

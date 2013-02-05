@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/forward_step.F,v 1.2 2012/10/21 04:01:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/forward_step.F,v 1.3 2013/02/05 15:14:01 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -24,6 +24,12 @@ C $Name:  $
 #endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
+#endif
+#ifdef ALLOW_STREAMICE
+# include "STREAMICE_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
 #endif
 
 CBOP
@@ -84,6 +90,7 @@ C     == Global variables ==
 #  include "CTRL_SIZE.h"
 #  include "ctrl.h"
 #  include "ctrl_dummy.h"
+#  include "CTRL_GENARR.h"
 # endif
 # ifdef ALLOW_COST
 #  include "cost.h"
@@ -122,6 +129,7 @@ C     == Global variables ==
 #  include "GAD_SOM_VARS.h"
 # endif
 # ifdef ALLOW_OBCS
+#  include "OBCS_PARAMS.h"
 #  include "OBCS_FIELDS.h"
 #  include "OBCS_SEAICE.h"
 #  ifdef ALLOW_PTRACERS
@@ -145,6 +153,12 @@ C     == Global variables ==
 # ifdef ALLOW_SHELFICE
 #  include "SHELFICE.h"
 #  include "SHELFICE_COST.h"
+# endif
+# ifdef ALLOW_STREAMICE
+#  include "STREAMICE.h"
+#  include "STREAMICE_ADV.h"
+#  include "STREAMICE_BDRY.h"
+#  include "STREAMICE_CG.h"
 # endif
 # ifdef ALLOW_EBM
 #  include "EBM.h"
@@ -427,6 +441,15 @@ CADJ STORE hFacC = comlev1, key = ikey_dynamics, kind = isbyte
        CALL TIMER_START('DO_OCEANIC_PHYS     [FORWARD_STEP]',myThid)
        CALL DO_OCEANIC_PHYS( myTime, myIter, myThid )
        CALL TIMER_STOP ('DO_OCEANIC_PHYS     [FORWARD_STEP]',myThid)
+
+
+
+# ifdef ALLOW_STREAMICE
+       CALL STREAMICE_SOLO_TIMESTEP ( myThid, myiter, 
+     &   iLoop, mytime )        
+#endif
+
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE EmPmR    = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
@@ -788,6 +811,7 @@ CADJ STORE uvel,vvel = comlev1, key = ikey_dynamics
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef NONLIN_FRSURF
 CADJ STORE uvel, vvel    = comlev1, key = ikey_dynamics, kind = isbyte
+cphCADJ STORE detahdt, etan = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif
 C--     Integrate continuity vertically for vertical velocity
@@ -806,8 +830,8 @@ CADJ STORE wVel = comlev1, key = ikey_dynamics, kind = isbyte
       IF ( select_rStar.NE.0 ) THEN
 # ifndef DISABLE_RSTAR_CODE
 #  ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE etaH          = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
+CADJ STORE etaH
+CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE rstarfacc,rstarfacs,rstarfacw
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 #  endif

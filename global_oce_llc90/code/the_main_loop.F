@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/the_main_loop.F,v 1.1 2012/10/03 20:27:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/the_main_loop.F,v 1.2 2013/02/05 15:14:01 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -23,6 +23,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
 #endif
 
 CBOP
@@ -100,6 +103,7 @@ c They provide the fields to be stored.
 #  include "DIC_COST.h"
 # endif
 #  ifdef ALLOW_OBCS
+#   include "OBCS_PARAMS.h"
 #   include "OBCS_FIELDS.h"
 #   include "OBCS_SEAICE.h"
 #   ifdef ALLOW_PTRACERS
@@ -163,7 +167,9 @@ c They provide the fields to be stored.
 # endif
 
 # ifdef ALLOW_ECCO_EVOLUTION
-#  include "ecco_cost.h"
+#  ifdef ALLOW_ECCO
+#   include "ecco_cost.h"
+#  endif
 # endif
 
 # endif /* undef ALLOW_AUTODIFF_OPENAD */
@@ -172,6 +178,7 @@ c They provide the fields to be stored.
 # include "CTRL_SIZE.h"
 # include "ctrl.h"
 # include "ctrl_dummy.h"
+# include "CTRL_GENARR.h"
 # endif
 # ifdef ALLOW_COST
 #  include "cost.h"
@@ -285,9 +292,11 @@ C--   Set initial conditions (variable arrays)
       CALL INITIALISE_VARIA( mythid )
       CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
 #ifdef ALLOW_ECCO_EVOLUTION
+#ifdef ALLOW_ECCO
 cph: avoid renewed call of initialise_varia in recomputation loop
 cph: in some circumstances
 CADJ STORE sbar_gen,tbar_gen  = onetape
+#endif
 #endif
 
 #ifdef ALLOW_SHOWFLOPS
@@ -454,6 +463,15 @@ CADJ INIT comlev1_thsice_4
 CADJ &     = COMMON,nchklev_1*nsx*nsy*maxpass*nthreads_chkpt
 #   endif /* ALLOW_THSICE */
 c--
+#   ifdef ALLOW_STREAMICE
+CADJ INIT comlev1_stream_nl = COMMON,nchklev_1*streamice_max_nl
+CADJ INIT comlev1_stream_front = COMMON,nchklev_1*4
+CADJ INIT comlev1_stream_ij
+CADJ &     = COMMON,nchklev_1*4*(snx+2)*nsx*(sny+2)*nsy
+CADJ INIT comlev1_stream_hybrid
+CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nr*nthreads_chkpt
+#   endif
+c--
 #   ifdef ALLOW_CG2D_NSA
 CADJ INIT comlev1_cg2d
 CADJ &     = COMMON,nchklev_1*nthreads_chkpt
@@ -525,6 +543,7 @@ c--     >>> Loop body start <<<
         ikey_dynamics = ilev_1
 #endif
 
+#ifdef ALLOW_ECCO
 #ifdef ALLOW_ECCO_EVOLUTION
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('cost_averagesfields',myThid)
@@ -539,6 +558,7 @@ C--   Reset the model iteration counter and the model time.
       CALL COST_AVERAGESFIELDS( mytime, mythid )
       CALL TIMER_STOP ('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',mythid)
 #endif /* ALLOW_ECCO_EVOLUTION */
+#endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_PROFILES
       IF (usePROFILES) THEN
@@ -611,12 +631,14 @@ c--     >>> Loop body end <<<
       enddo
 #endif /* ALLOW_AUTODIFF */
 
+#ifdef ALLOW_ECCO
 #ifdef ALLOW_ECCO_EVOLUTION
 c--     Accumulate time averages of temperature, salinity
       CALL TIMER_START('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',mythid)
       CALL COST_AVERAGESFIELDS( endtime, mythid )
       CALL TIMER_STOP ('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',mythid)
 #endif /* ALLOW_ECCO_EVOLUTION */
+#endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_PROFILES
       IF (usePROFILES) THEN
@@ -627,12 +649,14 @@ c--   Accumulate in-situ time averages of temperature, salinity, SSH.
       ENDIF
 #endif
 
+#ifdef ALLOW_ECCO
 #ifdef ALLOW_ECCO_EVOLUTION
 c--   Compute all ecco cost function contributions.
       CALL TIMER_START('ECCO_COST_DRIVER   [THE_MAIN_LOOP]', mythid)
       CALL ECCO_COST_DRIVER ( endTime, myIter, mythid )
       CALL TIMER_STOP ('ECCO_COST_DRIVER   [THE_MAIN_LOOP]', mythid)
 #endif /* ALLOW_ECCO_EVOLUTION */
+#endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_COST
 c--   Sum all cost function contributions.
