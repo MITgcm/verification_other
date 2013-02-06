@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_calc_rhs.F,v 1.9 2013/02/06 04:07:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_calc_rhs.F,v 1.10 2013/02/06 04:44:08 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -270,7 +270,7 @@ C-    store updated state to pass to LSC (addition from POG)
          CALL DIAGNOSTICS_FILL( rain2d , 'AtPhLscP',
      &                          0, 1, 3, bi, bj, myThid )
 C     Re-use "q_ref" array to calculate Relative Humidity (in %)
-         q_ref = 100._d 0 * q3d_tmp/q_ref
+         q_ref = 100. _d 0 * q3d_tmp/q_ref
          CALL DIAGNOSTICS_FILL( q_ref , 'RELHUM  ',
      &                         -1, Nr, 3, bi, bj, myThid )
       ENDIF
