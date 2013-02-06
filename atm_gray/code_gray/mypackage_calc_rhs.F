@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_calc_rhs.F,v 1.8 2013/01/31 13:06:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code_gray/Attic/mypackage_calc_rhs.F,v 1.9 2013/02/06 04:07:52 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -256,7 +256,7 @@ C-    store updated state to pass to LSC (addition from POG)
       rain2d(:,:) = 0.
       CALL LSCALE_COND (
      I                   t3d_tmp, q3d_tmp, pFull3d, pHalf3d, coldT,
-     O                   rain2d, snow2d, cond_dt_tg, cond_dt_qg,
+     O                   rain2d, snow2d, cond_dt_tg, cond_dt_qg, q_ref,
      I                   myThid )
       cond_dt_tg = cond_dt_tg / deltaT
       cond_dt_qg = cond_dt_qg / deltaT
@@ -269,6 +269,10 @@ C-    store updated state to pass to LSC (addition from POG)
       IF ( useDiagnostics ) THEN
          CALL DIAGNOSTICS_FILL( rain2d , 'AtPhLscP',
      &                          0, 1, 3, bi, bj, myThid )
+C     Re-use "q_ref" array to calculate Relative Humidity (in %)
+         q_ref = 100._d 0 * q3d_tmp/q_ref
+         CALL DIAGNOSTICS_FILL( q_ref , 'RELHUM  ',
+     &                         -1, Nr, 3, bi, bj, myThid )
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 

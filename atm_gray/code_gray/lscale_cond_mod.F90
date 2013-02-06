@@ -20,7 +20,7 @@ private
 !-----------------------------------------------------------------------
 !   ---- version number ----
 
- character(len=128) :: version = '$Id: lscale_cond_mod.F90,v 1.1 2012/09/11 03:53:05 jmc Exp $'
+ character(len=128) :: version = '$Id: lscale_cond_mod.F90,v 1.2 2013/02/06 04:07:52 jmc Exp $'
  character(len=128) :: tag = '$Name:  $'
 
 !-----------------------------------------------------------------------
@@ -58,7 +58,7 @@ contains
 !   subroutine lscale_cond (tin, qin, pfull, phalf, coldT, &
 !                           rain, snow, tdel, qdel, mask, conv)
 subroutine lscale_cond (tin, qin, pfull, phalf, coldT, &
-                        rain, snow, tdel, qdel,        &
+                        rain, snow, tdel, qdel, qsat,  &
                         myThid, mask, conv )
 
 
@@ -85,6 +85,7 @@ subroutine lscale_cond (tin, qin, pfull, phalf, coldT, &
 !           tdel     temperature tendency at full model levels
 !           qdel     specific humidity tendency (of water vapor) at
 !                      full model levels
+!           qsat     saturated specific humidity
 !
 !-----------------------------------------------------------------------
 !--------------------- interface arguments -----------------------------
@@ -92,7 +93,7 @@ subroutine lscale_cond (tin, qin, pfull, phalf, coldT, &
    real   , intent(in) , dimension(:,:,:) :: tin, qin, pfull, phalf
    logical   , intent(in) , dimension(:,:):: coldT
    real   , intent(out), dimension(:,:)   :: rain,snow
-   real   , intent(out), dimension(:,:,:) :: tdel, qdel
+   real   , intent(out), dimension(:,:,:) :: tdel, qdel, qsat
    integer, intent(in)                    :: myThid
    real   , intent(in) , dimension(:,:,:), optional :: mask
    logical, intent(in) , dimension(:,:,:), optional :: conv
@@ -101,7 +102,7 @@ subroutine lscale_cond (tin, qin, pfull, phalf, coldT, &
 
 logical,dimension(size(tin,1),size(tin,2),size(tin,3)) :: do_adjust
    real,dimension(size(tin,1),size(tin,2),size(tin,3)) ::  &
-                             esat, qsat, desat, dqsat, pmes, pmass
+                             esat, desat, dqsat, pmes, pmass
    real,dimension(size(tin,1),size(tin,2))             :: hlcp, precip
 integer  k, kx
 !-----------------------------------------------------------------------
