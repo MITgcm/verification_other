@@ -1,0 +1,42 @@
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/offline_cheapaml/README,v 1.1 2013/05/22 22:24:54 jmc Exp $
+C $Name:  $
+
+MITgcm_contrib/verification_other/offline_cheapaml/
+
+Provide source code and input files for a simple set-up,
+ using cheapAML pkg (Deremble etal, MWR, 2013)
+in a simple cartesian-coordinate zonally periodic channel (80 x 40+2)
+without ocean time-stepping (offline) but with seaice
+ (similar to offline_exf_seaice/input.thsice)
+
+Note: implementation for running thsice with cheapaml is still
+      under development (e.g., no precip/snow over seaice)
+
+--------------
+Instructions:
+--------------
+Download MITgcm (including verification experiments) from MITgcm repository
+ <my_dir_space> cvs co -P -d MITgcm_current MITgcm
+and download "offline_cheapaml" set-up from MITgcm_contrib repository,
+   a) either directly in dir verification
+     <my_dir_space> cd MITgcm_current/verification
+     <verification> cvs co -P -d offline_cheapaml MITgcm_contrib/verification_other/offline_cheapaml
+or b) in a similar level in the directory tree, e.g., in verification_other in MITgcm_current:
+     <my_dir_space> cd MITgcm_current
+     <MITgcm_current> mkdir verification_other ; cd verification_other
+     <verification_other> cvs co -P -d offline_cheapaml MITgcm_contrib/verification_other/offline_cheapaml
+
+to built and run :
+> cd offline_cheapaml/build
+> (if done after a previous built, do "make Clean" first)
+> ../../../tools/genmake2 -mods ../code -of ../../../tools/build_options/[Selected-Option-File]
+> make depend
+> make
+> cd ../run
+> (if done after a previous run, clean-up all files: /bin/rm -f * )
+> ln -s ../input/* .
+> ln -s ../build/mitgcmuv .
+> mitgcmuv >& output.txt
+and output.txt can be compared with offline_cheapaml/results/output.txt
+
+--------------
