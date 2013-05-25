@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/offline_cheapaml/code/Attic/cheapaml.F,v 1.1 2013/05/22 19:39:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/offline_cheapaml/code/Attic/cheapaml.F,v 1.2 2013/05/25 18:19:05 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -24,7 +24,7 @@ C       ---------
 C
 C       Input:
 C       ------
-C       uwind, vwind  - mean wind speed (m/s)
+C       uWind, vWind  - mean wind speed (m/s)
 C       Tr - Relaxation profile for Tair on boundaries (C)
 C       qr - Relaxation profile for specific humidity (kg/kg)
 C       CheaptracerR - Relaxation profile for passive tracer
@@ -47,7 +47,7 @@ C     == global variables ==
 C     == routine arguments ==
       _RL     myTime
       INTEGER myIter
-      INTEGER mythid
+      INTEGER myThid
 
 C     == Local variables ==
       INTEGER bi,bj
@@ -67,14 +67,13 @@ C zonal and meridional transports
         _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C       AML timestep
         _RL deltaTTracer,deltaTm,ts,xalwu
-c       _RL dm,pt,fsha,flha,evp,xalwd,xolw,xlwnet
         _RL dm,pt,xalwd,xlwnet
         _RL dtemp,xflu,xfld,dq,dtr
 c       _RL Fclouds, ttt2
-c       _RL q,precip,ssqt,ttt,q100,entrain,cdq
         _RL q,precip,ttt,entrain
         _RL uRelWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
         _RL vRelWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL windSq  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
         _RL fsha(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
         _RL flha(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
         _RL evp (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -82,6 +81,8 @@ c       _RL q,precip,ssqt,ttt,q100,entrain,cdq
         _RL ssqt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
         _RL q100(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
         _RL cdq (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C     surfDrag   :: surface drag coeff (for wind stress)
+        _RL surfDrag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
         _RL dumArg(6)
         _RL fsha0, flha0, evp_0, xolw0, ssqt0, q100_0, cdq_0
         _RL Tsurf  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -254,18 +255,18 @@ C compute advective and diffusive flux divergence
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
              gTair(i,j,bi,bj)=0. _d 0
-             uTrans(i,j)=uwind(i,j,bi,bj)
-             vTrans(i,j)=vwind(i,j,bi,bj)
+             uTrans(i,j)=uWind(i,j,bi,bj)
+             vTrans(i,j)=vWind(i,j,bi,bj)
            ENDDO
           ENDDO
           CALL GAD_2d_CALC_RHS(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy,
      I           uTrans, vTrans,
-     I           uwind, vwind,
+     I           uWind, vWind,
      I           cheapaml_kdiff, Tair,
      I           deltaTtracer, zu, useFluxLimit,
      I           cheapamlXperiodic, cheapamlYperiodic,
-     O           wwind,
+     O           wWind,
      U           gTair,
      I           myTime, myIter, myThid )
          startAB = cheapTairStartAB + nt - 1
@@ -282,7 +283,7 @@ C close bi,bj loops
          ENDDO
         ENDDO
 C update edges
-        _EXCH_XY_RL(Tair,mythid)
+        _EXCH_XY_RL(Tair,myThid)
 
        IF (useFreshWaterFlux) THEN
 C do water
@@ -291,18 +292,18 @@ C do water
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
              gqair(i,j,bi,bj)=0. _d 0
-             uTrans(i,j)=uwind(i,j,bi,bj)
-             vTrans(i,j)=vwind(i,j,bi,bj)
+             uTrans(i,j)=uWind(i,j,bi,bj)
+             vTrans(i,j)=vWind(i,j,bi,bj)
            ENDDO
           ENDDO
           CALL GAD_2d_CALC_RHS(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy,
      I           uTrans, vTrans,
-     I           uwind, vwind,
+     I           uWind, vWind,
      I           cheapaml_kdiff, qair,
      I           deltaTtracer, zu, useFluxLimit,
      I           cheapamlXperiodic, cheapamlYperiodic,
-     O           wwind,
+     O           wWind,
      U           gqair,
      I           myTime, myIter, myThid )
           startAB = cheapTairStartAB + nt - 1
@@ -319,7 +320,7 @@ C close bi, bj loops
          ENDDO
         ENDDO
 C update edges
-        _EXCH_XY_RL(qair,mythid)
+        _EXCH_XY_RL(qair,myThid)
        ENDIF         ! if use freshwater
 
        IF (useCheapTracer) THEN
@@ -329,18 +330,18 @@ C     do tracer
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
              gCheaptracer(i,j,bi,bj)=0. _d 0
-             uTrans(i,j)=uwind(i,j,bi,bj)
-             vTrans(i,j)=vwind(i,j,bi,bj)
+             uTrans(i,j)=uWind(i,j,bi,bj)
+             vTrans(i,j)=vWind(i,j,bi,bj)
            ENDDO
           ENDDO
           CALL GAD_2d_CALC_RHS(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy,
      I           uTrans, vTrans,
-     I           uwind, vwind,
+     I           uWind, vWind,
      I           cheapaml_kdiff, Cheaptracer,
      I           deltaTtracer, zu, useFluxLimit,
      I           cheapamlXperiodic, cheapamlYperiodic,
-     O           wwind,
+     O           wWind,
      U           gCheaptracer,
      I           myTime, myIter, myThid )
           startAB = cheapTracStartAB + nt - 1
@@ -357,7 +358,7 @@ C     close bi, bj loops
          ENDDO
         ENDDO
 C     update edges
-        _EXCH_XY_RL(Cheaptracer,mythid)
+        _EXCH_XY_RL(Cheaptracer,myThid)
        ENDIF                   ! if use tracer
 
 C reset boundaries to open boundary profile
@@ -399,10 +400,6 @@ C--   end loop on nt (short time-step loop)
 C cycling on short atmospheric time step is now done
 
 C     now continue with diabatic forcing
-c     iMin = 1-OLx
-c     iMax = sNx+OLx-1
-c     jMin = 1-OLy
-c     jMax = sNy+OLy-1
       iMin = 1
       iMax = sNx
       jMin = 1
@@ -411,25 +408,44 @@ c     jMax = sNy+OLy-1
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
+            surfDrag(i,j,bi,bj) = 0.
+            uRelWind(i,j) = uWind(i,j,bi,bj)-uVel(i,j,1,bi,bj)
+            vRelWind(i,j) = vWind(i,j,bi,bj)-vVel(i,j,1,bi,bj)
+          ENDDO
+         ENDDO
+         DO j = jMin,jMax
+          DO i = iMin,iMax
+            windSq(i,j) = ( uRelWind( i ,j)*uRelWind( i ,j)
+     &                    + uRelWind(i+1,j)*uRelWind(i+1,j)
+     &                    + vRelWind(i, j )*vRelWind(i, j )
+     &                    + vRelWind(i,j+1)*vRelWind(i,j+1)
+     &                    )*0.5 _d 0
+#ifdef INCONSISTENT_WIND_LOCATION
+            windSq(i,j) = uRelWind(i,j)*uRelWind(i,j)
+     &                  + vRelWind(i,j)*vRelWind(i,j)
+#endif
+          ENDDO
+         ENDDO
+
          IF ( useThSIce ) THEN
            CALL CHEAPAML_SEAICE(
      I                    solar(1-OLx,1-OLy,bi,bj),
      I                    cheapdlongwave(1-OLx,1-OLy,bi,bj),
-     I                    uwind(1-OLx,1-OLy,bi,bj),
-     I                    vwind(1-OLx,1-OLy,bi,bj), lath,
+     I                    uWind(1-OLx,1-OLy,bi,bj),
+     I                    vWind(1-OLx,1-OLy,bi,bj), lath,
      O                    fsha, flha, evp, xolw, ssqt, q100, cdq,
      O                    Tsurf, iceFrac, Qsw(1-OLx,1-OLy,bi,bj),
      I                    bi, bj, myTime, myIter, myThid )
            DO j = jMin,jMax
             DO i = iMin,iMax
-              uRelWind(i,j) = uwind(i,j,bi,bj)-uVel(i,j,1,bi,bj)
-              vRelWind(i,j) = vwind(i,j,bi,bj)-vVel(i,j,1,bi,bj)
               CALL CHEAPAML_COARE3_FLUX(
      I                      i, j, bi, bj, 0,
-     I                      theta(1-OLx,1-OLy,1,bi,bj),
-     I                      uRelWind, vRelWind,
-     O                      fsha0, flha0, evp_0,
-     O                      xolw0, ssqt0, q100_0, cdq_0,
+     I                      theta(1-OLx,1-OLy,1,bi,bj), windSq,
+     O                      fsha0, flha0, evp_0, xolw0,
+     O                      ssqt0, q100_0, cdq_0,
+     O                      surfDrag(i,j,bi,bj),
      O                      dumArg(1), dumArg(2), dumArg(3), dumArg(4),
      I                      myIter, myThid )
               Qnet(i,j,bi,bj) = (
@@ -462,14 +478,12 @@ C-     Qsw (from FFIELDS.h) has opposite (and annoying) sign convention:
      O                      fsha(i,j), flha(i,j), evp(i,j),
      O                      xolw(i,j), ssqt(i,j), q100(i,j) )
              ELSEIF (FluxFormula.EQ.'COARE3') THEN
-              uRelWind(i,j) = uwind(i,j,bi,bj)-uVel(i,j,1,bi,bj)
-              vRelWind(i,j) = vwind(i,j,bi,bj)-vVel(i,j,1,bi,bj)
               CALL CHEAPAML_COARE3_FLUX(
      I                      i, j, bi, bj, 0,
-     I                      theta(1-OLx,1-OLy,1,bi,bj),
-     I                      uRelWind, vRelWind,
-     O                      fsha(i,j), flha(i,j), evp(i,j),
-     O                      xolw(i,j), ssqt(i,j), q100(i,j), cdq(i,j),
+     I                      theta(1-OLx,1-OLy,1,bi,bj), windSq,
+     O                      fsha(i,j), flha(i,j), evp(i,j), xolw(i,j),
+     O                      ssqt(i,j), q100(i,j), cdq(i,j),
+     O                      surfDrag(i,j,bi,bj),
      O                      dumArg(1), dumArg(2), dumArg(3), dumArg(4),
      I                      myIter, myThid )
              ENDIF
@@ -484,10 +498,10 @@ C-     Qsw (from FFIELDS.h) has opposite (and annoying) sign convention:
           DO i = iMin,iMax
 
 C atmospheric upwelled long wave
-           ttt = Tair(i,j,bi,bj)-gamma_blk*(cheaphgrid(i,j,bi,bj)-zt)
+           ttt = Tair(i,j,bi,bj)-gamma_blk*(CheapHgrid(i,j,bi,bj)-zt)
 c          xalwu = stefan*(ttt+celsius2K)**4*0.5 _d 0
            xalwu = stefan*(0.5*Tair(i,j,bi,bj)+0.5*ttt+celsius2K)**4
-     &            *0.5 _d 0
+     &                   *0.5 _d 0
 C atmospheric downwelled long wave
            xalwd = stefan*(Tair(i,j,bi,bj)+celsius2K)**4*0.5 _d 0
 C total flux at upper atmospheric layer interface
@@ -511,17 +525,17 @@ C convert spec humidity in water vapor pressure (mbar) using coef 1000/0.622=160
      &        + 4.0*0.98 _d 0*stefan*(theta(i,j,1,bi,bj)+celsius2K)**3
      &          *(theta(i,j,1,bi,bj)-Tair(i,j,bi,bj))
 
-c          xlwnet = xolw-stefan*(theta(i,j,1,bi,bj)+celsius2K)**4.
+c            xlwnet = xolw-stefan*(theta(i,j,1,bi,bj)+celsius2K)**4.
 c     &       *(0.65+11.22*qair(i,j,bi,bj) + 0.25*cheapclouds(i,j,bi,bj)
 c     &       -8.23*qair(i,j,bi,bj)*cheapclouds(i,j,bi,bj))
            ENDIF
 C clouds
-c          ttt2=Tair(i,j,bi,bj)-1.5*gamma_blk*cheaphgrid(i,j,bi,bj)
+c          ttt2=Tair(i,j,bi,bj)-1.5*gamma_blk*CheapHgrid(i,j,bi,bj)
 c          Fclouds = stefan*ttt2**4*(0.4*cheapclouds(i,j,bi,bj)+1-0.4)/2
-c          ttt2=Tair(i,j,bi,bj)-3*gamma_blk*cheaphgrid(i,j,bi,bj)+celsius2K
+c          ttt2=Tair(i,j,bi,bj)-3*gamma_blk*CheapHgrid(i,j,bi,bj)+celsius2K
 c          Fclouds = 0.3*stefan*ttt2**4 + 0.22*xolw*cheapclouds(i,j,bi,bj)
 C add flux divergences into atmospheric temperature tendency
-           gTair(i,j,bi,bj)= (xfld-xflu)/cheaphgrid(i,j,bi,bj)
+           gTair(i,j,bi,bj)= (xfld-xflu)/CheapHgrid(i,j,bi,bj)
            IF ( .NOT.useThSIce ) THEN
             Qnet(i,j,bi,bj) = (
      &                         -solar(i,j,bi,bj)
@@ -543,18 +557,18 @@ C layer top
 C first, what is the pressure there?
 C ts is surface atmospheric temperature
             ts=Tair(i,j,bi,bj)+gamma_blk*zt+celsius2K
-            pt=p0*(1-gamma_blk*cheaphgrid(i,j,bi,bj)/ts)
+            pt=p0*(1-gamma_blk*CheapHgrid(i,j,bi,bj)/ts)
      &         **(gravity/gamma_blk/gasR)
 
 C factor to compute rainfall from specific humidity
             dm=100.*(p0-pt)*recip_gravity
 C     Large scale precip
             precip = 0.
-            IF ( wwind(i,j,bi,bj).GT.0. .AND.
+            IF ( wWind(i,j,bi,bj).GT.0. .AND.
      &           q.GT.ssqt(i,j)*0.7 _d 0 ) THEN
               precip = precip
      &               + ( (q-ssqt(i,j)*0.7 _d 0)*dm/cheap_pr2 )
-     &                 *(wwind(i,j,bi,bj)/0.75 _d -5)**2
+     &                 *(wWind(i,j,bi,bj)/0.75 _d -5)**2
             ENDIF
 
 C     Convective precip
@@ -562,13 +576,14 @@ C     Convective precip
               precip = precip + ((q-ssqt(i,j)*0.9 _d 0)*dm/cheap_pr1)
             ENDIF
 
+            cheapPrecip(i,j,bi,bj) = precip*1200/CheapHgrid(i,j,bi,bj)
             entrain = cdq(i,j)*q*0.25
 
-c           gqair(i,j,bi,bj)=(evp-precip-entrain)/cheaphgrid(i,j,bi,bj)
-            gqair(i,j,bi,bj) = (evp(i,j)-entrain)/cheaphgrid(i,j,bi,bj)
+c           gqair(i,j,bi,bj)=(evp-precip-entrain)/CheapHgrid(i,j,bi,bj)
+            gqair(i,j,bi,bj) = (evp(i,j)-entrain)/CheapHgrid(i,j,bi,bj)
      &                        /rhoa*maskC(i,j,1,bi,bj)
             EmPmR(i,j,bi,bj) = ( EmPmR(i,j,bi,bj)
-     &                          -precip*1200/cheaphgrid(i,j,bi,bj)
+     &                          -cheapPrecip(i,j,bi,bj)
      &                         )*maskC(i,j,1,bi,bj)
            ENDIF
 
@@ -632,17 +647,21 @@ C close bi,bj loops
       ENDDO
 
 C update edges
-       _EXCH_XY_RL(Tair,mythid)
-       _EXCH_XY_RS(Qnet,mythid)
+       _EXCH_XY_RL(Tair,myThid)
+       _EXCH_XY_RS(Qnet,myThid)
       IF (useFreshWaterFlux) THEN
-       _EXCH_XY_RL(qair,mythid)
-       _EXCH_XY_RS(EmPmR,mythid)
+       _EXCH_XY_RL(qair,myThid)
+       _EXCH_XY_RS(EmPmR,myThid)
       ENDIF
       IF (useCheapTracer) THEN
-       _EXCH_XY_RL(Cheaptracer,mythid)
+       _EXCH_XY_RL(Cheaptracer,myThid)
       ENDIF
       IF (.NOT.useStressOption) THEN
-       CALL EXCH_UV_AGRID_3D_RL( ustress, vstress, .TRUE., 1, myThid )
+       IF ( FluxFormula.EQ.'COARE3' ) THEN
+        _EXCH_XY_RL( surfDrag, myThid )
+       ELSE
+        CALL EXCH_UV_AGRID_3D_RL( ustress, vstress, .TRUE., 1, myThid )
+       ENDIF
       ENDIF
 
 C reset edges to open boundary profiles
@@ -684,19 +703,53 @@ c     CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-Cswd move wind stresses to u and v points
+
+        IF ( .NOT.useStressOption .AND. FluxFormula.EQ.'COARE3' ) THEN
+         DO j = 1-OLy+1,sNy+OLy
+          DO i = 1-OLx+1,sNx+OLx
+            fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)*0.5 _d 0
+     &          *( surfDrag(i-1,j,bi,bj) + surfDrag(i,j,bi,bj) )
+     &          *( uWind(i,j,bi,bj)-uVel(i,j,1,bi,bj) )
+            fv(i,j,bi,bj) = maskS(i,j,1,bi,bj)*0.5 _d 0
+     &          *( surfDrag(i,j-1,bi,bj) + surfDrag(i,j,bi,bj) )
+     &          *( vWind(i,j,bi,bj)-vVel(i,j,1,bi,bj) )
+          ENDDO
+         ENDDO
+#ifdef INCONSISTENT_WIND_LOCATION
          DO j = 1-OLy,sNy+OLy
           DO i = 1-OLx+1,sNx+OLx
-            fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)
-     &          *(ustress(i,j,bi,bj)+ustress(i-1,j,bi,bj))*0.5 _d 0
+            fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)*0.5 _d 0
+     &          *( surfDrag(i-1,j,bi,bj)
+     &             *( uWind(i-1,j,bi,bj)-uVel(i-1,j,1,bi,bj) )
+     &           + surfDrag(i,j,bi,bj)
+     &             *( uWind(i,j,bi,bj) - uVel(i,j,1,bi,bj) ) )
           ENDDO
          ENDDO
          DO j = 1-OLy+1,sNy+OLy
           DO i = 1-OLx,sNx+OLx
-            fv(i,j,bi,bj) = maskS(i,j,1,bi,bj)
-     &          *(vstress(i,j,bi,bj)+vstress(i,j-1,bi,bj))*0.5 _d 0
+            fv(i,j,bi,bj) = maskS(i,j,1,bi,bj)*0.5 _d 0
+     &          *( surfDrag(i,j-1,bi,bj)
+     &             *( vWind(i,j-1,bi,bj)-vVel(i,j-1,1,bi,bj) )
+     &           + surfDrag(i,j,bi,bj)
+     &             *( vWind(i,j,bi,bj) - vVel(i,j,1,bi,bj) ) )
           ENDDO
          ENDDO
+#endif /* INCONSISTENT_WIND_LOCATION */
+        ELSE
+Cswd move wind stresses to u and v points
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx+1,sNx+OLx
+            fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)*0.5 _d 0
+     &          *( ustress(i,j,bi,bj) + ustress(i-1,j,bi,bj) )
+          ENDDO
+         ENDDO
+         DO j = 1-OLy+1,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+            fv(i,j,bi,bj) = maskS(i,j,1,bi,bj)*0.5 _d 0
+     &          *( vstress(i,j,bi,bj) + vstress(i,j-1,bi,bj) )
+          ENDDO
+         ENDDO
+        ENDIF
 
 C--   end bi,bj loops
        ENDDO
@@ -706,11 +759,13 @@ C--   end bi,bj loops
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-       CALL DIAGNOSTICS_FILL(uwind,  'CH_Uwind',0,1,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(vwind,  'CH_Vwind',0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(uWind,  'CH_Uwind',0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(vWind,  'CH_Vwind',0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL_RS(Qnet,'CH_QNET ',0,1,0,1,1,myThid)
-       IF (useFreshWaterFlux)
-     & CALL DIAGNOSTICS_FILL_RS(EmPmR,'CH_EmP  ',0,1,0,1,1,myThid)
+       IF (useFreshWaterFlux) THEN
+        CALL DIAGNOSTICS_FILL_RS( EmPmR, 'CH_EmP  ', 0,1,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(cheapPrecip,'CH_Prec ',0,1,0,1,1,myThid)
+       ENDIF
        IF (useCheapTracer) THEN
         CALL DIAGNOSTICS_FILL(Cheaptracer,'CH_Trace',0,1,0,1,1,myThid)
        ENDIF

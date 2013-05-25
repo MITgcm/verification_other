@@ -1,16 +1,19 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/offline_cheapaml/code/Attic/cheapaml_seaice.F,v 1.1 2013/05/22 19:39:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/offline_cheapaml/code/Attic/cheapaml_seaice.F,v 1.2 2013/05/25 18:19:06 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
 #ifdef ALLOW_THSICE
 # include "THSICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CHEAPAML_SEAICE
 C     !INTERFACE:
       SUBROUTINE CHEAPAML_SEAICE(
-     I                    swDown, lwDown, uRelWind, vRelWind, LVapor,
+     I                    swDown, lwDown, uWind, vWind, LVapor,
      O                    fsha, flha, evp, xolw, ssqt, q100, cdq,
      O                    Tsurf, iceFrac, sw2oce,
      I                    bi, bj, myTime, myIter, myThid )
@@ -29,11 +32,13 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_THSICE
-c#include "FFIELDS.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_SIZE.h"
 #include "THSICE_VARS.h"
-#include "THSICE_OPTIONS.h"
+#endif
+#ifdef ALLOW_SEAICE
+# include "SEAICE_SIZE.h"
+# include "SEAICE.h"
 #endif
 
       INTEGER siLo, siHi, sjLo, sjHi
@@ -53,8 +58,8 @@ C     myTime   :: current time in simulation
 C     myThid   :: my Thread Id number
       _RL  swDown(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  lwDown(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uRelWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vRelWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL LVapor
       _RL myTime
       INTEGER bi, bj, myIter, myThid
@@ -85,6 +90,9 @@ c     _RL prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_THSICE
 C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     uRelWind :: relative wind speed, u-component [m/s], (C-grid)
+C     vRelWind :: relative wind speed, v-component [m/s], (C-grid)
+C     windSq   :: relative wind speed squared (grid-cell center)
       INTEGER i, j
       INTEGER iceOrNot
       INTEGER iMin, iMax
@@ -96,7 +104,10 @@ C     == Local variables ==
 c       _RL tFrzOce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
         _RL dTsurf(1:sNx,1:sNy)
 
-        _RL dumArg(6)
+        _RL uRelWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL vRelWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL windSq(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL cdu, dumArg(4)
         _RL fsha0(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
         _RL evp_0(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
         _RL xolw0(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -121,6 +132,32 @@ c      DO bi=myBxLo(myThid),myBxHi(myThid)
 
         CALL THSICE_GET_OCEAN(
      I                         bi, bj, myTime, myIter, myThid )
+
+        DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
+            uRelWind(i,j) = uWind(i,j)
+            vRelWind(i,j) = vWind(i,j)
+          ENDDO
+        ENDDO
+#ifdef ALLOW_SEAICE
+        IF ( useSEAICE ) THEN
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
+            uRelWind(i,j) = uRelWind(i,j)-uIce(i,j,bi,bj)
+            vRelWind(i,j) = vRelWind(i,j)-vIce(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_SEAICE */
+        DO j = jMin,jMax
+          DO i = iMin,iMax
+            windSq(i,j) = ( uRelWind( i ,j)*uRelWind( i ,j)
+     &                    + uRelWind(i+1,j)*uRelWind(i+1,j)
+     &                    + vRelWind(i, j )*vRelWind(i, j )
+     &                    + vRelWind(i,j+1)*vRelWind(i,j+1)
+     &                    )*0.5 _d 0
+          ENDDO
+        ENDDO
 
 C   1) compute albedo ; compute netSW
        CALL THSICE_ALBEDO(
@@ -157,25 +194,23 @@ C   3) compute other flx over seaice & derivative vs Tsurf, using previous Tsurf
             ENDIF
             Tsurf(i,j) = 0.
             CALL CHEAPAML_COARE3_FLUX(
-     I                      i, j, bi, bj, iceOrNot,
-     I                      Tsurf,
-     I                      uRelWind, vRelWind,
-     O                      fsha0(i,j), flha(i,j), evp_0(i,j),
-     O                      xolw0(i,j), ssqt(i,j), q100(i,j), cdq(i,j),
-     O                      dumArg(1), dumArg(2), dumArg(3), dumArg(4),
-     I                      myIter, myThid )
+     I                    i, j, bi, bj, iceOrNot,
+     I                    Tsurf, windSq,
+     O                    fsha0(i,j), flha(i,j), evp_0(i,j), xolw0(i,j),
+     O                    ssqt(i,j), q100(i,j), cdq(i,j), cdu,
+     O                    dumArg(1), dumArg(2), dumArg(3), dumArg(4),
+     I                    myIter, myThid )
             sFlx(i,j,0) = lwDown(i,j)- xolw0(i,j)
      &                  - fsha0(i,j) - evp_0(i,j)*LatentHeat
 
             Tsurf(i,j) = Tsrf(i,j,bi,bj)
             CALL CHEAPAML_COARE3_FLUX(
-     I                      i, j, bi, bj, iceOrNot,
-     I                      Tsurf,
-     I                      uRelWind, vRelWind,
-     O                      fsha(i,j), flha(i,j), evp(i,j),
-     O                      xolw(i,j), ssqt(i,j), q100(i,j), cdq(i,j),
-     O               dShdTs(i,j), dEvdTs(i,j), dLwdTs(i,j), dumArg(4),
-     I                      myIter, myThid )
+     I                    i, j, bi, bj, iceOrNot,
+     I                    Tsurf, windSq,
+     O                    fsha(i,j), flha(i,j), evp(i,j), xolw(i,j),
+     O                    ssqt(i,j), q100(i,j), cdq(i,j), cdu,
+     O              dShdTs(i,j), dEvdTs(i,j), dLwdTs(i,j), dumArg(4),
+     I                   myIter, myThid )
             sFlx(i,j,1) = lwDown(i,j)- xolw(i,j)
      &                  - fsha(i,j) - evp(i,j)*LatentHeat
             sFlx(i,j,2) = -dLwdTs(i,j)
