@@ -4,7 +4,8 @@ kwr=0;
 nx=80; ny=42; nr=3; nt=1;
 
 xc=[1:nx]; xc=xc-mean(xc);
-yc=[1:ny]-.5;
+yc=[1:ny]-.5; ymid=mean(yc);
+yv=yc-0.5;
 
 %------------------------------------------------------
 
@@ -18,11 +19,20 @@ if kwr > 0,
  fid=fopen(namf,'w','b'); fwrite(fid,depth,'real*8'); fclose(fid);
 end
 
-namf='windx.bin';
-wnd=windx*ones(nx,ny,nt);
+namf=['windx_',int2str(windx),'ms.bin'];
+uwind=windx*ones(nx,ny,nt);
 if kwr > 0,
  fprintf('write to file: %s\n',namf);
- fid=fopen(namf,'w','b'); fwrite(fid,wnd,'real*8'); fclose(fid);
+ fid=fopen(namf,'w','b'); fwrite(fid,uwind,'real*8'); fclose(fid);
+end
+
+namf='windy_conv.bin';
+dvdy=-1.e-6*5.e+3; %- uniform convergence: wWind = 10^-6 m/s
+yy=yv-ymid; vwind=dvdy*yy; vwind(1)=0;
+fld=ones(nx,1)*vwind;
+if kwr > 0,
+ fprintf('write to file: %s\n',namf);
+ fid=fopen(namf,'w','b'); fwrite(fid,fld,'real*8'); fclose(fid);
 end
 
 %- file name convention: "const_{xx}.bin" <-> uniform value = xx (in percent)
