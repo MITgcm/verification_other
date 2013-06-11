@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/offline_cheapaml/code/DIAGNOSTICS_SIZE.h,v 1.1 2013/05/22 19:39:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/offline_cheapaml/code/DIAGNOSTICS_SIZE.h,v 1.2 2013/06/11 01:59:20 jmc Exp $
 C $Name:  $
 
 
@@ -22,9 +22,9 @@ C  and "diagSt_size" (statistics-diags) since values here are deliberately small
       INTEGER    diagSt_size
       PARAMETER( ndiagMax = 500 )
       PARAMETER( numlists = 10, numperlist = 50, numLevels=2*Nr )
-      PARAMETER( numDiags = 20*Nr )
+      PARAMETER( numDiags = 40*Nr )
       PARAMETER( nRegions = 0 , sizRegMsk = 1 , nStats = 4 )
-      PARAMETER( diagSt_size = 20*Nr )
+      PARAMETER( diagSt_size = 40*Nr )
 
 
 CEH3 ;;; Local Variables: ***
