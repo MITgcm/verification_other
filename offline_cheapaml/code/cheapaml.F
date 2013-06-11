@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/offline_cheapaml/code/Attic/cheapaml.F,v 1.2 2013/05/25 18:19:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/offline_cheapaml/code/Attic/cheapaml.F,v 1.3 2013/06/11 01:57:46 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -639,6 +639,8 @@ C     do implicit time stepping over land and or buffer
         IF ( useDiagnostics ) THEN
          CALL DIAGNOSTICS_FILL( fsha,'CH_SH   ',0,1,2,bi,bj,myThid )
          CALL DIAGNOSTICS_FILL( flha,'CH_LH   ',0,1,2,bi,bj,myThid )
+         CALL DIAGNOSTICS_FILL( q100,'CH_q100 ',0,1,2,bi,bj,myThid )
+         CALL DIAGNOSTICS_FILL( ssqt,'CH_ssqt ',0,1,2,bi,bj,myThid )
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
