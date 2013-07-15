@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.5 2013/04/09 20:07:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.6 2013/07/15 19:15:05 heimbach Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -58,9 +58,9 @@ C ********************************************************************
 C ***                Cost function Package                         ***
 c ********************************************************************
 C 
-#define ALLOW_COST
+#define ALLOW_COST_FULL
 
-#ifdef ALLOW_COST
+#ifdef ALLOW_COST_FULL
 
 C       >>> Cost function contributions
 #define ALLOW_ECCO_OLD_FC_PRINT
@@ -174,7 +174,7 @@ C       >>> Sea Surface Height Observation/Estimates.
 # endif
 
 c
-#endif /* ALLOW_COST */
+#endif /* ALLOW_COST_FULL */
 
 
 C ********************************************************************
