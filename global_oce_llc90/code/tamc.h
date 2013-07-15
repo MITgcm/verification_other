@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/tamc.h,v 1.1 2012/10/03 20:27:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/tamc.h,v 1.2 2013/07/15 19:06:20 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -115,7 +115,7 @@ c     and writing data.
       INTEGER act0, act1, act2, act3, act4
       INTEGER max0, max1, max2, max3
       INTEGER iikey, kkey, passkey, igadkey, 
-     &        itdkey, idynkey, igmkey, iptrkey
+     &        itdkey, idynkey, igmkey
 
 c     ================================================================
 c     END OF HEADER TAMC
