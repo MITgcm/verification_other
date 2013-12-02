@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/cpl_gray+ocn/shared_code/OCNIDS.h,v 1.1 2013/09/25 19:31:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/cpl_gray+ocn/shared_code/OCNIDS.h,v 1.2 2013/12/02 23:43:19 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -6,7 +6,7 @@ C     | OCNIDS.h Declare symbolic constants holding strings that
 C     |          are used to identify this component and the
 C     |          fields it exchanges with other components.
 C     *==========================================================*
-      CHARACTER*(8)  ocnCompName 
+      CHARACTER*(8)  ocnCompName
       PARAMETER( ocnCompName         = 'UV-Ocean'       )
 
       CHARACTER*(10) ocnMxlDName
