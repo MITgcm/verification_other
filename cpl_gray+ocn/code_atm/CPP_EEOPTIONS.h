@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/cpl_gray+ocn/code_atm/CPP_EEOPTIONS.h,v 1.1 2013/09/25 19:28:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/cpl_gray+ocn/code_atm/CPP_EEOPTIONS.h,v 1.2 2014/02/03 22:57:30 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -82,6 +82,10 @@ C--   Flag to turn off the writing of error message to ioUnit zero
 C--   Alternative formulation of BYTESWAP, faster than
 C     compiler flag -byteswapio on the Altix.
 #undef FAST_BYTESWAP
+
+C--   Flag defined for eeset_parms.F and open_copy_data_file.F
+C     to write scratch files from process 0 only
+#undef SINGLE_DISK_IO
 
 C=== MPI, EXCH and GLOBAL_SUM related options ===
 C--   Flag turns off MPI_SEND ready_to_receive polling in the

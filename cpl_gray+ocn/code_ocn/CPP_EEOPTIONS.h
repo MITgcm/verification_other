@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/cpl_gray+ocn/code_ocn/CPP_EEOPTIONS.h,v 1.1 2013/09/25 19:28:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/cpl_gray+ocn/code_ocn/CPP_EEOPTIONS.h,v 1.2 2014/02/03 22:57:30 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -83,6 +83,10 @@ C--   Alternative formulation of BYTESWAP, faster than
 C     compiler flag -byteswapio on the Altix.
 #undef FAST_BYTESWAP
 
+C--   Flag defined for eeset_parms.F and open_copy_data_file.F
+C     to write scratch files from process 0 only
+#undef SINGLE_DISK_IO
+
 C=== MPI, EXCH and GLOBAL_SUM related options ===
 C--   Flag turns off MPI_SEND ready_to_receive polling in the
 C     gather_* subroutines to speed up integrations.
@@ -107,6 +111,10 @@ C           filled in some way.
 #undef  ALWAYS_PREVENT_Y_PERIODICITY
 #define CAN_PREVENT_X_PERIODICITY
 #define CAN_PREVENT_Y_PERIODICITY
+
+C--   disconnect tiles (no exchange between tiles, just fill-in edges
+C     assuming locally periodic subdomain)
+#undef DISCONNECTED_TILES
 
 C--   Alternative way of doing global sum without MPI allreduce call
 C     but instead, explicit MPI send & recv calls.
