@@ -1,8 +1,26 @@
-$Header: /u/gcmpack/MITgcm_contrib/verification_other/update_history,v 1.13 2014/05/07 23:21:15 jmc Exp $
+$Header: /u/gcmpack/MITgcm_contrib/verification_other/update_history,v 1.14 2014/05/21 18:41:02 jmc Exp $
 $Name:  $
 
     Update history and content of "MITgcm_contrib/verification_other"
     =================================================================
+
+2014/05/21:
+atm_gray & cpl_gray+ocn: change convection parameters:
+    switch on "do_virtual" and "do_shallower" (recommended by Paul O'Gorman)
+    but keep default RH threshold (=0.8)
+    Update output of cpl_gray+ocn (no need to update atm_gray output,
+    too short cold start run).
+global_ocean.gm_k3d: Update output after fixing minor bugs relating to
+    finding the +eigenvalues/vectors (in gmredi_calc_eigs.F & gmredi_k3d.F):
+    was getting only 3 matching digits for cg2d.
+    New output generated on baudelaire using gfortran and "-devel" option.
+    Added to bi-weekly ifort+MPI test on acesgrid.
+
+2014/05/11:
+  - update atm_gray & cpl_gray+ocn output after changes in atmospheric p*:
+    + Switch to more accurate p* coordinate slope term (calc_grad_phi_hyd.F)
+    + use constant reference Pot.Temp (thetaConst) instead of tRef
+    + Acount for true p* correction in theta <-> T conversion in pkg/atm_phys
 
 2014/05/07:
   - add a test case for gmredi K3D scheme (set up from Michael Bates)
