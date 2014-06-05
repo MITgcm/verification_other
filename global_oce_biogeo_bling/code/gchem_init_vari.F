@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code/Attic/gchem_init_vari.F,v 1.1 2014/05/23 17:35:40 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code/Attic/gchem_init_vari.F,v 1.2 2014/06/05 21:32:06 mmazloff Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -66,10 +66,6 @@ ccccccccccccccccccccccccccc
          CALL BLING_SURFFORCING_INIT(myThid)
 # ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
-# endif
-# ifdef ALLOW_CTRL
-CAV should this be ALLOW_BLING_CONTROL?
-      CALL BLING_SET_CONTROL(myThid)
 # endif
 #endif /* ALLOW_BLING */
 
