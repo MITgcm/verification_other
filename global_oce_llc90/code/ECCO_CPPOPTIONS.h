@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.7 2014/02/05 15:22:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.8 2014/07/01 16:03:52 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -124,7 +124,7 @@ C       > It requires providing a specific cost function routine, and editing co
 #define ALLOW_GENCOST_SSHV4_OUTPUT
 # undef ALLOW_SHALLOW_ALTIMETRY
 # undef ALLOW_HIGHLAT_ALTIMETRY
-# undef ALLOW_PSBAR_MEAN
+#define ALLOW_PSBAR_MEAN
 #define ALLOW_PSBAR_STERIC
 # undef ALLOW_PSBAR_GENPRECIP
 # undef ALLOW_GENTIM2D_CONTROL
