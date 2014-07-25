@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/Attic/cost_genctrl.F,v 1.1 2014/06/05 21:41:21 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/Attic/cost_genctrl.F,v 1.2 2014/07/25 03:46:54 mmazloff Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -50,6 +50,7 @@ c     == local variables ==
       integer iarr
 CMM(
       integer il
+      _RL     mmmax, mmmin
       integer bi,bj
       integer i,j,k
       integer jmin,jmax
@@ -100,6 +101,8 @@ c--   Evaluate the individual cost function contributions.
 CMM(
 #ifdef ALLOW_GENARR3D_CONTROL
       DO iarr = 1, maxCtrlArr3D
+      mmmax = -9999
+      mmmin = 9999
        il=ILNBLNK( xx_genarr3d_file(iarr) )
        write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_genarr3d_file(iarr)(1:il),'.',optimcycle
@@ -119,6 +122,8 @@ c--         Determine the weights to be used.
      &                 + wptrcr(iarr,k,bi,bj)
      &                 *tmpx*tmpx
                   num_gencost(bi,bj,iarr) = num_gencost(bi,bj,iarr) + 1. _d 0
+                 if (tmpx.gt.mmmax) mmmax = tmpx
+                 if (tmpx.lt.mmmin) mmmin = tmpx
                 endif
               enddo
              enddo
@@ -126,7 +131,8 @@ c--         Determine the weights to be used.
 
         ENDDO
        ENDDO
-CMM        print *,'CMM Cost Ptracer 1 = ', objf_gencost(bi,bj,1)
+       print *,'CMM Cost XX_Ptracer = ', iarr, objf_gencost(bi,bj,iarr)
+       print *,'CMM XX_Ptracer min max = ', mmmin, mmmax
       ENDDO 
 #endif /* ALLOW_GENARR3D_CONTROL */
 
