@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/Attic/ecco_cost_weights.F,v 1.2 2014/07/25 03:46:54 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/Attic/ecco_cost_weights.F,v 1.3 2014/07/25 03:58:45 mmazloff Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -302,7 +302,6 @@ c--   Read error information and set up weight matrices.
      &               , wvi(k)
 #endif
 CMM(
-CMM #ifdef ALLOW_TRACER0_COST_CONTRIBUTION
 #ifdef ALLOW_GENARR3D_CONTROL
      &       ,wtr1(k),wtr2(k),wtr3(k),wtr4(k),wtr5(k),wtr6(k)
 #endif

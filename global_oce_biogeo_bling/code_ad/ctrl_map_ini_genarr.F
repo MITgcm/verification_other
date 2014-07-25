@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/ctrl_map_ini_genarr.F,v 1.2 2014/07/25 03:46:54 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/ctrl_map_ini_genarr.F,v 1.3 2014/07/25 03:58:45 mmazloff Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -59,9 +59,6 @@ C     == local variables ==
       logical ladinit
       character*( 80)   fnamegeneric
       _RL     fac
-CMM(
-      _RL     mmmax, mmmin
-CMM)
 CEOP
 
       jmin = 1
@@ -142,8 +139,6 @@ C INITIALIZE
       enddo
 CMM)
       DO iarr = 1, maxCtrlArr3D
-      mmmax = -9999
-      mmmin =  9999 
        il=ILNBLNK( xx_genarr3d_file(iarr) )
        write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_genarr3d_file(iarr)(1:il),'.',optimcycle
@@ -171,8 +166,6 @@ CMM)
 CMM(
               ptracer(i,j,k,bi,bj,1) = ptracer(i,j,k,bi,bj,1)
      & + tmpfld3d(i,j,k,bi,bj)
-       if (tmpfld3d(i,j,k,bi,bj).gt.mmmax) mmmax=tmpfld3d(i,j,k,bi,bj)
-       if (tmpfld3d(i,j,k,bi,bj).lt.mmmin) mmmin=tmpfld3d(i,j,k,bi,bj)
                 tmpfld3d(i,j,k,bi,bj) = 0.0
 CMM)
             enddo
@@ -180,7 +173,6 @@ CMM)
           enddo
         ENDDO
        ENDDO
-       print *,'CMM MAP XX_Ptracer iarr min max = ', iarr, mmmin, mmmax
 C--   end iarr loop
       ENDDO
 CMM(
