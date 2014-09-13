@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.8 2014/07/01 16:03:52 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.9 2014/09/13 19:53:12 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -186,6 +186,7 @@ C
 #define  ALLOW_NONDIMENSIONAL_CONTROL_IO
 # undef  CTRL_UNPACK_PRECISE
 # undef  CTRL_PACK_PRECISE
+#define ALLOW_GENTIM2D_CONTROL
 
 C       >>> Spatial Correlation Operator.
 #define ALLOW_SMOOTH_CORREL3D
