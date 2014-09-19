@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/CTRL_SIZE.h,v 1.1 2014/09/13 19:53:12 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/CTRL_SIZE.h,v 1.2 2014/09/19 20:43:43 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -18,10 +18,10 @@ C     maxCtrlTim2D :: number of 2-d generic tim-varying ctrl variables
       parameter ( maxCtrlArr2D = 1 )
 
       integer     maxCtrlArr3D
-      parameter ( maxCtrlArr3D = 1 )
+      parameter ( maxCtrlArr3D = 5 )
 
       integer     maxCtrlTim2D
-      parameter ( maxCtrlTim2D = 1 )
+      parameter ( maxCtrlTim2D = 7 )
 
 #endif
 
