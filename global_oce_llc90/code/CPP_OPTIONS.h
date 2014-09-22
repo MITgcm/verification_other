@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/CPP_OPTIONS.h,v 1.2 2014/09/13 19:53:12 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/CPP_OPTIONS.h,v 1.3 2014/09/22 22:00:55 gforget Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -130,6 +130,9 @@ C   is still useful with, e.g., single-domain curvilinear configurations.
 
 C o Use old EXTERNAL_FORCING_U,V,T,S subroutines (for backward compatibility)
 #undef USE_OLD_EXTERNAL_FORCING
+
+C o phase out old codes
+#define PHASE_OUT_OUT_CODES
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
