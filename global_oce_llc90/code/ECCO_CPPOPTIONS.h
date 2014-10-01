@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.11 2014/09/14 21:53:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.12 2014/10/01 16:06:08 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -152,10 +152,10 @@ C       >>> Surface Observations.
 #define ALLOW_TMI_SST_COST_CONTRIBUTION
 #define ALLOW_DAILYSST_COST_CONTRIBUTION
 # undef ALLOW_SSS_COST_CONTRIBUTION
-# undef ALLOW_SEAICE_COST_SMR_AREA
 #define ALLOW_DAILYSCAT_COST_CONTRIBUTION
 
 C       >>> Sea Surface Height Observation/Estimates.
+c#ifdef ALLOW_OLD_ESTIM_CODES
 #define ALLOW_EGM96_ERROR_DIAG
 #define ALLOW_SSH_MEAN_COST_CONTRIBUTION
 #define ALLOW_SSH_TPANOM_COST_CONTRIBUTION
@@ -171,6 +171,7 @@ C       >>> Sea Surface Height Observation/Estimates.
 # ifndef ALLOW_EGM96_ERROR_DIAG
 #  undef ALLOW_SSH_TOT
 # endif
+c#endif
 
 c
 #endif /* ALLOW_COST_FULL */
