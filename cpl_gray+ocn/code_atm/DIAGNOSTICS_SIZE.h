@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/cpl_gray+ocn/code_atm/DIAGNOSTICS_SIZE.h,v 1.1 2013/09/25 19:28:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/cpl_gray+ocn/code_atm/DIAGNOSTICS_SIZE.h,v 1.2 2014/10/07 01:05:22 jmc Exp $
 C $Name:  $
 
 
@@ -22,9 +22,10 @@ C  and "diagSt_size" (statistics-diags) since values here are deliberately small
       INTEGER    diagSt_size
       PARAMETER( ndiagMax = 500 )
       PARAMETER( numlists = 10, numperlist = 50, numLevels=2*Nr )
-      PARAMETER( numDiags = 40*Nr )
+c     PARAMETER( numDiags = 260*Nr )  ! to use repeatCycle=12 for 3-D dynDiag
+      PARAMETER( numDiags = 100*Nr )
       PARAMETER( nRegions = 9 , sizRegMsk = 3 , nStats = 4 )
-      PARAMETER( diagSt_size = 20*Nr )
+      PARAMETER( diagSt_size = 40*Nr )
 
 
 CEH3 ;;; Local Variables: ***
