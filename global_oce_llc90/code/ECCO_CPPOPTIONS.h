@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.12 2014/10/01 16:06:08 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.13 2014/10/10 01:50:34 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -119,6 +119,8 @@ C       > It requires providing a specific cost function routine, and editing co
 #define ALLOW_GENCOST_FREEFORM
 
 #define COST_GENERIC_ASSUME_CYCLIC
+
+#define ALLOW_GENCOST3D
 
 #define ALLOW_GENCOST_SSHV4
 #define ALLOW_GENCOST_SSHV4_OUTPUT
