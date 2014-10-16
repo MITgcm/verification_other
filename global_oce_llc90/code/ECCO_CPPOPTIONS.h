@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.13 2014/10/10 01:50:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.14 2014/10/16 20:12:42 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -16,6 +16,7 @@ C ********************************************************************
 C ***                         ECCO Package                         ***
 C ********************************************************************
 C
+
 C       >>> Do a long protocol.
 #undef ECCO_VERBOSE
 C       >>> use model/src/forward_step.F
@@ -58,48 +59,9 @@ C ********************************************************************
 C ***                Cost function Package                         ***
 c ********************************************************************
 C 
-#define ALLOW_COST_FULL
-
-#ifdef ALLOW_COST_FULL
 
 C       >>> Cost function contributions
 #define ALLOW_ECCO_OLD_FC_PRINT
-
-C       >>> Initial values.
-#define ALLOW_THETA0_COST_CONTRIBUTION
-#define ALLOW_SALT0_COST_CONTRIBUTION
-c so that the uncertainty fieldss are read in regardless:
-#define ALLOW_WTHETALEV
-#define ALLOW_WSALTLEV
-
-C       >>> Surface fluxes.
-# undef ALLOW_HFLUX_COST_CONTRIBUTION
-# undef ALLOW_SFLUX_COST_CONTRIBUTION
-#define ALLOW_USTRESS_COST_CONTRIBUTION
-#define ALLOW_VSTRESS_COST_CONTRIBUTION
-
-C       >>> Atmospheric state and radiation.
-#define ALLOW_ATEMP_COST_CONTRIBUTION
-#define ALLOW_AQH_COST_CONTRIBUTION
-#define ALLOW_UWIND_COST_CONTRIBUTION
-#define ALLOW_VWIND_COST_CONTRIBUTION
-#define ALLOW_PRECIP_COST_CONTRIBUTION
-# undef ALLOW_SWFLUX_COST_CONTRIBUTION
-#define ALLOW_SWDOWN_COST_CONTRIBUTION
-# undef ALLOW_LWFLUX_COST_CONTRIBUTION
-#define ALLOW_LWDOWN_COST_CONTRIBUTION
-
-C       >>> Ocean Parameters.
-# undef ALLOW_EDDYPSI_COST_CONTRIBUTION
-#define ALLOW_DIFFKR_COST_CONTRIBUTION
-#define ALLOW_KAPGM_COST_CONTRIBUTION
-# undef ALLOW_BOTTOMDRAG_COST_CONTRIBUTION
-#define ALLOW_KAPREDI_COST_CONTRIBUTION
-
-C       >>> Ocean Hydro. Atlas.
-# undef GENERIC_BAR_MONTH
-#define ALLOW_THETA_COST_CONTRIBUTION
-#define ALLOW_SALT_COST_CONTRIBUTION
 
 C       >>> ALLOW_GENCOST_CONTRIBUTION: interactive way to add basic 2D cost function terms.
 C       > In data.ecco, this requires the specification of data file (name, frequency,
@@ -122,62 +84,15 @@ C       > It requires providing a specific cost function routine, and editing co
 
 #define ALLOW_GENCOST3D
 
-#define ALLOW_GENCOST_SSHV4
 #define ALLOW_GENCOST_SSHV4_OUTPUT
 # undef ALLOW_SHALLOW_ALTIMETRY
 # undef ALLOW_HIGHLAT_ALTIMETRY
 #define ALLOW_PSBAR_MEAN
 #define ALLOW_PSBAR_STERIC
-# undef ALLOW_PSBAR_GENPRECIP
-
-# undef ALLOW_GENCOST_SSTV4
-# undef ALLOW_GENCOST_SSTV4_OUTPUT
-
-#define ALLOW_SEAICE_COST_CONTRIBUTION
 #define ALLOW_GENCOST_SEAICEV4
-
-C       >>> User Cost Function Terms.
-#define ALLOW_USERCOST_CONTRIBUTION
-# undef ALLOW_USERCOST_TSUV_CONTRIBUTION
-# undef ALLOW_USERCOST_TSdrift_CONTRIBUTION
 
 C       >>> In-Situ Profiles.
 #define ALLOW_PROFILES_CONTRIBUTION
-
-C       >>> GRACE Bottom Pressure.
-#define ALLOW_BP_COST_CONTRIBUTION
-#define ALLOW_BP_COST_OUTPUT
-
-C       >>> Surface Observations.
-# undef ALLOW_DRIFTER_COST_CONTRIBUTION
-#define ALLOW_SST_COST_CONTRIBUTION
-#define ALLOW_TMI_SST_COST_CONTRIBUTION
-#define ALLOW_DAILYSST_COST_CONTRIBUTION
-# undef ALLOW_SSS_COST_CONTRIBUTION
-#define ALLOW_DAILYSCAT_COST_CONTRIBUTION
-
-C       >>> Sea Surface Height Observation/Estimates.
-c#ifdef ALLOW_OLD_ESTIM_CODES
-#define ALLOW_EGM96_ERROR_DIAG
-#define ALLOW_SSH_MEAN_COST_CONTRIBUTION
-#define ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-#define ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-#define ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-# if (defined (ALLOW_SSH_MEAN_COST_CONTRIBUTION) || \
-      defined (ALLOW_SSH_TPANOM_COST_CONTRIBUTION) || \
-      defined (ALLOW_SSH_ERSANOM_COST_CONTRIBUTION))
-#  define ALLOW_SSH_COST_CONTRIBUTION
-# endif
-# undef ALLOW_NEW_SSH_COST
-#define ALLOW_SSH_TOT
-# ifndef ALLOW_EGM96_ERROR_DIAG
-#  undef ALLOW_SSH_TOT
-# endif
-c#endif
-
-c
-#endif /* ALLOW_COST_FULL */
-
 
 C ********************************************************************
 C ***               Control vector Package                         ***
@@ -199,41 +114,8 @@ C       >>> Spatial Correlation Operator.
 #define ALLOW_SMOOTH2D
 #define ALLOW_ADCTRLBOUND
 
-C       >>> Initial values.
-#define ALLOW_THETA0_CONTROL
-#define ALLOW_SALT0_CONTROL
-
-C       >>> Surface fluxes.
-# undef ALLOW_HFLUX_CONTROL
-# undef ALLOW_SFLUX_CONTROL
-#define ALLOW_USTRESS_CONTROL
-#define ALLOW_VSTRESS_CONTROL
-
-C       >>> Atmospheric state and radiation.
-#define  ALLOW_ATEMP_CONTROL
-#define  ALLOW_AQH_CONTROL
-#define  ALLOW_UWIND_CONTROL
-#define  ALLOW_VWIND_CONTROL
-#define  ALLOW_PRECIP_CONTROL
-# undef  ALLOW_SWFLUX_CONTROL
-#define  ALLOW_SWDOWN_CONTROL
-# undef  ALLOW_LWFLUX_CONTROL
-#define  ALLOW_LWDOWN_CONTROL
-
-C       >>> Ocean Parameters.
-# undef ALLOW_EDDYPSI_CONTROL
-#define ALLOW_DIFFKR_CONTROL
-#define ALLOW_KAPGM_CONTROL
-# undef ALLOW_BOTTOMDRAG_CONTROL
-#define ALLOW_KAPREDI_CONTROL
-
 C       >>> rotation of xx for wind
 #define ALLOW_ROTATE_UV_CONTROLS
-
-
-
-C   Specific relaxation strategy
-# undef ALLOW_RBCS_SPIN
 
 #endif /* ALLOW_ECCO */
 #endif /* ECCO_CPPOPTIONS_H */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/GMREDI_OPTIONS.h,v 1.2 2013/07/15 19:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/GMREDI_OPTIONS.h,v 1.3 2014/10/16 20:12:42 gforget Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -14,10 +14,7 @@ C Use this file for selecting options within the GM/Redi package
 C     Package-specific Options & Macros go here
 
 C Designed to simplify the Ajoint code:
-#if ( defined (ALLOW_KAPGM_CONTROL) || \
-      defined (ALLOW_KAPREDI_CONTROL) )
-# define GMREDI_WITH_STABLE_ADJOINT
-#endif
+#define GMREDI_WITH_STABLE_ADJOINT
 C -- exclude the clipping/tapering part of the code that is not used
 #define GM_EXCLUDE_CLIPPING
 #define GM_EXCLUDE_FM07_TAP
