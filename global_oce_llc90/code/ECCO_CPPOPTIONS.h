@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.15 2014/10/18 14:22:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.16 2014/10/19 23:24:59 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -71,7 +71,6 @@ C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT_MPI
 
 #define ALLOW_AUTODIFF_WHTAPEIO
-#define ALLOW_PACKUNPACK_METHOD2
 #define AUTODIFF_USE_OLDSTORE_2D
 #define AUTODIFF_USE_OLDSTORE_3D
 #define EXCLUDE_WHIO_GLOBUFF_2D
@@ -86,6 +85,7 @@ C
 
 #ifdef ALLOW_CTRL
 
+#define ALLOW_PACKUNPACK_METHOD2
 # undef  CTRL_SET_OLD_MAXCVARS_30
 #define  CTRL_SET_PREC_32
 #define  ALLOW_NONDIMENSIONAL_CONTROL_IO

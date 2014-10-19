@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/CPP_OPTIONS.h,v 1.3 2014/09/22 22:00:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/CPP_OPTIONS.h,v 1.4 2014/10/19 23:24:59 gforget Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -17,7 +17,6 @@ C *==================================================================*
 CEOP
 
 #include "PACKAGES_CONFIG.h"
-#include "AD_CONFIG.h"
 
 C CPP flags controlling particular source code features
 
@@ -38,7 +37,7 @@ C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
 
 C o Allow full 3D specification of vertical diffusivity
-c#undef ALLOW_3D_DIFFKR
+#define ALLOW_3D_DIFFKR
 
 C o Allow latitudinally varying BryanLewis79 vertical diffusivity
 #undef ALLOW_BL79_LAT_VARY
@@ -146,16 +145,6 @@ C   For this to work, PACKAGES_CONFIG.h needs to be included!
      defined (ALLOW_EXF))
 # include "ECCO_CPPOPTIONS.h"
 #endif
-
-C o Allow full 3D specification of vertical diffusivity
-#ifdef ALLOW_DIFFKR_CONTROL
-C - Need to be defined if using DIFFKR_CONTROL
-C   (alternatively, could have put this in ECCO_CPPOPTIONS)
-#define ALLOW_3D_DIFFKR
-#else
-C - otherwise, can be turned on or off hereafter:
-#undef  ALLOW_3D_DIFFKR
-#endif /* ALLOW_DIFFKR_CONTROL */
 
 #endif /* CPP_OPTIONS_H */
 
