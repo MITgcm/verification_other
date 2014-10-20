@@ -1,17 +1,33 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/EXF_OPTIONS.h,v 1.1 2012/08/24 16:33:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/EXF_OPTIONS.h,v 1.2 2014/10/20 03:29:00 gforget Exp $
 C $Name:  $
+
+CBOP
+C !ROUTINE: EXF_OPTIONS.h
+C !INTERFACE:
+C #include "EXF_OPTIONS.h"
+
+C !DESCRIPTION:
+C *==================================================================*
+C | CPP options file for EXternal Forcing (EXF) package:
+C | Control which optional features to compile in this package code.
+C *==================================================================*
+CEOP
 
 #ifndef EXF_OPTIONS_H
 #define EXF_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#include "AD_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_EXF
-C     Package-specific Options & Macros go here
+#ifdef ECCO_CPPOPTIONS_H
 
-C CPP flags controlling which code is included in the files that
-C will be compiled.
+C-- When multi-package option-file ECCO_CPPOPTIONS.h is used (directly included
+C    in CPP_OPTIONS.h), this option file is left empty since all options that
+C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
+
+#else /* ndef ECCO_CPPOPTIONS_H */
+
+C-- Package-specific Options & Macros go here
 
 c   pkg/exf CPP options:
 c   --------------------
@@ -168,5 +184,6 @@ C   (no pole symmetry, single vector-comp interp, reset to 0 zonal-comp @ N.pole
 # define EXF_IREAD_USE_GLOBAL_POINTER
 #endif
 
+#endif /* ndef ECCO_CPPOPTIONS_H */
 #endif /* ALLOW_EXF */
 #endif /* EXF_OPTIONS_H */

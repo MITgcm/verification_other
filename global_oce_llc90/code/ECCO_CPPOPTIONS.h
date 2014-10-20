@@ -1,11 +1,16 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.16 2014/10/19 23:24:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.17 2014/10/20 03:29:00 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
 #define ECCO_CPPOPTIONS_H
-#include "AD_CONFIG.h"
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+
+C-- Collect here, in a single option-file, options to control which optional
+C   features to compile in packages AUTODIFF, COST, CTRL, ECCO, CAL and EXF.
+C   If used, this option-file needs to be directly included in CPP_OPTIONS.h
+C   Although this method, inherited from ECCO setup, has been traditionally
+C   used for all adjoint built, work is in progess to allow to use the
+C   standard metod (each of the above pkg get its own options from its
+C   specific option-file) also for adjoint built.
 
 C ********************************************************************
 C ***                         ECCO Package                         ***
@@ -107,5 +112,6 @@ C       >>> rotation of xx for wind
 
 #endif /* ALLOW_CTRL */
 
+C ********************************************************************
 #endif /* ECCO_CPPOPTIONS_H */
 

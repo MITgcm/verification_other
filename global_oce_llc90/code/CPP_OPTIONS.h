@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/CPP_OPTIONS.h,v 1.4 2014/10/19 23:24:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/CPP_OPTIONS.h,v 1.5 2014/10/20 03:29:00 gforget Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -15,8 +15,6 @@ C | main CPP options file for the model:
 C | Control which optional features to compile in model/src code.
 C *==================================================================*
 CEOP
-
-#include "PACKAGES_CONFIG.h"
 
 C CPP flags controlling particular source code features
 
@@ -130,21 +128,8 @@ C   is still useful with, e.g., single-domain curvilinear configurations.
 C o Use old EXTERNAL_FORCING_U,V,T,S subroutines (for backward compatibility)
 #undef USE_OLD_EXTERNAL_FORCING
 
-C o phase out old codes
-#define PHASE_OUT_OUT_CODES
-
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
-
-C o Include/exclude code specific to the ECCO/SEALION version.
-C   AUTODIFF or EXF package.
-C   Currently controled by a single header file
-C   For this to work, PACKAGES_CONFIG.h needs to be included!
-#if (defined (ALLOW_AUTODIFF) || \
-     defined (ALLOW_ECCO) || \
-     defined (ALLOW_EXF))
-# include "ECCO_CPPOPTIONS.h"
-#endif
 
 #endif /* CPP_OPTIONS_H */
 
