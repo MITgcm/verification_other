@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_cs32/code/mom_calc_visc.F,v 1.2 2013/08/06 20:59:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_cs32/code/mom_calc_visc.F,v 1.3 2014/10/20 03:22:59 gforget Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
