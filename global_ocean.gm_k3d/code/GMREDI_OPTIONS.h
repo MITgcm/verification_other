@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_ocean.gm_k3d/code/GMREDI_OPTIONS.h,v 1.1 2014/05/07 21:45:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_ocean.gm_k3d/code/GMREDI_OPTIONS.h,v 1.2 2015/01/14 22:26:59 jmc Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -27,10 +27,9 @@ C Use old calculation (before 2007/05/24) of Visbeck etal K_GM+Redi
 C (which depends on tapering scheme)
 #undef OLD_VISBECK_CALC
 
-C This allows the Bates et al formulation to calculate the 
+C This allows the Bates et al formulation to calculate the
 C bolus transport and K for Redi
 #define GM_K3D
-#define use_lapack
 #undef GM_K3D_PASSIVE
 
 C This allows the leading diagonal (top two rows) to be non-unity
