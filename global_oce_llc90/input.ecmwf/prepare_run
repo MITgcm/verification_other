@@ -1,9 +1,29 @@
-#!/bin/csh -f
+#! /usr/bin/env bash
 
-set dirInputFields  = ../../global_oce_input_fields/
-set dirLlc90        = ../../global_oce_llc90/
+dirList="../input.ecmwf/ ../../global_oce_input_fields/ecmwf/"
 
-ln -s ${dirLlc90}/input.ecmwf/* .
-ln -s ${dirInputFields}/ecmwf/* .
-${dirLlc90}/input/prepare_run
+for fromDir in $dirList
+do
+
+#- and do a symbolic link in the current directory
+#   (if the file does not already exist)
+if test -d $fromDir ; then
+  fileList=`( cd $fromDir ; ls -1 )`
+  lnkList='files:'
+  for xx in $fileList
+  do
+    if test -r ${fromDir}/$xx ; then
+      if test ! -r $xx ; then
+        lnkList=${lnkList}" "$xx
+        ln -sf ${fromDir}/$xx .
+      fi
+    fi
+  done
+  echo ' link' $lnkList "from dir:" $fromDir
+else
+  echo " Error:" $fromDir "not a directory"
+fi
+done
+
+../input/prepare_run
 

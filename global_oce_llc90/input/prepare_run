@@ -1,16 +1,36 @@
-#!/bin/csh -f
+#! /usr/bin/env bash
 
-set dirInputFields  = ../../global_oce_input_fields/
-set dirLlc90        = ../../global_oce_llc90/
-set dirCs32         = ../../global_oce_cs32/
+dirList="../input/ ../../global_oce_input_fields/llc90/ ../../global_oce_input_fields/llc90_fields/ ../../global_oce_input_fields/llc90_runoff/"
 
-ln -s ${dirCs32}/input_fields/CORE* .
-ln -s ${dirLlc90}/input/* .
-ln -s ${dirInputFields}/* .
-ln -s ${dirInputFields}/llc90/* .
-ln -s ${dirInputFields}/llc90_fields/* .
-ln -s ${dirInputFields}/llc90_runoff/* .
+for fromDir in $dirList
+do
 
+#- and do a symbolic link in the current directory
+#   (if the file does not already exist)
+if test -d $fromDir ; then
+  fileList=`( cd $fromDir ; ls -1 )`
+  lnkList='files:'
+  for xx in $fileList
+  do
+    if test -r ${fromDir}/$xx ; then
+      if test ! -r $xx ; then
+        lnkList=${lnkList}" "$xx
+        ln -sf ${fromDir}/$xx .
+      fi
+    fi
+  done
+  echo ' link' $lnkList "from dir:" $fromDir
+else
+  echo " Error:" $fromDir "not a directory"
+fi
+done
+
+if test ! -r CORE2_dlw_daily_r2_cnyf ; then
+  ln -s ../../global_oce_cs32/input_fields/CORE* .
+fi
+
+if test ! -d "diags" ; then
 mkdir diags
 mkdir tapes
+fi
 
