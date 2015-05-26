@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/CTRL_SIZE.h,v 1.4 2014/11/13 17:02:12 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/CTRL_SIZE.h,v 1.5 2015/05/26 22:44:56 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -25,7 +25,7 @@ C     maxCtrlProc  :: number of pre-processing options per ctrl variable
       parameter ( maxCtrlTim2D = 8 )
 
       integer     maxCtrlProc
-      parameter ( maxCtrlProc = 1 )
+      parameter ( maxCtrlProc = 3 )
 
 #endif
 
