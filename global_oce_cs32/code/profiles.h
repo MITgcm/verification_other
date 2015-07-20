@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_cs32/code/Attic/profiles.h,v 1.4 2015/03/27 12:22:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_cs32/code/Attic/profiles.h,v 1.5 2015/07/20 19:37:39 gforget Exp $
 C $Name:  $
 
 C============================================================
@@ -11,7 +11,7 @@ C============================================================
       INTEGER NVARMAX
       PARAMETER ( NVARMAX=6 )
       INTEGER NLEVELMAX
-      PARAMETER ( NLEVELMAX=100 )
+      PARAMETER ( NLEVELMAX=110 )
       INTEGER NUM_INTERP_POINTS
       PARAMETER (NUM_INTERP_POINTS = 1)
 
@@ -41,8 +41,6 @@ C===========================================================
       _RL prof_etan_mean(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL prof_theta_mean(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL prof_salt_mean(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL prof_tdat_mean(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL prof_sdat_mean(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
       integer profNo(NFILESPROFMAX,nsx,nsy)
       integer profDepthNo(NFILESPROFMAX,nsx,nsy)
@@ -53,6 +51,7 @@ C===========================================================
      & fidtangent(NFILESPROFMAX,nsx,nsy)
       integer fiddata(NFILESPROFMAX,nsx,nsy)
       character*(8) prof_names(NVARMAX)
+      character*(8) prof_namesmod(NVARMAX)
       character*(12) prof_namesmask(NVARMAX)
       character*(14) prof_namesweight(NVARMAX)
 
@@ -72,14 +71,14 @@ C===========================================================
 
       COMMON /profiles_r/ prof_time, prof_lon, prof_lat,
      & prof_depth, prof_mask1D_cur, 
-     & prof_etan_mean, prof_theta_mean, prof_salt_mean,
-     & prof_tdat_mean, prof_sdat_mean
+     & prof_etan_mean, prof_theta_mean, prof_salt_mean
       COMMON /profiles_i/ prof_ind_glob, profNo, profDepthNo,
      & fidforward, fidadjoint, fidtangent, fiddata,
      & prof_num_var_tot, prof_num_var_cur
       COMMON /profiles_l/ vec_quantities, profilesDoNcOutput, 
      & profilesDoGenGrid
-      COMMON /profiles_c/ prof_names, prof_namesmask, prof_namesweight
+      COMMON /profiles_c/ prof_names, prof_namesmask,
+     & prof_namesweight, prof_namesmod
 
 #ifdef ALLOW_PROFILES_GENERICGRID
       COMMON /profiles_GenericGrid_r/ prof_interp_weights,
