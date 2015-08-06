@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.17 2014/10/20 03:29:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/Attic/ECCO_CPPOPTIONS.h,v 1.18 2015/08/06 20:37:05 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -18,9 +18,6 @@ C ********************************************************************
 C
 
 #ifdef ALLOW_ECCO
-
-C       >>> use model/src/forward_step.F
-#define ALLOW_ECCO_EVOLUTION
 
 C       >>> Cost function contributions
 #define ALLOW_ECCO_OLD_FC_PRINT

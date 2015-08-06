@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/ECCO_OPTIONS.h,v 1.2 2014/11/02 23:23:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/ECCO_OPTIONS.h,v 1.3 2015/08/06 20:37:05 gforget Exp $
 C $Name:  $
 
 CBOP
@@ -29,9 +29,6 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 C   ==================================================================
 C-- Package-specific Options & Macros go here
 C
-
-C       >>> use model/src/forward_step.F
-#define ALLOW_ECCO_EVOLUTION
 
 C       >>> Cost function contributions
 #define ALLOW_ECCO_OLD_FC_PRINT
