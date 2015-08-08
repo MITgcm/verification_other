@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_cs32/code/PROFILES_SIZE.h,v 1.1 2015/08/06 15:51:19 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_cs32/code/PROFILES_SIZE.h,v 1.2 2015/08/08 18:37:47 gforget Exp $
 C $Name:  $
 
 C============================================================
@@ -18,9 +18,5 @@ C============================================================
       INTEGER NLEVELMAX
       PARAMETER ( NLEVELMAX=110 )
       INTEGER NUM_INTERP_POINTS
-#ifndef ALLOW_PROFILES_GENERICGRID
       PARAMETER (NUM_INTERP_POINTS = 4)
-#else
-      PARAMETER (NUM_INTERP_POINTS = 1)
-#endif
 
