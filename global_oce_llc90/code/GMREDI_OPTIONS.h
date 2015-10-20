@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/GMREDI_OPTIONS.h,v 1.4 2014/10/21 04:56:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/GMREDI_OPTIONS.h,v 1.5 2015/10/20 16:58:18 gforget Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -18,7 +18,9 @@ C Designed to simplify the Ajoint code:
 
 C This allows for GMREDI controls
 #define ALLOW_KAPGM_CONTROL
+# undef ALLOW_KAPGM_CONTROL_OLD
 #define ALLOW_KAPREDI_CONTROL
+# undef ALLOW_KAPREDI_CONTROL_OLD
 
 C -- exclude the clipping/tapering part of the code that is not used
 #define GM_EXCLUDE_CLIPPING
