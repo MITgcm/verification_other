@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/GMREDI_OPTIONS.h,v 1.5 2015/10/20 16:58:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/GMREDI_OPTIONS.h,v 1.6 2015/10/23 19:25:16 gforget Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -16,12 +16,6 @@ C     Package-specific Options & Macros go here
 C Designed to simplify the Ajoint code:
 #define GMREDI_WITH_STABLE_ADJOINT
 
-C This allows for GMREDI controls
-#define ALLOW_KAPGM_CONTROL
-# undef ALLOW_KAPGM_CONTROL_OLD
-#define ALLOW_KAPREDI_CONTROL
-# undef ALLOW_KAPREDI_CONTROL_OLD
-
 C -- exclude the clipping/tapering part of the code that is not used
 #define GM_EXCLUDE_CLIPPING
 #define GM_EXCLUDE_FM07_TAP
@@ -34,6 +28,11 @@ C This allows to use Visbeck et al formulation to compute K_GM+Redi
 C Use old calculation (before 2007/05/24) of Visbeck etal K_GM+Redi
 C (which depends on tapering scheme)
 #undef OLD_VISBECK_CALC
+
+C This allows the Bates et al formulation to calculate the
+C bolus transport and K for Redi
+#undef GM_K3D
+#undef GM_K3D_PASSIVE
 
 C This allows the leading diagonal (top two rows) to be non-unity
 C (a feature required when tapering adiabatically).

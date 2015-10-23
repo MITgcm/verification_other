@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/CTRL_OPTIONS.h,v 1.1 2014/10/20 03:29:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/CTRL_OPTIONS.h,v 1.2 2015/10/23 19:25:16 gforget Exp $
 C $Name:  $
 
 CBOP
@@ -33,6 +33,12 @@ C o I/O and pack settings
 #define CTRL_SET_PREC_32
 #define ALLOW_NONDIMENSIONAL_CONTROL_IO
 #define ALLOW_PACKUNPACK_METHOD2
+
+C This allows for GMREDI controls
+#define ALLOW_KAPGM_CONTROL
+# undef ALLOW_KAPGM_CONTROL_OLD
+#define ALLOW_KAPREDI_CONTROL
+# undef ALLOW_KAPREDI_CONTROL_OLD
 
 C o sets of controls
 #define ALLOW_GENTIM2D_CONTROL
