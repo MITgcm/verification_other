@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code/DIAGNOSTICS_SIZE.h,v 1.1 2013/07/07 23:55:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/atm_gray/code/DIAGNOSTICS_SIZE.h,v 1.2 2015/12/13 22:34:56 jmc Exp $
 C $Name:  $
 
 
@@ -24,7 +24,7 @@ C  and "diagSt_size" (statistics-diags) since values here are deliberately small
       PARAMETER( numlists = 10, numperlist = 50, numLevels=2*Nr )
       PARAMETER( numDiags = 40*Nr )
       PARAMETER( nRegions = 9 , sizRegMsk = 3 , nStats = 4 )
-      PARAMETER( diagSt_size = 20*Nr )
+      PARAMETER( diagSt_size = 40*Nr )
 
 
 CEH3 ;;; Local Variables: ***
