@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks_JJ.F,v 1.1 2015/12/11 19:48:32 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks_JJ.F,v 1.2 2016/01/05 16:04:36 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -79,6 +79,7 @@ C- Update etaN
              salt(I,J,K-1,bi,bj)=salt(I,J,K,bi,bj)
              theta(I,J,K-1,bi,bj)=theta(I,J,K,bi,bj)
              hfacC(I,J,K,bi,bj)=1.0
+           Rmin_surf(I,J,bi,bj) = Rmin_surf(I,J,bi,bj)+1/recip_drF(K)
 
            ENDIF
              IF (R_shelfice(i,j,bi,bj) .NE. R_grounding(i,j,bi,bj))THEN
@@ -112,6 +113,7 @@ C- Update etaN
              etaN(I,J,bi,bj) = etaN(I,J,bi,bj) +1/recip_drF(K)
              etaH(I,J,bi,bj) = etaH(I,J,bi,bj) +1/recip_drF(K)
            R_shelfice(I,J,bi,bj) = R_shelfice(I,J,bi,bj) -1/recip_drF(K)
+           Rmin_surf(I,J,bi,bj) = Rmin_surf(I,J,bi,bj) -1/recip_drF(K)
 
          gunm1(I+1,J,K+1,bi,bj)=((gunm1(I+1,J,K,bi,bj)*(1/recip_drF(K)+
      &     etaN(I,J,bi,bj)))+(gunm1(I+1,J,K+1,bi,bj)*1/recip_drF(K+1)))/
