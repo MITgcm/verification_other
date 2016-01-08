@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.1 2015/12/11 19:48:32 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.2 2016/01/08 16:53:25 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -743,12 +743,12 @@ c     &               +rhoconst*ro_surf(2,330,1,1))
 
 
 
-c       DO bj = myByLo(myThid), myByHi(myThid)
-c        DO bi = myBxLo(myThid), myBxHi(myThid)
-c         DO j = 1-OLy, sNy+OLy
-c          DO i = 1-OLx, sNx+OLx
-c           shelficeLoadAnomaly(i,j,bi,bj) = gravity
-c     &      *( shelficeMass(i,j,bi,bj) + rhoConst*Ro_surf(i,j,bi,bj) )
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
+           shelficeLoadAnomaly(i,j,bi,bj) = gravity
+     &      *( shelficeMass(i,j,bi,bj) + rhoConst*Ro_surf(i,j,bi,bj) )
 c#ifdef ALLOW_STREAMICE
 c       IF ( R_shelfice(i,j,bi,bj) .EQ. R_grounding(i,j,bi,bj)  ) THEN
 c     
@@ -783,11 +783,11 @@ c          endif
 
 c            ENDIF
 c#endif /* ALLOW_STREAMICE */
-c
-cc          ENDDO
-c c        ENDDO
-c c       ENDDO
-c       ENDDO
+
+          ENDDO
+        ENDDO
+       ENDDO
+       ENDDO
 c     ENDIF
 
 c        print *, 'JJHAF', (H_streamice(2,30,1,1)+R_low(2,30,1,1))
