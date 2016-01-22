@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE.h,v 1.2 2016/01/22 16:09:33 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE.h,v 1.3 2016/01/22 18:09:42 dgoldberg Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -121,7 +121,7 @@ CEOP
      &     shiPrandtl, shiSchmidt, shiKinVisc,
      &     SHELFICERemeshFrequency,
      &     SHELFICESplitThreshold,
-     &     SHELFICEMergeThreshold,
+     &     SHELFICEMergeThreshold
       _RL SHELFICE_dumpFreq, SHELFICE_taveFreq
       _RL SHELFICEheatTransCoeff
       _RL SHELFICEsaltTransCoeff
@@ -156,7 +156,7 @@ CEOP
      &     R_Grounding, 
      &     shelficeHeatFlux,
      &     shelfIceFreshWaterFlux,
-     &     shelfIceMassDynTendency,
+     &     shelfIceMassDynTendency
       _RS R_shelfIce            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS R_Grounding           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeHeatFlux      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

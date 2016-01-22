@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/ini_masks_etc_JJ.F,v 1.2 2016/01/22 16:09:33 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/ini_masks_etc_JJ.F,v 1.3 2016/01/22 18:09:42 dgoldberg Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -392,7 +392,7 @@ C-    end bi,bj loops.
         DO j=1,sNy
          DO i=1,sNx+1
           ks = kSurfW(i,j,bi,bj)
-c          IF (ks.LE.Nr) THEN
+          IF (ks.LE.Nr) THEN
 c-  allows hFacW to be larger than surrounding hFacC=1 @ edge of a step with
 C   different kSurfC on either side (topo in p-coords, ice-shelf in z-coords)
             hhm = Ro_surf(i-1,j,bi,bj)+etaN(i-1,j,bi,bj)
@@ -408,14 +408,14 @@ c           IF(ks.EQ.kSurfC(i,j,bi,bj))   hhp = rSurftmp(i,j)
      &            + ( MIN(hhm,hhp)
      &              - MIN( Ro_surf(i-1,j,bi,bj), Ro_surf(i,j,bi,bj) )
      &              )*recip_drF(ks)*maskW(i,j,ks,bi,bj)
-c          ENDIF
+           ENDIF
          ENDDO
         ENDDO
 
         DO j=1,sNy+1
          DO i=1,sNx
           ks = kSurfS(i,j,bi,bj)
-c          IF (ks.LE.Nr) THEN
+          IF (ks.LE.Nr) THEN
 C-  allows hFacS to be larger than surrounding hFacC=1 @ edge of a step with
 C   different kSurfC on either side (topo in p-coords, ice-shelf in z-coords)
             hhm = Ro_surf(i,j-1,bi,bj)+etaN(i,j-1,bi,bj)
@@ -431,7 +431,7 @@ c           IF(ks.EQ.kSurfC(i,j,bi,bj))   hhp = rSurftmp(i,j)
      &            + ( MIN(hhm,hhp)
      &              - MIN( Ro_surf(i,j-1,bi,bj), Ro_surf(i,j,bi,bj) )
      &              )*recip_drF(ks)*maskS(i,j,ks,bi,bj)
-c          ENDIF
+          ENDIF
          ENDDO
         ENDDO
        ENDDO
