@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_forcing_surf.F,v 1.1 2015/12/11 19:48:32 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_forcing_surf.F,v 1.2 2016/01/22 16:09:34 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -24,7 +24,7 @@ C     == Global data ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-c#include "DYNVARS.h"
+#include "DYNVARS.h"
 #include "SURFACE.h"
 #include "FFIELDS.h"
 #include "SHELFICE.h"
@@ -105,6 +105,16 @@ C     (calling SHELFICE_FORCING_T & _S from APPLY_FORCING_T & _S)
 c           IF ( kTopC(i,j,bi,bj).NE.0 ) THEN
              EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj)
      &         + shelfIceFreshWaterFlux(i,j,bi,bj)
+c             IF (J .GT. 395) THEN
+c              
+c           IF ((myTime/86400) .EQ.
+c     &     INT (myTime/86400) .AND. myTime
+c     &      .NE. 0.0        ) THEN
+c            SeaLevelRestore(i,j,bi,bj) = etaN(i,j,bi,bj)*1030/86400
+c             ENDIF
+c           EmPmR(i,j,bi,bj)=SeaLevelRestore(i,j,bi,bj)
+c             ENDIF
+                  
 c           ENDIF
            ENDDO
           ENDDO
@@ -134,30 +144,6 @@ C--   end if not SHELFICEboundaryLayer
            ENDDO
           ENDDO
         ENDIF
-
-                 DO j=jmin, jmax
-           Do i=imin, imax
-
-c      IF ( R_shelfice(i,j,bi,bj) .EQ. R_grounding(i,j,bi,bj)  ) THEN
-
-
-c            IF (phi0surf(i,j,bi,bj) .GT. 232  ) THEN
-
-c     phi0surf(i,j,bi,bj) = 232
-c     &       (shelficeGroundInit(1,5,1,1)+rhoConst*
-c     & Ro_surf(1,5,1,1)) *recip_rhoConst
-c             ENDIF
-c              ENDIF
-             ENDDO
-            ENDDO
-
-
-
-
-
-
-
-
 
 c      ENDDO
 c     ENDDO

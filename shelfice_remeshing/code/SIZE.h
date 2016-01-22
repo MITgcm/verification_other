@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SIZE.h,v 1.1 2015/12/11 19:48:31 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SIZE.h,v 1.2 2016/01/22 16:09:33 dgoldberg Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -36,8 +36,8 @@ C     Nr  - No. points in Z for full process domain.
       INTEGER Ny
       INTEGER Nr
       PARAMETER (
-     &           sNx =  1,
-     &           sNy =  200,
+     &           sNx =  3,
+     &           sNy =  400,
      &           OLx =   3,
      &           OLy =   3,
      &           nSx =   1,

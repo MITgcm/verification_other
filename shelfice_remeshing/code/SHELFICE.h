@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE.h,v 1.1 2015/12/11 19:48:31 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE.h,v 1.2 2016/01/22 16:09:33 dgoldberg Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -122,8 +122,6 @@ CEOP
      &     SHELFICERemeshFrequency,
      &     SHELFICESplitThreshold,
      &     SHELFICEMergeThreshold,
-     &     SHELFICEGroundW,
-     &     SHELFICEGroundC
       _RL SHELFICE_dumpFreq, SHELFICE_taveFreq
       _RL SHELFICEheatTransCoeff
       _RL SHELFICEsaltTransCoeff
@@ -141,7 +139,7 @@ CEOP
      &     shelficeMass, shelficeMassInit, shelficeGroundInit,
      &     shelficeLoadAnomaly,
      &     shelficeForcingT, shelficeForcingS,
-     &     shiTransCoeffT, shiTransCoeffS 
+     &     shiTransCoeffT, shiTransCoeffS, EFFMASS 
       _RL shelficeMass          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeMassInit      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeGroundInit    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -150,7 +148,9 @@ CEOP
       _RL shelficeForcingS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shiTransCoeffT        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shiTransCoeffS        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-     
+      _RL EFFMASS               (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SeaLevelRestore       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
       COMMON /SHELFICE_FIELDS_RS/
      &     R_shelfIce, 
      &     R_Grounding, 

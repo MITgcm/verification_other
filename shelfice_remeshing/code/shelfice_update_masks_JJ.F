@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks_JJ.F,v 1.2 2016/01/05 16:04:36 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks_JJ.F,v 1.3 2016/01/22 16:09:34 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -58,8 +58,8 @@ C     I,J,K   :: Loop counters
 C- Update etaN
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO J = 1-OLy,sNy+OLy
-          DO I = 1-OLx,sNx+OLx
+         DO J = 1,sNy
+          DO I = 1,sNx
            IF ( R_shelfice(I,J,bi,bj) .LT. 0.0) THEN
             IF (etah(I,J,bi,bj) .GT. SHELFICESplitThreshold ) THEN
              K  = MAX(1,kTopC(I,J,bi,bj))
@@ -132,10 +132,6 @@ C- Update etaN
      &     etaN(I,J,bi,bj)))+(gvnm1(I,J,K+1,bi,bj)*1/recip_drF(K+1)))/
      &       (1/recip_drF(K)+1/recip_drF(K+1)+etaN(I,J,bi,bj))
 
-
-
-
-
              hfacC(I,J,K,bi,bj)=1.0
              ENDIF 
             ENDIF
@@ -148,8 +144,8 @@ C- Update etaN
      
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO J = 1-OLy,sNy+OLy
-          DO I = 1-OLx,sNx+OLx
+         DO J = 1,sNy
+          DO I = 1,sNx
             etaH(I,J,bi,bj)=etaN(I,J,bi,bj)
             etaHnm1(I,J,bi,bj)=etaH(I,J,bi,bj)
           ENDDO
@@ -159,26 +155,35 @@ C- Update etaN
 
 
 
-        DO   bj = myByLo(myThid), myByHi(myThid)
+       DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO J = 1-OLy,sNy+OLy
-          DO I = 1-OLx,sNx+OLx
-               K = MAX(1,kTopC(I,J,bi,bj))
-
+         DO J = 1,sNy
+          DO I = 1,sNx
+           K = MAX(1,kTopC(I,J,bi,bj))
             hfac_surfc(I,J,bi,bj)= ((etaH(I,J,bi,bJ) +(1/recip_drF(K)))
      &     *recip_drF(K))
-
-
-
           ENDDO
          ENDDO
         ENDDO
        ENDDO
 
      
+        CALL EXCH_XYZ_RL(salt,myThid)
+        CALL EXCH_XYZ_RL(theta,myThid)
+        CALL EXCH_XYZ_RL(uVel,myThid)
+        CALL EXCH_XYZ_RL(vVel,myThid)
+        CALL EXCH_XYZ_RL(gunm1,myThid)
+        CALL EXCH_XYZ_RL(gvnm1,myThid)
+        CALL EXCH_XYZ_RL(hFacC,myThid)
+ 
+           CALL EXCH_XY_RL(EtaN,myThid)
+           CALL EXCH_XY_RL(EtaH,myThid)
+           CALL EXCH_XY_RL(EtaHnm1,myThid)
+           CALL EXCH_XY_RL(R_shelfice,myThid)
+           CALL EXCH_XY_RL(Rmin_surf,myThid)
+           CALL EXCH_XY_RL(hFac_surfC,myThid)
 
-
-
+           
 C- fill in the overlap (+ BARRIER):
       _EXCH_XY_RS(R_shelfIce, myThid )
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.2 2016/01/08 16:53:25 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.3 2016/01/22 16:09:34 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -103,8 +103,9 @@ C     drKp1, recip_drLoc
       _RL drKp1, drKp2, recip_drLoc
       _RL recip_latentHeat
       _RL tmpFac
-      _RL SHICEHAF 
-      _RL SHC,SHW,SHA,FACTOR1,FACTOR2,FACTOR3
+      _RL massMin, mass, mass_eff, DELZ
+      _RL SHA,FACTOR1,FACTOR2,FACTOR3
+      _RL GMSL,ETACOUNT
 #ifdef SHI_ALLOW_GAMMAFRICT
       _RL shiPr, shiSc, shiLo, recip_shiKarman, shiTwoThirds
       _RL gammaTmoleT, gammaTmoleS, gammaTurb, gammaTurbConst
@@ -729,78 +730,42 @@ C     endif (not) useISOMIPTD
 
 C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
 #ifndef ALLOW_AUTODIFF
-c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
-
-c            print *, 'JJBEF',gravity*(shelficemass(2,30,1,1)
-c     &               +rhoconst*ro_surf(2,30,1,1))
-c        print *, 'JJBEF',gravity*(shelficemass(2,230,1,1)
-c     &               +rhoconst*ro_surf(2,230,1,1))
-
-c        print *, 'JJBEF',gravity*(shelficemass(2,330,1,1)
-c     &               +rhoconst*ro_surf(2,330,1,1))
-
-
-
 
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j = 1-OLy, sNy+OLy
+         DO j = 1-OLy, sNy+OLy
           DO i = 1-OLx, sNx+OLx
            shelficeLoadAnomaly(i,j,bi,bj) = gravity
      &      *( shelficeMass(i,j,bi,bj) + rhoConst*Ro_surf(i,j,bi,bj) )
-c#ifdef ALLOW_STREAMICE
-c       IF ( R_shelfice(i,j,bi,bj) .EQ. R_grounding(i,j,bi,bj)  ) THEN
-c     
-c          if(i==1) then
-c          print * ,'JRJ1',i,j,shelficeloadanomaly(i,j,bi,bj),
-c     &     FACTOR1,FACTOR2,FACTOR3
-c          endif
+#ifdef ALLOW_STREAMICE
 
-c          SHICEHAF=H_streamice(i,j,bi,bj)+R_low(i,j,bi,bj)
-c     &         *(streamice_density_ocean_avg/streamice_density)
+          delZ = drF(kLowC(i,j,bi,bj))
+          massMin = -1*streamice_density_ocean_avg
+     &         *(R_low(i,j,bi,bj)+hfacMin*delZ)
+          mass = shelficemass(i,j,bi,bj)
 
-!          SHICEHAF=SHICEHAF-((990*streamice_density_ocean_avg/
-!     &         streamice_density)-990)
-         
-c     
-c          SHA=SHELFICEGroundC/
-c     &        SQRT(.01+shelficeLoadAnomaly(i,j,bi,bj)**2)
-c
-c          FACTOR1 = (1-SHA)/2.
-c          FACTOR2 = (1+SHA)/2.
-c          FACTOR3 = tanh(SHELFICEGroundW/2.-
-c    &              8*SHICEHAF/SHELFICEGroundW)
-c
-c          shelficeLoadAnomaly(i,j,bi,bj)=
-c     &       (FACTOR1*FACTOR3 + FACTOR2)*
-c     &       shelficeLoadAnomaly(i,j,bi,bj)
-c
-c          if(i==1) then
-c          print * ,'JRJ2',i,j,shelficeloadanomaly(i,j,bi,bj),
-c     &     FACTOR1,FACTOR2,FACTOR3
-c          endif
+          SHA=massMin/
+     &        SQRT(.01+mass**2)
 
-c            ENDIF
-c#endif /* ALLOW_STREAMICE */
+          FACTOR1 = (1-sha)/2.
+          FACTOR2 = (1+sha)/2.
+          FACTOR3 = tanh((massMin - mass)*4./delZ)
+
+          mass_eff=
+     &       (FACTOR1*FACTOR3 + FACTOR2)*mass
+
+         shelficeLoadAnomaly(i,j,bi,bj) = gravity
+     &      *( mass_eff + rhoConst*Ro_surf(i,j,bi,bj) )
+
+           EFFMASS(i,j,bi,bj)=mass_eff
+
+#endif /* ALLOW_STREAMICE */
 
           ENDDO
+         ENDDO
         ENDDO
        ENDDO
-       ENDDO
-c     ENDIF
-
-c        print *, 'JJHAF', (H_streamice(2,30,1,1)+R_low(2,30,1,1))
-c     &         *(streamice_density_ocean_avg/streamice_density)
-
-
-
-c            print *, 'JJSLA',shelficeloadanomaly(2,30,1,1)
-c             print *, 'JJSLA',shelficeloadanomaly(2,230,1,1)
-c                  print *, 'JJSLA',shelficeloadanomaly(2,330,1,1)
-c                  print *, 'JJETAN', etaN(2,30,1,1)
-
-
 
 
 #endif /* ndef ALLOW_AUTODIFF */
@@ -832,9 +797,11 @@ C     Friction velocity
       ENDIF
         CALL DIAGNOSTICS_FILL(R_shelfice,'SHI_Rshelfice',
      &      0,1,0,1,1,myThid)
-
-
-#endif /* ALLOW_DIAGNOSTICS */
+        CALL DIAGNOSTICS_FILL(EFFMASS,'SHI_MassEff',
+     &      0,1,0,1,1,myThid)
+        
+#endif
+ 
 
 #endif /* ALLOW_SHELFICE */
       RETURN

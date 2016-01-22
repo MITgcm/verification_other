@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_readparms.F,v 1.1 2015/12/11 19:48:32 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_readparms.F,v 1.2 2016/01/22 16:09:34 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -67,8 +67,6 @@ CEOP
      &     SHELFICERemeshFrequency,
      &     SHELFICESplitThreshold,
      &     SHELFICEMergeThreshold,
-     &     SHELFICEGroundW,
-     &     SHELFICEGROUNDC,
      &     shiCdrag, shiZetaN, shiRc,
      &     shiPrandtl, shiSchmidt, shiKinVisc
 #ifdef ALLOW_COST
@@ -129,8 +127,6 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICERemeshFrequency  = 2592000.
       SHELFICESplitThreshold   = 5
       SHELFICEMergeThreshold   = -8
-      SHELFICEGroundW          = 100
-      SHELFICEGroundC          = 1000
 C these params. are default of Holland and Jenkins (1999)
       shiCdrag                 = 0.0015 _d 0
       shiZetaN                 = 0.052 _d 0

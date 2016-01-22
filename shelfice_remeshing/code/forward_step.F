@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/forward_step.F,v 1.1 2015/12/11 19:48:31 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/forward_step.F,v 1.2 2016/01/22 16:09:33 dgoldberg Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -448,6 +448,7 @@ CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
         CALL UPDATE_SURF_DR( .FALSE., myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_SURF_DR      [FORWARD_STEP]',myThid)
        ENDIF
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hFacC, hFacS, hFacW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
@@ -867,6 +868,8 @@ CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 # endif /* DISABLE_RSTAR_CODE */
        ELSE
 # ifdef ALLOW_AUTODIFF_TAMC
+
+
 CADJ STORE hFac_surfC, hFac_surfS, hFac_surfW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
@@ -875,6 +878,8 @@ CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
         CALL TIMER_STOP ('UPDATE_SURF_DR      [FORWARD_STEP]',myThid)
        ENDIF
 # ifdef ALLOW_AUTODIFF_TAMC
+      
+
 CADJ STORE hFacC, hFacS, hFacW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW  =
@@ -886,6 +891,7 @@ CADJ STORE pC, pS, pW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 #  endif
 # endif
+
 C-    update also CG2D matrix (and preconditioner)
       IF ( momStepping .AND. nonlinFreeSurf.GT.2 ) THEN
         CALL TIMER_START('UPDATE_CG2D         [FORWARD_STEP]',myThid)

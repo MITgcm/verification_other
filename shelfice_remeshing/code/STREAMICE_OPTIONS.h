@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/STREAMICE_OPTIONS.h,v 1.1 2015/12/11 19:48:31 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/STREAMICE_OPTIONS.h,v 1.2 2016/01/22 16:09:33 dgoldberg Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -25,6 +25,7 @@ C Place CPP define/undef flag here
 #undef ALLOW_STREAMICE_2DTRACER
 #undef STREAMICE_TRACER_AB
 #undef STREAMICE_SERIAL_TRISOLVE
+#define STREAMICE_FLOWLINE_BUTTRESS
 
 #endif /* ALLOW_MYPACKAGE */
 #endif /* MYPACKAGE_OPTIONS_H */
