@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_init_fixed.F,v 1.2 2016/01/22 16:09:34 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_init_fixed.F,v 1.3 2016/01/25 18:08:21 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -253,7 +253,7 @@ c     ENDIF
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
  
-       diagName  = 'SHI_MassEff'
+       diagName  = 'SHI_MEff'
        diagTitle = 'dynamic ice shelf mass for surface load anomaly'
        diagUnits = 'kg/m^2          '
        diagCode  = 'SM      L1      '
