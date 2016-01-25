@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_restore_sealevel.F,v 1.1 2016/01/25 14:07:12 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_restore_sealevel.F,v 1.2 2016/01/25 14:58:05 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -90,7 +90,7 @@ C--   Zero out surface forcing terms below ice-shelf
              lambda_obcs_t = (
      &     float(shelfice_etarestore_spongewidth-jsl)*shelficeEtaRelax
      &            + float(jsl)*Vrelaxobcsinner)
-     &            / float(5)
+     &            / float(shelfice_etarestore_spongewidth)
              IF (lambda_obcs_t.ne.0.) THEN
               lambda_obcs_t = 1. _d 0 / lambda_obcs_t
              ELSE
