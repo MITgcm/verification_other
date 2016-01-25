@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_forcing_surf.F,v 1.2 2016/01/22 16:09:34 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_forcing_surf.F,v 1.3 2016/01/25 14:07:12 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
+#include "OBCS_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -28,6 +29,10 @@ C     == Global data ==
 #include "SURFACE.h"
 #include "FFIELDS.h"
 #include "SHELFICE.h"
+! #include "OBCS_PARAMS.h"
+! #include "OBCS_GRID.h"
+! #include "OBCS_FIELDS.h"
+
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -47,7 +52,8 @@ C     myThid    :: Thread Id number
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j   :: Loop counters
-      INTEGER i, j
+      INTEGER i, j, jsl
+      _RL etarelax, lambda_obcs_t
 CEOP
 
 c     DO bj=myByLo(myThid),myByHi(myThid)
@@ -121,7 +127,9 @@ c           ENDIF
 #endif /* ALLOW_AUTODIFF */
         ENDIF
 
-
+        CALL SHELFICE_RESTORE_SEALEVEL(
+     I           bi, bj, iMin, iMax, jMin, jMax,
+     I           myTime, myIter, myThid )
 
 
 C--   end if not SHELFICEboundaryLayer

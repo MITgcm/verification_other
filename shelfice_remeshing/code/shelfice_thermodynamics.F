@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.3 2016/01/22 16:09:34 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.4 2016/01/25 14:07:12 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -110,6 +110,7 @@ C     drKp1, recip_drLoc
       _RL shiPr, shiSc, shiLo, recip_shiKarman, shiTwoThirds
       _RL gammaTmoleT, gammaTmoleS, gammaTurb, gammaTurbConst
       _RL ustar, ustarSq, etastar
+      _RL SEALEVEL
       PARAMETER ( shiTwoThirds = 0.66666666666666666666666666667D0 )
 #ifdef ALLOW_DIAGNOSTICS
       _RL uStarDiag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -731,6 +732,9 @@ C     endif (not) useISOMIPTD
 C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
 #ifndef ALLOW_AUTODIFF
 
+       SEALEVEL = 0. _d 0
+       CALL SHELFICE_SEA_LEVEL_AVG( SEALEVEL, myThid )
+       print *, "GOT HERE AVG SEA LEVEL ", SEALEVEL
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -740,9 +744,19 @@ C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
      &      *( shelficeMass(i,j,bi,bj) + rhoConst*Ro_surf(i,j,bi,bj) )
 #ifdef ALLOW_STREAMICE
 
-          delZ = drF(kLowC(i,j,bi,bj))
+          K = kLowC(i,j,bi,bj)
+          if (K .gt. 0) then
+           delZ = drF(kLowC(i,j,bi,bj))
+          else
+           delZ =  drF(Nr)
+          endif
+
           massMin = -1*streamice_density_ocean_avg
-     &         *(R_low(i,j,bi,bj)+hfacMin*delZ)
+     &         *(R_low(i,j,bi,bj)+2.*hfacMin*delZ)
+
+          massMin = streamice_density_ocean_avg
+     &         *(SEALEVEL-(R_low(i,j,bi,bj)+1.5*hfacMin*delZ))
+
           mass = shelficemass(i,j,bi,bj)
 
           SHA=massMin/

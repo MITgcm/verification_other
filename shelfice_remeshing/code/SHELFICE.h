@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE.h,v 1.3 2016/01/22 18:09:42 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE.h,v 1.4 2016/01/25 14:07:12 dgoldberg Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -105,9 +105,11 @@ C \ev
 CEOP
 
       COMMON /SHELFICE_PARMS_I/  kTopC,
-     &     SHELFICEselectDragQuadr
+     &     SHELFICEselectDragQuadr,
+     &     shelfice_etarestore_spongewidth
       INTEGER kTopC (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER SHELFICEselectDragQuadr
+      INTEGER shelfice_etarestore_spongewidth
 
       COMMON /SHELFICE_PARMS_R/
      &     SHELFICE_dumpFreq, SHELFICE_taveFreq,
@@ -121,7 +123,8 @@ CEOP
      &     shiPrandtl, shiSchmidt, shiKinVisc,
      &     SHELFICERemeshFrequency,
      &     SHELFICESplitThreshold,
-     &     SHELFICEMergeThreshold
+     &     SHELFICEMergeThreshold,
+     &     shelficeEtaRelax
       _RL SHELFICE_dumpFreq, SHELFICE_taveFreq
       _RL SHELFICEheatTransCoeff
       _RL SHELFICEsaltTransCoeff
@@ -134,7 +137,7 @@ CEOP
       _RL SHELFICEthetaSurface, SHELFICESplitThreshold
       _RL shiCdrag, shiZetaN, shiRc, SHELFICERemeshFrequency
       _RL shiPrandtl, shiSchmidt, shiKinVisc
-      _RL SHELFICEGroundW, SHELFICEGroundC
+      _RL SHELFICEGroundW, SHELFICEGroundC, shelficeEtaRelax
       COMMON /SHELFICE_FIELDS_RL/
      &     shelficeMass, shelficeMassInit, shelficeGroundInit,
      &     shelficeLoadAnomaly,
@@ -185,6 +188,7 @@ CEOP
       LOGICAL SHELFICEuseGammaFrict
       LOGICAL SHELFICEMassStepping
       LOGICAL SHELFICEDynMassOnly
+      LOGICAL SHELFICEEtaSponge
       COMMON /SHELFICE_PARMS_L/
      &     SHELFICEisOn,
      &     useISOMIPTD,
@@ -201,7 +205,8 @@ CEOP
      &     SHELFICEadvDiffHeatFlux,
      &     SHELFICEuseGammaFrict,
      &     SHELFICEMassStepping,
-     &     SHELFICEDynMassOnly
+     &     SHELFICEDynMassOnly,
+     &     SHELFICEEtaSponge
 
       CHARACTER*(MAX_LEN_FNAM) SHELFICEloadAnomalyFile
       CHARACTER*(MAX_LEN_FNAM) SHELFICEmassFile
