@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE.h,v 1.4 2016/01/25 14:07:12 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE.h,v 1.5 2016/01/26 10:49:13 dgoldberg Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -18,10 +18,7 @@ C
 C--   Constants that can be set in data.shelfice
 C     SHELFICEtopoFile         :: File containing the topography of the
 C                                 shelfice draught (unit=m)
-C     SHELFICEGroundTopoFile   :: File containing the topography of "grounded"
-c                                 ice (unit=m)
 C     SHELFICEmassFile         :: name of shelfice Mass file
-C     SHELFICEGroundInitFile   :: name of GroundingMass file, equivalent to justC                                 float ice at GroundTopo level 
 C     SHELFICEloadAnomalyFile  :: name of shelfice load anomaly file
 C     SHELFICEMassDynTendFile  :: file name for other mass tendency
 C                                 (e.g. dynamics)
@@ -139,13 +136,12 @@ CEOP
       _RL shiPrandtl, shiSchmidt, shiKinVisc
       _RL SHELFICEGroundW, SHELFICEGroundC, shelficeEtaRelax
       COMMON /SHELFICE_FIELDS_RL/
-     &     shelficeMass, shelficeMassInit, shelficeGroundInit,
+     &     shelficeMass, shelficeMassInit, 
      &     shelficeLoadAnomaly,
      &     shelficeForcingT, shelficeForcingS,
      &     shiTransCoeffT, shiTransCoeffS, EFFMASS 
       _RL shelficeMass          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeMassInit      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL shelficeGroundInit    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeLoadAnomaly   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeForcingT      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeForcingS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -156,12 +152,10 @@ CEOP
 
       COMMON /SHELFICE_FIELDS_RS/
      &     R_shelfIce, 
-     &     R_Grounding, 
      &     shelficeHeatFlux,
      &     shelfIceFreshWaterFlux,
      &     shelfIceMassDynTendency
       _RS R_shelfIce            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS R_Grounding           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeHeatFlux      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeFreshWaterFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS

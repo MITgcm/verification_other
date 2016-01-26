@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks_JJ.F,v 1.3 2016/01/22 16:09:34 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks_JJ.F,v 1.4 2016/01/26 10:49:13 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -10,7 +10,7 @@ CBOP
 C     !ROUTINE: SHELFICE_UPDATE_MASKS
 C     !INTERFACE:
       SUBROUTINE SHELFICE_UPDATE_MASKS_JJ(
-     I     rF, recip_drF,
+     I     rF, recip_drF, R_Low,
      U     hFacC,
      I     myThid )
 C     !DESCRIPTION: \bv
@@ -42,7 +42,8 @@ C     myThid    :: Number of this instance of SHELFICE_UPDATE_MASKS
       _RS rF        (1:Nr+1)
       _RS recip_drF (1:Nr)
       _RS hFacC     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
-      
+      _RS R_Low     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+
       INTEGER myThid
 
 #ifdef ALLOW_SHELFICE
@@ -54,7 +55,7 @@ C     I,J,K   :: Loop counters
       INTEGER I, J, K
       _RL hFacCtmp
       _RL hFacMnSz
-
+                  etah(2,100,1,1)=-8
 C- Update etaN
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -80,12 +81,14 @@ C- Update etaN
              theta(I,J,K-1,bi,bj)=theta(I,J,K,bi,bj)
              hfacC(I,J,K,bi,bj)=1.0
            Rmin_surf(I,J,bi,bj) = Rmin_surf(I,J,bi,bj)+1/recip_drF(K)
+                     
 
            ENDIF
-             IF (R_shelfice(i,j,bi,bj) .NE. R_grounding(i,j,bi,bj))THEN
+             IF (R_shelfice(i,j,bi,bj) .NE. R_low(i,j,bi,bj)
+     &                                         +1/recip_drF(K))THEN
              IF (etah(I,J,bi,bj) .LT. SHELFICEMergeThreshold ) THEN
              K = MAX(1,kTopC(I,J,bi,bj))
-
+             
              salt(I,J,K+1,bi,bj)=((salt(I,J,K,bi,bj)*(1/recip_drF(K)+
      &       etaN(I,J,bi,bj)))+(salt(I,J,K+1,bi,bj)*1/recip_drF(K+1)))/(
      &       1/recip_drF(K)+1/recip_drF(K+1)+etaN(I,J,bi,bj))

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks.F,v 1.2 2016/01/22 16:09:34 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks.F,v 1.3 2016/01/26 10:49:13 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -59,7 +59,6 @@ C     initialize R_shelfIce
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           R_shelfIce(i,j,bi,bj) = 0. _d 0
-          R_Grounding(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
@@ -72,9 +71,6 @@ C The 0 is the "iteration" argument. The 1 is the record number.
        CALL READ_REC_XY_RS( SHELFICEtopoFile, R_shelfIce,
      &      1, 0, myThid )
 
-       CALL READ_REC_XY_RS( SHELFICEGroundTopoFile, R_Grounding,
-     &      1, 0, myThid )
-
 C Read the shelfIce draught using the mid-level I/O pacakage read_write_fld
 C The 0 is the "iteration" argument. The ' ' is an empty suffix
 C      CALL READ_FLD_XY_RS( SHELFICEtopoFile, ' ', R_shelfIce,
@@ -84,7 +80,7 @@ C- end setup R_shelfIce in the interior
 
 C- fill in the overlap (+ BARRIER):
       _EXCH_XY_RS(R_shelfIce, myThid )
-         _EXCH_XY_RS(R_Grounding, myThid )
+
 
 C--   Calculate lopping factor hFacC : Remove part outside of the domain
 C     taking into account the Reference (=at rest) Surface Position Ro_shelfIce

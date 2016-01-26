@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/ini_masks_etc_JJ.F,v 1.3 2016/01/22 18:09:42 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/ini_masks_etc_JJ.F,v 1.4 2016/01/26 10:49:13 dgoldberg Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -142,7 +142,7 @@ C      o Impose minimum fraction and/or size (dimensional)
 C--   Modify lopping factor hFacC : Remove part outside of the domain
 C     taking into account the Reference (=at rest) Surface Position Ro_shelfIce
        CALL SHELFICE_UPDATE_MASKS_JJ(
-     I     rF, recip_drF,
+     I     rF, recip_drF, R_low,
      U     hFacC,
      I     myThid )
       ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_init_fixed.F,v 1.3 2016/01/25 18:08:21 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_init_fixed.F,v 1.4 2016/01/26 10:49:13 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -75,7 +75,6 @@ C-----------------------------------------------------------------------
           ELSE
             kTopC(i,j,bi,bj) = 0
           ENDIF
-          shelficeGroundInit(i,j,bi,bj) = 0. _d 0
           shelficeMassInit   (i,j,bi,bj) = 0. _d 0
           shelficeLoadAnomaly(i,j,bi,bj) = 0. _d 0
           shelfIceMassDynTendency(i,j,bi,bj) = 0. _d 0
@@ -114,10 +113,7 @@ c--   use weight as mask
      &                          1, 0, myThid, dummy )
 #endif /* ALLOW_SHIFWFLX_COST_CONTRIBUTION and ALLOW_SHIFWFLX_CONTROL */
 #endif /* ALLOW_COST */
-      IF ( SHELFICEGroundInitFile .NE. ' ' ) THEN
-       CALL READ_FLD_XY_RL( SHELFICEGroundInitFile, ' ',
-     &                      shelficeGroundInit, 0, myThid )
-      ENDIF
+
       IF ( SHELFICEloadAnomalyFile .NE. ' ' ) THEN
        CALL READ_FLD_XY_RL( SHELFICEloadAnomalyFile, ' ',
      &                      shelficeLoadAnomaly, 0, myThid )
