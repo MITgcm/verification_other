@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_read_pickup.F,v 1.3 2016/01/26 15:19:13 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_read_pickup.F,v 1.4 2016/01/26 16:46:20 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -19,7 +19,7 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "SHELFICE.h"
-
+#include "SURFACE.h"
 C     !INPUT PARAMETERS:
 C     myIter            :: time-step number
 C     myThid            :: thread number
@@ -130,7 +130,7 @@ C---    read STREAMICE 2-D fields for restart
 
         CALL READ_MFLDS_3D_RL( 'SHI_mass', shelfIceMass,
      &                                 nj, fp, 1 , myIter, myThid )
-        CALL READ_MFLDS_3D_RL( 'RSHELF', R_shelfice,
+        CALL READ_MFLDS_3D_RL( 'R_Shelfi', R_shelfice,
      &                                 nj, fp, 1 , myIter, myThid )
         CALL READ_MFLDS_3D_RL( 'RMinSurf', Rmin_surf,
      &                                 nj, fp, 1 , myIter, myThid )
