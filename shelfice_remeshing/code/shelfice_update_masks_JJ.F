@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks_JJ.F,v 1.5 2016/01/26 14:39:23 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks_JJ.F,v 1.6 2016/01/26 15:19:13 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -88,7 +88,7 @@ C- Update etaN
      &                                     )THEN
              IF (etah(I,J,bi,bj) .LT. SHELFICEMergeThreshold ) THEN
              K = MAX(1,kTopC(I,J,bi,bj))
-             print *,'JJBAD'
+             
              salt(I,J,K+1,bi,bj)=((salt(I,J,K,bi,bj)*(1/recip_drF(K)+
      &       etaN(I,J,bi,bj)))+(salt(I,J,K+1,bi,bj)*1/recip_drF(K+1)))/(
      &       1/recip_drF(K)+1/recip_drF(K+1)+etaN(I,J,bi,bj))
@@ -113,10 +113,10 @@ C- Update etaN
      &      etaN(I,J,bi,bj)))+(uVel(I+1,J,K+1,bi,bj)*1/recip_drF(K+1)))/
      &       (1/recip_drF(K)+1/recip_drF(K+1)+etaN(I,J,bi,bj))
 
-             etaN(I,J,bi,bj) = etaN(I,J,bi,bj) +1/recip_drF(K)
-             etaH(I,J,bi,bj) = etaH(I,J,bi,bj) +1/recip_drF(K)
-           R_shelfice(I,J,bi,bj) = R_shelfice(I,J,bi,bj) -1/recip_drF(K)
-           Rmin_surf(I,J,bi,bj) = Rmin_surf(I,J,bi,bj) -1/recip_drF(K)
+             etaN(I,J,bi,bj) = etaN(I,J,bi,bj) +1/recip_drF(K+1)
+             etaH(I,J,bi,bj) = etaH(I,J,bi,bj) +1/recip_drF(K+1)
+           R_shelfice(I,J,bi,bj) = R_shelfice(I,J,bi,bj) -1/recip_drF(K+1)
+           Rmin_surf(I,J,bi,bj) = Rmin_surf(I,J,bi,bj) -1/recip_drF(K+1)
 
          gunm1(I+1,J,K+1,bi,bj)=((gunm1(I+1,J,K,bi,bj)*(1/recip_drF(K)+
      &     etaN(I,J,bi,bj)))+(gunm1(I+1,J,K+1,bi,bj)*1/recip_drF(K+1)))/

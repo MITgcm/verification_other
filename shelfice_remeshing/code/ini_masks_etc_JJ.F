@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/ini_masks_etc_JJ.F,v 1.5 2016/01/26 14:39:23 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/ini_masks_etc_JJ.F,v 1.6 2016/01/26 15:19:12 dgoldberg Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
