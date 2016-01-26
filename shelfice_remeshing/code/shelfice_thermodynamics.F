@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.6 2016/01/26 10:49:13 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.7 2016/01/26 14:39:23 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -525,9 +525,11 @@ c         DO bj = myByLo(myThid), myByHi(myThid)
 c         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
+             IF (kTopC(i,j,bi,bj) .LT.kLowC (i,j,bi,bj)
+     &                                     )THEN
 
-        IF (R_shelfice(i,j,bi,bj) .NE. R_low(i,j,bi,bj)
-     &                                  +1/recip_drF(K))THEN
+c        IF (R_shelfice(i,j,bi,bj) .NE. R_low(i,j,bi,bj)
+c     &                                  +1/recip_drF(K))THEN
 
             shiTransCoeffT(i,j,bi,bj)=0
          shiTransCoeffS (i,j,bi,bj)=0
