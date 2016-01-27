@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_remeshing.F,v 1.2 2016/01/22 16:09:34 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_remeshing.F,v 1.3 2016/01/27 14:01:02 dgoldberg Exp $
 C $Name:  $
 #include "SHELFICE_OPTIONS.h"
 #ifdef ALLOW_CTRL
@@ -49,7 +49,7 @@ C     === Global variables ===
          CALL CALC_SURF_DR( etaH, myTime, myIter, myThid )
          CALL UPDATE_SURF_DR(.FALSE., myTime, myIter, myThid)
          CALL UPDATE_CG2D(myTime,myIter, myThid)
-         CALL INTEGR_CONTINUITY (uVel ,vVel, starttime, myIter, myThid)
+         CALL INTEGR_CONTINUITY (uVel ,vVel, myTime, niter0, myThid)
          ENDIF 
 #endif /* ALLOW_SHELFICE */
 
