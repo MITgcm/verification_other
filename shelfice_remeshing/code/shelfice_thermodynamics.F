@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.8 2016/01/26 15:19:13 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.9 2016/01/27 15:33:49 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -105,12 +105,12 @@ C     drKp1, recip_drLoc
       _RL tmpFac
       _RL massMin, mass, mass_eff, DELZ
       _RL SHA,FACTOR1,FACTOR2,FACTOR3
-      _RL GMSL,ETACOUNT
+      _RL GMSL,ETACOUNT, SEALEVEL, oce_density
 #ifdef SHI_ALLOW_GAMMAFRICT
       _RL shiPr, shiSc, shiLo, recip_shiKarman, shiTwoThirds
       _RL gammaTmoleT, gammaTmoleS, gammaTurb, gammaTurbConst
       _RL ustar, ustarSq, etastar
-      _RL SEALEVEL
+
       PARAMETER ( shiTwoThirds = 0.66666666666666666666666666667D0 )
 #ifdef ALLOW_DIAGNOSTICS
       _RL uStarDiag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -724,6 +724,12 @@ C     endif (not) useISOMIPTD
        CALL SHELFICE_STEP_ICEMASS( myTime, myIter, myThid )
       ENDIF
 
+      IF (.not.allow_streamice)
+             oce_density = 1028.
+      ELSE
+             oce_density = streamice_density_ocean_avg
+      ENDIF
+
 C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
 #ifndef ALLOW_AUTODIFF
 
@@ -746,10 +752,10 @@ C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
            delZ =  drF(Nr)
           endif
 
-          massMin = -1*streamice_density_ocean_avg
+          massMin = -1*oce_density
      &         *(R_low(i,j,bi,bj)+2.*hfacMin*delZ)
 
-          massMin = streamice_density_ocean_avg
+          massMin = oce_density
      &         *(SEALEVEL-(R_low(i,j,bi,bj)+1.5*hfacMin*delZ))
 
           mass = shelficemass(i,j,bi,bj)
