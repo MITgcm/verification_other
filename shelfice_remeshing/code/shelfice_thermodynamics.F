@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.10 2016/01/28 11:46:44 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.11 2016/01/28 14:56:06 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -523,7 +523,7 @@ C            gammaTurb = MAX(0.D0, gammaTurb)
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          IF (kTopC(i,j,bi,bj) .LT.kLowC (i,j,bi,bj))THEN
+          IF (kTopC(i,j,bi,bj) .GE.kLowC (i,j,bi,bj))THEN
               shiTransCoeffT(i,j,bi,bj)=0
               shiTransCoeffS (i,j,bi,bj)=0
           ENDIF
