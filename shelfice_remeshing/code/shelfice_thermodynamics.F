@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.9 2016/01/27 15:33:49 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.10 2016/01/28 11:46:44 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -724,7 +724,7 @@ C     endif (not) useISOMIPTD
        CALL SHELFICE_STEP_ICEMASS( myTime, myIter, myThid )
       ENDIF
 
-      IF (.not.allow_streamice)
+      IF (.not.usestreamice) THEN
              oce_density = 1028.
       ELSE
              oce_density = streamice_density_ocean_avg
