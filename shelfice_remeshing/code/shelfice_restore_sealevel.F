@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_restore_sealevel.F,v 1.2 2016/01/25 14:58:05 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_restore_sealevel.F,v 1.3 2016/01/31 23:08:17 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -78,17 +78,16 @@ C--   Zero out surface forcing terms below ice-shelf
           DO jsl= 1,shelfice_etarestore_spongewidth-1
            j=OB_Jn(i,bi,bj)-jsl
            IF ((j.ge.jmin).and.(j.le.jmax)) THEN
-!            IF  (OBNeta(i,bi,bj).ne. 0.d0) then
-             IF (useLinearSponge) THEN
+             IF (.true.) THEN
               etarelax = OBNeta(i,bi,bj)
              ELSE
               etarelax=(
      &       float(shelfice_etarestore_spongewidth-jsl)*OBNeta(i,bi,bj)
-     &             + float(jsl)*etaN(i,j,bi,bj) )
+     &             + float(jsl)*etah(i,j,bi,bj) )
      &             / float(shelfice_etarestore_spongewidth)
              ENDIF
              lambda_obcs_t = (
-     &     float(shelfice_etarestore_spongewidth-jsl)*shelficeEtaRelax
+     &            float(jsl)*shelficeEtaRelax
      &            + float(jsl)*Vrelaxobcsinner)
      &            / float(shelfice_etarestore_spongewidth)
              IF (lambda_obcs_t.ne.0.) THEN
@@ -96,14 +95,9 @@ C--   Zero out surface forcing terms below ice-shelf
              ELSE
               lambda_obcs_t = 0. _d 0
              ENDIF
-             EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj)
-     &            +  maskInC(i,j,bi,bj) * lambda_obcs_t
-     &            * ( etaN(i,j,bi,bj) - etarelax )
-!              if (i.eq.1) then
-!              print *, "EVAP ADDED ",j,maskInC(i,j,bi,bj) * lambda_obcs_t
-!      &            * ( etaN(i,j,bi,bj) - etarelax)
-!              endif
-!            ENDIF
+             EmPmR(i,j,bi,bj) =
+     &              maskInC(i,j,bi,bj) * lambda_obcs_t
+     &            * ( etah(i,j,bi,bj) - etarelax ) * rhoConst
            ENDIF
           ENDDO
          ENDIF
