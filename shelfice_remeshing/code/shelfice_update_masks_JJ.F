@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks_JJ.F,v 1.9 2016/01/28 15:26:14 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks_JJ.F,v 1.10 2016/02/11 15:29:39 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -56,14 +56,19 @@ C     I,J,K   :: Loop counters
       _RL hFacCtmp
       _RL hFacMnSz
 
+
+
+
 C- Update etaN
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO J = 1,sNy
           DO I = 1,sNx
            IF ( R_shelfice(I,J,bi,bj) .LT. 0.0) THEN
-            IF (etah(I,J,bi,bj) .GT. SHELFICESplitThreshold ) THEN
              K  = MAX(1,kTopC(I,J,bi,bj))
+        IF (hFacC(I,J,K,bi,bj)+etah(I,J,bi,bj)*recip_drF(K)
+     &                .GT. SHELFICESplitThreshold ) THEN
+
             etaN(I,J,bi,bj) = etaN(I,J,bi,bj) - 1/recip_drF(K-1)
             etaH(I,J,bi,bj) = etaH(I,J,bi,bj) - 1/recip_drF(K-1)
           R_shelfIce(I,J,bi,bj) = R_shelfIce(I,J,bi,bj)+1/recip_drF(K-1)
@@ -86,9 +91,11 @@ C- Update etaN
            ENDIF
              IF (kTopC(i,j,bi,bj) .LT.kLowC (i,j,bi,bj)
      &                                     )THEN
-             IF (etah(I,J,bi,bj) .LT. SHELFICEMergeThreshold ) THEN
-             K = MAX(1,kTopC(I,J,bi,bj))
-             
+          K = MAX(1,kTopC(I,J,bi,bj))
+
+        IF (hFacC(I,J,K,bi,bj)+etah(I,J,bi,bj)*recip_drF(K) 
+     &                .LT. SHELFICEMergeThreshold ) THEN
+
              salt(I,J,K+1,bi,bj)=((salt(I,J,K,bi,bj)*(1/recip_drF(K)+
      &       etaN(I,J,bi,bj)))+(salt(I,J,K+1,bi,bj)*1/recip_drF(K+1)))/(
      &       1/recip_drF(K)+1/recip_drF(K+1)+etaN(I,J,bi,bj))
