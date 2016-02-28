@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code/Attic/gchem_init_vari.F,v 1.2 2014/06/05 21:32:06 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code/Attic/gchem_init_vari.F,v 1.3 2016/02/28 21:48:37 mmazloff Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -63,7 +63,7 @@ ccccccccccccccccccccccccccc
 # endif
          CALL BLING_INIT_VARIA(myThid)
          CALL BLING_INI_FORCING(myThid)
-         CALL BLING_SURFFORCING_INIT(myThid)
+         CALL BLING_CARBONATE_INIT(myThid)
 # ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
 # endif

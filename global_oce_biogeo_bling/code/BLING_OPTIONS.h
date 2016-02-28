@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code/BLING_OPTIONS.h,v 1.1 2014/05/23 17:35:39 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code/BLING_OPTIONS.h,v 1.2 2016/02/28 21:48:37 mmazloff Exp $
 C $Name:  $
 
 #ifndef BLING_OPTIONS_H
@@ -9,27 +9,29 @@ C $Name:  $
 #ifdef ALLOW_BLING
 C     Package-specific Options & Macros go here
 
-c Use nitrate instead of phosphate as macro-nutrient
-#undef  NITROGEN_CURRENCY
+c Active tracer for total phytoplankton biomass
+#undef  ADVECT_PHYTO
 
 c Prevents negative values in nutrient fields
 #define BLING_NO_NEG
 
-c Replace Liebig nutrient limitation function by 
-c the product of macro- and micro-nutrient limitations
-#undef  MULT_NUT_LIM
-
 c Assume that phytoplankton in the mixed layer experience
 c the average light over the mixed layer
 c (as in original BLING model)
-#undef  ML_MEAN_LIGHT
+#define ML_MEAN_LIGHT
+
+c Assume that phytoplankton are homogenized in the mixed layer
+#define ML_MEAN_PHYTO
 
 c Determine PAR from shortwave radiation from EXF package
 #undef  USE_EXFQSW
 
+c Sub grid scale sediments
+#undef USE_SGS_SED
+
 c Read atmospheric pCO2 values from EXF package
-c *** requires modifications to pkg/exf, not checked in yet ***
-c #undef  USE_EXFPCO2
+c *** to be specified in ECCO_CPPOPTIONS.h ***
+c #undef  USE_EXFCO2
 
 c Simplify some parts of the code that are problematic 
 c when using the adjoint

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code/Attic/gchem_readparms.F,v 1.1 2014/05/23 17:35:40 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code/Attic/gchem_readparms.F,v 1.2 2016/02/28 21:48:37 mmazloff Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -45,6 +45,7 @@ C  to test the flag before any corresponding pkg S/R call
      &                   nsubtime,
      &                   useDIC,
      &                   useBLING,
+     &                   useBLING,
      &                   useCFC,
      &                   useDARWIN,
      &                   Filename1,
@@ -65,6 +66,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C Set defaults values for parameters in GCHEM.h
        useDIC = .FALSE.
+       useBLING = .FALSE.
        useBLING = .FALSE.
        useCFC = .FALSE.
        useDARWIN = .FALSE.

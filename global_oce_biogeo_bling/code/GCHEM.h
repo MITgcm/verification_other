@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code/Attic/GCHEM.h,v 1.1 2014/05/23 17:35:40 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code/Attic/GCHEM.h,v 1.2 2016/02/28 21:48:37 mmazloff Exp $
 C $Name:  $
 
 #ifdef ALLOW_GCHEM
@@ -13,7 +13,7 @@ C These can be read in from data.gchem
 C
 C--   COMMON /GCHEM_PARM_L/ Logical valued parameters used by GCHEM pkg.
 C     useDIC    :: flag to turn on/off DIC pkg
-CBRC  useBLING  :: flag to turn on/off BLING pkg
+C     useBLING  :: flag to turn on/off BLING pkg
 C     useCFC    :: flag to turn on/off CFC pkg
 C     useDARWIN :: flag to turn on/off darwin pkg
 C
