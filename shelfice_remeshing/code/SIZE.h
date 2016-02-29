@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SIZE.h,v 1.3 2016/02/11 15:29:39 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SIZE.h,v 1.4 2016/02/29 16:05:41 dgoldberg Exp $
 C $Name:  $
 C
 C     /==========================================================\

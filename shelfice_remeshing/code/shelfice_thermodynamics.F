@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.11 2016/01/28 14:56:06 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.12 2016/02/29 16:05:41 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -491,6 +491,14 @@ C--   to the surface
             ustarSq = shiCdrag * MAX( 1.D-6,
      &           0.25 _d 0 *(uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)) )
             ustar   = SQRT(ustarSq)
+
+          IF (kTopC(i,j,bi,bj) .GE.kLowC (i,j,bi,bj))THEN
+               ustar = 0 
+          ENDIF
+
+
+
+
 #ifdef ALLOW_DIAGNOSTICS
             uStarDiag(I,J,bi,bj) = ustar
 #endif /* ALLOW_DIAGNOSTICS */
@@ -735,7 +743,7 @@ C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
 
        SEALEVEL = 0. _d 0
        CALL SHELFICE_SEA_LEVEL_AVG( SEALEVEL, myThid )
-       print *, "GOT HERE AVG SEA LEVEL ", SEALEVEL
+c       print *, "GOT HERE AVG SEA LEVEL ", SEALEVEL
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
