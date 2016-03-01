@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.12 2016/02/29 16:05:41 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.13 2016/03/01 10:35:25 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -818,7 +818,7 @@ C     Friction velocity
      &  CALL DIAGNOSTICS_FILL(uStarDiag,'SHIuStar',0,1,0,1,1,myThid)
 #endif /* SHI_ALLOW_GAMMAFRICT */
       ENDIF
-        CALL DIAGNOSTICS_FILL(R_shelfice,'SHI_Rshelfice',
+        CALL DIAGNOSTICS_FILL(R_shelfice,'SHIRshel',
      &      0,1,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(EFFMASS,'SHI_MEff',
      &      0,1,0,1,1,myThid)

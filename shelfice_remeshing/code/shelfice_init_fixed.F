@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_init_fixed.F,v 1.4 2016/01/26 10:49:13 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_init_fixed.F,v 1.5 2016/03/01 10:35:25 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -242,7 +242,7 @@ c     ENDIF
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
      
-       diagName  = 'SHI_Rshelfice'
+       diagName  = 'SHIRshel'
        diagTitle = 'depth of shelfice'
        diagUnits = 'm          '
        diagCode  = 'SM      L1      '
