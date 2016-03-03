@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code/BLING_OPTIONS.h,v 1.2 2016/02/28 21:48:37 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code/BLING_OPTIONS.h,v 1.3 2016/03/03 20:50:00 mmazloff Exp $
 C $Name:  $
 
 #ifndef BLING_OPTIONS_H
@@ -8,9 +8,6 @@ C $Name:  $
 
 #ifdef ALLOW_BLING
 C     Package-specific Options & Macros go here
-
-c Active tracer for total phytoplankton biomass
-#undef  ADVECT_PHYTO
 
 c Prevents negative values in nutrient fields
 #define BLING_NO_NEG
@@ -27,10 +24,10 @@ c Determine PAR from shortwave radiation from EXF package
 #undef  USE_EXFQSW
 
 c Sub grid scale sediments
-#undef USE_SGS_SED
+#undef  USE_SGS_SED
 
 c Read atmospheric pCO2 values from EXF package
-c *** to be specified in ECCO_CPPOPTIONS.h ***
+c *** to be specified in EXF_OPTIONS.h ***
 c #undef  USE_EXFCO2
 
 c Simplify some parts of the code that are problematic 
