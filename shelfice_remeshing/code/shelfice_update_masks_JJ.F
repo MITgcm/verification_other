@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks_JJ.F,v 1.12 2016/03/14 13:35:38 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks_JJ.F,v 1.13 2016/03/14 14:02:10 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -69,7 +69,7 @@ C- Update etaN
 
          K  = MAX(1,kTopC(I,J,bi,bj))
             
-              IF (etah(I,J,bi,bj)*recip_drF(K)
+              IF (etah(I,J,bi,bj)*recip_drF(K)+1.0
      &        .GT. SHELFICESplitThreshold ) THEN
         
 c        IF (hFacC(I,J,K,bi,bj)+etah(I,J,bi,bj)*recip_drF(K)
@@ -101,7 +101,7 @@ c             hfacC(I,J,K,bi,bj)=1.0
    
           K = MAX(1,kTopC(I,J,bi,bj))
 
-         IF (etah(I,J,bi,bj)*recip_drF(K) .LT.
+         IF (etah(I,J,bi,bj)*recip_drF(K)+1.0 .LT. 
      &               SHELFICEMergeThreshold ) THEN
 
 
