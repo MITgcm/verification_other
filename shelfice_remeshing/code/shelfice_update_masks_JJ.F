@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks_JJ.F,v 1.11 2016/02/29 16:05:41 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks_JJ.F,v 1.12 2016/03/14 13:35:38 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -65,11 +65,15 @@ C- Update etaN
          DO J = 1,sNy
           DO I = 1,sNx
            IF ( R_shelfice(I,J,bi,bj) .LT. 0.0) THEN
-c            IF (etah(I,J,bi,bj) .GT. SHELFICESplitThreshold ) THEN
-             K  = MAX(1,kTopC(I,J,bi,bj))
-  
-        IF (hFacC(I,J,K,bi,bj)+etah(I,J,bi,bj)*recip_drF(K)
-     &                .GT. SHELFICESplitThreshold ) THEN
+
+
+         K  = MAX(1,kTopC(I,J,bi,bj))
+            
+              IF (etah(I,J,bi,bj)*recip_drF(K)
+     &        .GT. SHELFICESplitThreshold ) THEN
+        
+c        IF (hFacC(I,J,K,bi,bj)+etah(I,J,bi,bj)*recip_drF(K)
+c     &                .GT. SHELFICESplitThreshold ) THEN
 
             etaN(I,J,bi,bj) = etaN(I,J,bi,bj) - 1/recip_drF(K-1)
             etaH(I,J,bi,bj) = etaH(I,J,bi,bj) - 1/recip_drF(K-1)
@@ -86,18 +90,23 @@ c            IF (etah(I,J,bi,bj) .GT. SHELFICESplitThreshold ) THEN
 
              salt(I,J,K-1,bi,bj)=salt(I,J,K,bi,bj)
              theta(I,J,K-1,bi,bj)=theta(I,J,K,bi,bj)
-             hfacC(I,J,K,bi,bj)=1.0
-           Rmin_surf(I,J,bi,bj) = Rmin_surf(I,J,bi,bj)+1/recip_drF(K-1)
+c             hfacC(I,J,K,bi,bj)=1.0
+       Rmin_surf(I,J,bi,bj) = Rmin_surf(I,J,bi,bj)+
+     &              1/recip_drF(K)*hFacC(I,J,K,bi,bj)
                      
 
            ENDIF
              IF (kTopC(i,j,bi,bj) .LT.kLowC (i,j,bi,bj)
      &                                     )THEN
-c             IF (etah(I,J,bi,bj) .LT. SHELFICEMergeThreshold ) THEN
-             K = MAX(1,kTopC(I,J,bi,bj))
+   
+          K = MAX(1,kTopC(I,J,bi,bj))
 
-        IF (hFacC(I,J,K,bi,bj)+etah(I,J,bi,bj)*recip_drF(K) 
-     &                .LT. SHELFICEMergeThreshold ) THEN
+         IF (etah(I,J,bi,bj)*recip_drF(K) .LT.
+     &               SHELFICEMergeThreshold ) THEN
+
+
+c        IF (hFacC(I,J,K,bi,bj)+etah(I,J,bi,bj)*recip_drF(K) 
+c     &                .LT. SHELFICEMergeThreshold ) THEN
 
              salt(I,J,K+1,bi,bj)=((salt(I,J,K,bi,bj)*(1/recip_drF(K)+
      &       etaN(I,J,bi,bj)))+(salt(I,J,K+1,bi,bj)*1/recip_drF(K+1)))/(
@@ -145,7 +154,7 @@ c             IF (etah(I,J,bi,bj) .LT. SHELFICEMergeThreshold ) THEN
      &     etaN(I,J,bi,bj)))+(gvnm1(I,J,K+1,bi,bj)*1/recip_drF(K+1)))/
      &       (1/recip_drF(K)+1/recip_drF(K+1)+etaN(I,J,bi,bj))
 
-             hfacC(I,J,K,bi,bj)=1.0
+c             hfacC(I,J,K,bi,bj)=1.0
              ENDIF 
             ENDIF
            ENDIF
@@ -179,6 +188,9 @@ c             IF (etah(I,J,bi,bj) .LT. SHELFICEMergeThreshold ) THEN
          ENDDO
         ENDDO
        ENDDO
+
+     
+
 
      
         CALL EXCH_XYZ_RL(salt,myThid)
