@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/ECCO_OPTIONS.h,v 1.3 2015/08/06 20:37:05 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/ECCO_OPTIONS.h,v 1.4 2016/03/22 22:29:51 gforget Exp $
 C $Name:  $
 
 CBOP
@@ -59,7 +59,7 @@ c assume it contains a climatology (otherwise, assume it is a full time series)
 c include global mean steric sea level correction in etanFull
 #define ALLOW_PSBAR_STERIC
 #define ALLOW_SHALLOW_ALTIMETRY
-#undef  ALLOW_HIGHLAT_ALTIMETRY
+#define ALLOW_HIGHLAT_ALTIMETRY
 
 C       >>> In-Situ Profiles.
 #define ALLOW_PROFILES_CONTRIBUTION
