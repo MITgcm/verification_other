@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_readparms.F,v 1.4 2016/01/26 10:49:13 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_readparms.F,v 1.5 2016/04/04 12:53:15 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -70,7 +70,8 @@ CEOP
      &     shiCdrag, shiZetaN, shiRc,
      &     shiPrandtl, shiSchmidt, shiKinVisc,
      &     shelficeEtaSponge, ShelficeEtaRelax,
-     &     shelfice_etarestore_spongewidth
+     &     shelfice_etarestore_spongewidth,
+     &     SHELFICE_dig_ice
 #ifdef ALLOW_COST
      &     , mult_shelfice
      &     , mult_shifwflx, wshifwflx0, shifwflx_errfile
@@ -130,6 +131,7 @@ C Set defaults values for parameters in SHELFICE.h
       shelficeEtaRelax         = 0.
       shelfice_etarestore_spongewidth = 0
       shelficeEtaSponge        = .false.
+      SHELFICE_dig_ice         = .true.
 C these params. are default of Holland and Jenkins (1999)
       shiCdrag                 = 0.0015 _d 0
       shiZetaN                 = 0.052 _d 0

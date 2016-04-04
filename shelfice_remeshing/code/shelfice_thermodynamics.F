@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.13 2016/03/01 10:35:25 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.14 2016/04/04 12:53:15 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -764,8 +764,9 @@ c       print *, "GOT HERE AVG SEA LEVEL ", SEALEVEL
      &         *(R_low(i,j,bi,bj)+2.*hfacMin*delZ)
 
           massMin = oce_density
-     &         *(SEALEVEL-(R_low(i,j,bi,bj)+1.5*hfacMin*delZ))
+     &      *(SEALEVEL-(R_low(i,j,bi,bj)+R_MWCT(i,j,bi,bj)))
 
+          
           mass = shelficemass(i,j,bi,bj)
 
           SHA=massMin/

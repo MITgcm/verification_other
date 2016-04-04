@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE.h,v 1.5 2016/01/26 10:49:13 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE.h,v 1.6 2016/04/04 12:53:15 dgoldberg Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -151,11 +151,12 @@ CEOP
       _RL SeaLevelRestore       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON /SHELFICE_FIELDS_RS/
-     &     R_shelfIce, 
+     &     R_shelfIce, R_MWCT,
      &     shelficeHeatFlux,
      &     shelfIceFreshWaterFlux,
      &     shelfIceMassDynTendency
       _RS R_shelfIce            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS R_MWCT                (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeHeatFlux      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeFreshWaterFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS
@@ -183,6 +184,7 @@ CEOP
       LOGICAL SHELFICEMassStepping
       LOGICAL SHELFICEDynMassOnly
       LOGICAL SHELFICEEtaSponge
+      LOGICAL SHELFICE_dig_ice
       COMMON /SHELFICE_PARMS_L/
      &     SHELFICEisOn,
      &     useISOMIPTD,
@@ -200,7 +202,8 @@ CEOP
      &     SHELFICEuseGammaFrict,
      &     SHELFICEMassStepping,
      &     SHELFICEDynMassOnly,
-     &     SHELFICEEtaSponge
+     &     SHELFICEEtaSponge,
+     &     SHELFICE_dig_ice
 
       CHARACTER*(MAX_LEN_FNAM) SHELFICEloadAnomalyFile
       CHARACTER*(MAX_LEN_FNAM) SHELFICEmassFile
