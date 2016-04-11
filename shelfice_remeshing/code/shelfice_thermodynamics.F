@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.14 2016/04/04 12:53:15 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.15 2016/04/11 16:02:53 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -37,6 +37,7 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "SHELFICE.h"
+#include "SURFACE.h"
 #include "SHELFICE_COST.h"
 #ifdef ALLOW_AUTODIFF
 # include "CTRL_SIZE.h"
@@ -103,13 +104,13 @@ C     drKp1, recip_drLoc
       _RL drKp1, drKp2, recip_drLoc
       _RL recip_latentHeat
       _RL tmpFac
-      _RL massMin, mass, mass_eff, DELZ
+      _RL massMin, mass, DELZ
       _RL SHA,FACTOR1,FACTOR2,FACTOR3
       _RL GMSL,ETACOUNT, SEALEVEL, oce_density
 #ifdef SHI_ALLOW_GAMMAFRICT
       _RL shiPr, shiSc, shiLo, recip_shiKarman, shiTwoThirds
       _RL gammaTmoleT, gammaTmoleS, gammaTurb, gammaTurbConst
-      _RL ustar, ustarSq, etastar
+      _RL ustar, ustarSq, etastar, recipPi
 
       PARAMETER ( shiTwoThirds = 0.66666666666666666666666666667D0 )
 #ifdef ALLOW_DIAGNOSTICS
@@ -117,7 +118,7 @@ C     drKp1, recip_drLoc
 #endif /* ALLOW_DIAGNOSTICS */
 #endif
 
-#ifndef ALLOW_OPENAD
+#ifndef ALLOW_OPENAFD
       _RL SW_TEMP
       EXTERNAL SW_TEMP
 #endif
@@ -125,8 +126,15 @@ C     drKp1, recip_drLoc
 #ifdef ALLOW_SHIFWFLX_CONTROL
       _RL xx_shifwflx_loc(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
+
+#ifdef ALLOW_SHELFICE_REMESHING
+!       _RL EFFMASS(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL GrdFactor(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
 CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      recipPi = 1./(PI)
 
 #ifdef SHI_ALLOW_GAMMAFRICT
 #ifdef ALLOW_AUTODIFF
@@ -249,6 +257,74 @@ C     where this value is part of the protocol
 #endif /* ALLOW_SHIFWFLX_CONTROL */
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
+
+
+      IF (.not.usestreamice) THEN
+             oce_density = 1028.
+      ELSE
+             oce_density = streamice_density_ocean_avg
+      ENDIF
+
+C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
+
+
+#ifdef ALLOW_SHELFICE_REMESHING
+
+         SEALEVEL = 0. _d 0
+         CALL SHELFICE_SEA_LEVEL_AVG( SEALEVEL, myThid )
+c        print *, "GOT HERE AVG SEA LEVEL ", SEALEVEL
+
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
+           shelficeLoadAnomaly(i,j,bi,bj) = gravity
+     &      *( shelficeMass(i,j,bi,bj) + rhoConst*Ro_surf(i,j,bi,bj) )
+#ifdef ALLOW_STREAMICE
+
+           K = kLowC(i,j,bi,bj)
+           if (K .gt. 0) then
+            delZ = drF(kLowC(i,j,bi,bj))
+           else
+            delZ =  drF(Nr)
+           endif
+
+!            massMin = -1*oce_density
+!      &         *(R_low(i,j,bi,bj)+2.*hfacMin*delZ)
+
+           massMin = oce_density
+     &      *(SEALEVEL-(R_low(i,j,bi,bj)+R_MWCT(i,j,bi,bj)))
+
+          
+           mass = shelficemass(i,j,bi,bj)
+
+           SHA=massMin/
+     &        SQRT(.01+mass**2)
+
+           FACTOR1 = ((1-sha)/2.)
+           FACTOR2 = (1+sha)/2.
+           GrdFactor(i,j,bi,bj) = tanh((massMin - mass)*4./delZ)
+
+           EFFMASS(I,J,BI,BJ)=
+     &       (FACTOR1*GrdFactor(i,j,bi,bj) + FACTOR2)*mass
+
+!           shelfIceHeatFlux(i,j,bi,bj) = 
+!      &     shelfIceHeatFlux(i,j,bi,bj)*(FACTOR3*0.5+0.5)
+!           shelfIceFreshWaterFlux(i,j,bi,bj) = 
+!      &     shelfIceFreshWaterFlux(i,j,bi,bj)*(FACTOR3*0.5+0.5)
+!           shelficeForcingT(i,j,bi,bj) = 
+!      &     shelfIceForcingT(i,j,bi,bj)*(FACTOR3*0.5+0.5)
+!           shelfIceForcingS(i,j,bi,bj) = 
+!      &     shelfIceForcingS(i,j,bi,bj)*(FACTOR3*0.5+0.5)
+
+!          shelficeLoadAnomaly(i,j,bi,bj) = gravity
+!      &      *( EFFMASS(I,J,BI,BJ) + rhoConst*Ro_surf(i,j,bi,bj) )
+
+#endif /* ALLOW_STREAMICE */
+
+          ENDDO
+         ENDDO
+#endif
+! allow shelfice_remeshing      
+
 
         IF ( SHELFICEBoundaryLayer ) THEN
 C--   average over boundary layer width
@@ -693,6 +769,13 @@ cph     &           * ( saltFreeze - sLoc(I,J) ) / saltFreeze
 C--   Calculate the upward heat and fresh water fluxes;
 C--   MITgcm sign conventions: downward (negative) fresh water flux
 C--   implies melting and due to upward (positive) heat flux
+
+
+#ifdef ALLOW_SHELFICE_REMESHING
+           freshWaterFlux = 
+     &       freshWaterFlux*(GrdFactor(i,j,bi,bj)*0.5+0.5)
+#endif
+
             shelfIceHeatFlux(I,J,bi,bj) =
      &           ( eps3
      &           - freshWaterFlux*SHELFICEheatCapacity_Cp*fwflxFac )
@@ -728,71 +811,38 @@ C     endif (not) useISOMIPTD
        ENDDO
       ENDDO
 
+#ifndef ALLOW_AUTODIFF
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j = 1-OLy, sNy+OLy
+         DO i = 1-OLx, sNx+OLx
+
+#ifndef ALLOW_SHELFICE_REMESHING
+
+          shelficeLoadAnomaly(i,j,bi,bj) = gravity
+     &      *( shelficeMass(i,j,bi,bj) + rhoConst*Ro_surf(i,j,bi,bj) )
+
+#else
+
+          shelficeLoadAnomaly(i,j,bi,bj) = gravity
+     &      *( EFFMASS(I,J,BI,BJ) + rhoConst*Ro_surf(i,j,bi,bj) )
+
+#endif
+
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+
+#endif /* ndef ALLOW_AUTODIFF */
+
+
       IF (SHELFICEMassStepping) THEN
        CALL SHELFICE_STEP_ICEMASS( myTime, myIter, myThid )
       ENDIF
 
-      IF (.not.usestreamice) THEN
-             oce_density = 1028.
-      ELSE
-             oce_density = streamice_density_ocean_avg
-      ENDIF
-
-C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
-#ifndef ALLOW_AUTODIFF
-
-       SEALEVEL = 0. _d 0
-       CALL SHELFICE_SEA_LEVEL_AVG( SEALEVEL, myThid )
-c       print *, "GOT HERE AVG SEA LEVEL ", SEALEVEL
-
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j = 1-OLy, sNy+OLy
-          DO i = 1-OLx, sNx+OLx
-           shelficeLoadAnomaly(i,j,bi,bj) = gravity
-     &      *( shelficeMass(i,j,bi,bj) + rhoConst*Ro_surf(i,j,bi,bj) )
-#ifdef ALLOW_STREAMICE
-
-          K = kLowC(i,j,bi,bj)
-          if (K .gt. 0) then
-           delZ = drF(kLowC(i,j,bi,bj))
-          else
-           delZ =  drF(Nr)
-          endif
-
-          massMin = -1*oce_density
-     &         *(R_low(i,j,bi,bj)+2.*hfacMin*delZ)
-
-          massMin = oce_density
-     &      *(SEALEVEL-(R_low(i,j,bi,bj)+R_MWCT(i,j,bi,bj)))
-
-          
-          mass = shelficemass(i,j,bi,bj)
-
-          SHA=massMin/
-     &        SQRT(.01+mass**2)
-
-          FACTOR1 = (1-sha)/2.
-          FACTOR2 = (1+sha)/2.
-          FACTOR3 = tanh((massMin - mass)*4./delZ)
-
-          mass_eff=
-     &       (FACTOR1*FACTOR3 + FACTOR2)*mass
-
-         shelficeLoadAnomaly(i,j,bi,bj) = gravity
-     &      *( mass_eff + rhoConst*Ro_surf(i,j,bi,bj) )
-
-           EFFMASS(i,j,bi,bj)=mass_eff
-
-#endif /* ALLOW_STREAMICE */
-
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-
-
-#endif /* ndef ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
