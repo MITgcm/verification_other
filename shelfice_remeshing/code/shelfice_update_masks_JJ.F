@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks_JJ.F,v 1.13 2016/03/14 14:02:10 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks_JJ.F,v 1.14 2016/04/12 08:44:33 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -10,7 +10,7 @@ CBOP
 C     !ROUTINE: SHELFICE_UPDATE_MASKS
 C     !INTERFACE:
       SUBROUTINE SHELFICE_UPDATE_MASKS_JJ(
-     I     rF, recip_drF, kLowC,
+     I     rF, recip_drF, drF, kLowC,
      U     hFacC,
      I     myThid )
 C     !DESCRIPTION: \bv
@@ -41,6 +41,7 @@ C     hFacC     :: Fraction of cell in vertical which is open (see GRID.h)
 C     myThid    :: Number of this instance of SHELFICE_UPDATE_MASKS
       _RS rF        (1:Nr+1)
       _RS recip_drF (1:Nr)
+      _RS drF (1:Nr)
       _RS hFacC     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       INTEGER kLowC     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
@@ -60,101 +61,91 @@ C     I,J,K   :: Loop counters
 
 
 C- Update etaN
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO J = 1,sNy
-          DO I = 1,sNx
-           IF ( R_shelfice(I,J,bi,bj) .LT. 0.0) THEN
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO J = 1,sNy
+         DO I = 1,sNx
+          IF ( R_shelfice(I,J,bi,bj) .LT. 0.0) THEN
+           K  = MAX(1,kTopC(I,J,bi,bj))
+           IF (etah(I,J,bi,bj)*recip_drF(K)+1.0
+     &     .GT. SHELFICESplitThreshold ) THEN
+            IF (etah(I,J,bi,bj)*recip_drF(K+1)+1.0
+     &      .GT. SHELFICESplitThreshold ) THEN
+             etaN(I,J,bi,bj) = etaN(I,J,bi,bj)- drF(K-1)
+             etaH(I,J,bi,bj) = etaH(I,J,bi,bj)- drF(K-1)
+             R_shelfIce(I,J,bi,bj) = R_shelfIce(I,J,bi,bj)+drF(K-1)
+             Rmin_surf(I,J,bi,bj) = Rmin_surf(I,J,bi,bj)+
+     &       drF(K-1)*hFacC(I,J,K-1,bi,bj)
 
-
-         K  = MAX(1,kTopC(I,J,bi,bj))
-            
-              IF (etah(I,J,bi,bj)*recip_drF(K)+1.0
-     &        .GT. SHELFICESplitThreshold ) THEN
-        
-c        IF (hFacC(I,J,K,bi,bj)+etah(I,J,bi,bj)*recip_drF(K)
-c     &                .GT. SHELFICESplitThreshold ) THEN
-
-            etaN(I,J,bi,bj) = etaN(I,J,bi,bj) - 1/recip_drF(K-1)
-            etaH(I,J,bi,bj) = etaH(I,J,bi,bj) - 1/recip_drF(K-1)
-          R_shelfIce(I,J,bi,bj) = R_shelfIce(I,J,bi,bj)+1/recip_drF(K-1)
              uVel(I,J,K-1,bi,bj)=uVel(I,J,K,bi,bj)
              uVel(I+1,J,K-1,bi,bj)=uVel(I+1,J,K,bi,bj)
              vVel(I,J,K-1,bi,bj)=vVel(I,J,K,bi,bj)
              vVel(I,J+1,K-1,bi,bj)=vVel(I,J+1,K,bi,bj)
-
              gvnm1(I,J,K-1,bi,bj)=gvnm1(I,J,K,bi,bj)
              gvnm1(I,J+1,K-1,bi,bj)=gvnm1(I,J+1,K,bi,bj)
              gunm1(I,J,K-1,bi,bj)=gunm1(I,J,K,bi,bj)
              gunm1(I+1,J,K-1,bi,bj)=gunm1(I,J,K,bi,bj)
-
+       
              salt(I,J,K-1,bi,bj)=salt(I,J,K,bi,bj)
              theta(I,J,K-1,bi,bj)=theta(I,J,K,bi,bj)
-c             hfacC(I,J,K,bi,bj)=1.0
-       Rmin_surf(I,J,bi,bj) = Rmin_surf(I,J,bi,bj)+
-     &              1/recip_drF(K)*hFacC(I,J,K,bi,bj)
-                     
-
+            ENDIF
            ENDIF
-             IF (kTopC(i,j,bi,bj) .LT.kLowC (i,j,bi,bj)
-     &                                     )THEN
-   
-          K = MAX(1,kTopC(I,J,bi,bj))
+           IF (kTopC(i,j,bi,bj) .LT.kLowC (i,j,bi,bj))THEN
+            K = MAX(1,kTopC(I,J,bi,bj))
+            IF (etah(I,J,bi,bj)*recip_drF(K)+1.0 .LT. 
+     &       SHELFICEMergeThreshold ) THEN
+             IF (etah(I,J,bi,bj)*recip_drF(K+1)+1.0 .LT.
+     &        SHELFICEMergeThreshold ) THEN
 
-         IF (etah(I,J,bi,bj)*recip_drF(K)+1.0 .LT. 
-     &               SHELFICEMergeThreshold ) THEN
+              etaN(I,J,bi,bj) = etaN(I,J,bi,bj) +drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)
+              etaH(I,J,bi,bj) = etaH(I,J,bi,bj) +drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)
+              R_shelfice(I,J,bi,bj) = R_shelfice(I,J,bi,bj) -drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)
+              Rmin_surf(I,J,bi,bj) = Rmin_surf(I,J,bi,bj) -drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)
+             
+              vVel(I,J,K+1,bi,bj)=((vVel(I,J,K,bi,bj)*(drF(K)+
+     &        etaN(I,J,bi,bj)))+(vVel(I,J,K+1,bi,bj)*drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
 
+              vVel(I,J+1,K+1,bi,bj)=((vVel(I,J+1,K,bi,bj)*(drF(K)+
+     &        etaN(I,J,bi,bj)))+(vVel(I,J+1,K+1,bi,bj)*drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
 
-c        IF (hFacC(I,J,K,bi,bj)+etah(I,J,bi,bj)*recip_drF(K) 
-c     &                .LT. SHELFICEMergeThreshold ) THEN
+              uVel(I,J,K+1,bi,bj)=((uVel(I,J,K,bi,bj)*(drF(K)+
+     &        etaN(I,J,bi,bj)))+(uVel(I,J,K+1,bi,bj)*drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
 
-             salt(I,J,K+1,bi,bj)=((salt(I,J,K,bi,bj)*(1/recip_drF(K)+
-     &       etaN(I,J,bi,bj)))+(salt(I,J,K+1,bi,bj)*1/recip_drF(K+1)))/(
-     &       1/recip_drF(K)+1/recip_drF(K+1)+etaN(I,J,bi,bj))
+              uVel(I+1,J,K+1,bi,bj)=((uVel(I+1,J,K,bi,bj)*(drF(K)+
+     &        etaN(I,J,bi,bj)))+(uVel(I+1,J,K+1,bi,bj)*drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
 
-             theta(I,J,K+1,bi,bj)=((theta(I,J,K,bi,bj)*(1/recip_drF(K)+
-     &      etaN(I,J,bi,bj)))+(theta(I,J,K+1,bi,bj)*1/recip_drF(K+1)))/(
-     &       1/recip_drF(K)+1/recip_drF(K+1)+etaN(I,J,bi,bj))
+              gunm1(I+1,J,K+1,bi,bj)=((gunm1(I+1,J,K,bi,bj)*(drF(K)+
+     &        etaN(I,J,bi,bj)))+(gunm1(I+1,J,K+1,bi,bj)*drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
 
-             vVel(I,J,K+1,bi,bj)=((vVel(I,J,K,bi,bj)*(1/recip_drF(K)+
-     &       etaN(I,J,bi,bj)))+(vVel(I,J,K+1,bi,bj)*1/recip_drF(K+1)))/(
-     &       1/recip_drF(K)+1/recip_drF(K+1)+etaN(I,J,bi,bj))
+              gunm1(I,J,K+1,bi,bj)=((gunm1(I,J,K,bi,bj)*(drF(K)+
+     &        etaN(I,J,bi,bj)))+(gunm1(I,J,K+1,bi,bj)*drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
 
-            vVel(I,J+1,K+1,bi,bj)=((vVel(I,J+1,K,bi,bj)*(1/recip_drF(K)+
-     &      etaN(I,J,bi,bj)))+(vVel(I,J+1,K+1,bi,bj)*1/recip_drF(K+1)))/
-     &       (1/recip_drF(K)+1/recip_drF(K+1)+etaN(I,J,bi,bj))
+              gvnm1(I,J+1,K+1,bi,bj)=((gvnm1(I,J+1,K,bi,bj)*(drF(K)+
+     &        etaN(I,J,bi,bj)))+(gvnm1(I,J+1,K+1,bi,bj)*drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
+ 
+              gvnm1(I,J,K+1,bi,bj)=((gvnm1(I,J,K,bi,bj)*(drF(K)+
+     &        etaN(I,J,bi,bj)))+(gvnm1(I,J,K+1,bi,bj)*drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
 
-             uVel(I,J,K+1,bi,bj)=((uVel(I,J,K,bi,bj)*(1/recip_drF(K)+
-     &       etaN(I,J,bi,bj)))+(uVel(I,J,K+1,bi,bj)*1/recip_drF(K+1)))/(
-     &      1/recip_ drF(K)+1/recip_drF(K+1)+etaN(I,J,bi,bj))
+              salt(I,J,K+1,bi,bj)=((salt(I,J,K,bi,bj)*(drF(K)+
+     &        etaN(I,J,bi,bj)))+(salt(I,J,K+1,bi,bj)*drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
 
-            uVel(I+1,J,K+1,bi,bj)=((uVel(I+1,J,K,bi,bj)*(1/recip_drF(K)+
-     &      etaN(I,J,bi,bj)))+(uVel(I+1,J,K+1,bi,bj)*1/recip_drF(K+1)))/
-     &       (1/recip_drF(K)+1/recip_drF(K+1)+etaN(I,J,bi,bj))
-
-             etaN(I,J,bi,bj) = etaN(I,J,bi,bj) +1/recip_drF(K+1)
-             etaH(I,J,bi,bj) = etaH(I,J,bi,bj) +1/recip_drF(K+1)
-        R_shelfice(I,J,bi,bj) = R_shelfice(I,J,bi,bj) -1/recip_drF(K+1)
-           Rmin_surf(I,J,bi,bj) = Rmin_surf(I,J,bi,bj) -1/recip_drF(K+1)
-
-         gunm1(I+1,J,K+1,bi,bj)=((gunm1(I+1,J,K,bi,bj)*(1/recip_drF(K)+
-     &     etaN(I,J,bi,bj)))+(gunm1(I+1,J,K+1,bi,bj)*1/recip_drF(K+1)))/
-     &       (1/recip_drF(K)+1/recip_drF(K+1)+etaN(I,J,bi,bj))
-
-         gunm1(I,J,K+1,bi,bj)=((gunm1(I,J,K,bi,bj)*(1/recip_drF(K)+
-     &     etaN(I,J,bi,bj)))+(gunm1(I,J,K+1,bi,bj)*1/recip_drF(K+1)))/
-     &       (1/recip_drF(K)+1/recip_drF(K+1)+etaN(I,J,bi,bj))
-
-      gvnm1(I,J+1,K+1,bi,bj)=((gvnm1(I,J+1,K,bi,bj)*(1/recip_drF(K)+
-     &     etaN(I,J,bi,bj)))+(gvnm1(I,J+1,K+1,bi,bj)*1/recip_drF(K+1)))/
-     &       (1/recip_drF(K)+1/recip_drF(K+1)+etaN(I,J,bi,bj))
-
-
-      gvnm1(I,J,K+1,bi,bj)=((gvnm1(I,J,K,bi,bj)*(1/recip_drF(K)+
-     &     etaN(I,J,bi,bj)))+(gvnm1(I,J,K+1,bi,bj)*1/recip_drF(K+1)))/
-     &       (1/recip_drF(K)+1/recip_drF(K+1)+etaN(I,J,bi,bj))
-
-c             hfacC(I,J,K,bi,bj)=1.0
+              theta(I,J,K+1,bi,bj)=((theta(I,J,K,bi,bj)*(drF(K)+
+     &        etaN(I,J,bi,bj)))+(theta(I,J,K+1,bi,bj)*drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
+              ENDIF  
              ENDIF 
             ENDIF
            ENDIF
@@ -162,7 +153,6 @@ c             hfacC(I,J,K,bi,bj)=1.0
          ENDDO
         ENDDO
        ENDDO
-
      
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -175,38 +165,32 @@ c             hfacC(I,J,K,bi,bj)=1.0
         ENDDO
        ENDDO
 
-
-
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO J = 1,sNy
           DO I = 1,sNx
            K = MAX(1,kTopC(I,J,bi,bj))
-            hfac_surfc(I,J,bi,bj)= ((etaH(I,J,bi,bJ) +(1/recip_drF(K)))
+            hfac_surfc(I,J,bi,bj)= ((etaH(I,J,bi,bJ) +(drF(K)))
      &     *recip_drF(K))
           ENDDO
          ENDDO
         ENDDO
        ENDDO
-
-     
-
-
-     
-        CALL EXCH_XYZ_RL(salt,myThid)
-        CALL EXCH_XYZ_RL(theta,myThid)
-        CALL EXCH_XYZ_RL(uVel,myThid)
-        CALL EXCH_XYZ_RL(vVel,myThid)
-        CALL EXCH_XYZ_RL(gunm1,myThid)
-        CALL EXCH_XYZ_RL(gvnm1,myThid)
-        CALL EXCH_XYZ_RL(hFacC,myThid)
+    
+       CALL EXCH_XYZ_RL(salt,myThid)
+       CALL EXCH_XYZ_RL(theta,myThid)
+       CALL EXCH_XYZ_RL(uVel,myThid)
+       CALL EXCH_XYZ_RL(vVel,myThid)
+       CALL EXCH_XYZ_RL(gunm1,myThid)
+       CALL EXCH_XYZ_RL(gvnm1,myThid)
+       CALL EXCH_XYZ_RL(hFacC,myThid)
  
-           CALL EXCH_XY_RL(EtaN,myThid)
-           CALL EXCH_XY_RL(EtaH,myThid)
-           CALL EXCH_XY_RL(EtaHnm1,myThid)
-           CALL EXCH_XY_RL(R_shelfice,myThid)
-           CALL EXCH_XY_RL(Rmin_surf,myThid)
-           CALL EXCH_XY_RL(hFac_surfC,myThid)
+       CALL EXCH_XY_RL(EtaN,myThid)
+       CALL EXCH_XY_RL(EtaH,myThid)
+       CALL EXCH_XY_RL(EtaHnm1,myThid)
+       CALL EXCH_XY_RL(R_shelfice,myThid)
+       CALL EXCH_XY_RL(Rmin_surf,myThid)
+       CALL EXCH_XY_RL(hFac_surfC,myThid)
 
            
 C- fill in the overlap (+ BARRIER):
