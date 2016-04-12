@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks_JJ.F,v 1.14 2016/04/12 08:44:33 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/Attic/shelfice_update_masks_JJ.F,v 1.15 2016/04/12 10:43:48 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -108,43 +108,53 @@ C- Update etaN
              
               vVel(I,J,K+1,bi,bj)=((vVel(I,J,K,bi,bj)*(drF(K)+
      &        etaN(I,J,bi,bj)))+(vVel(I,J,K+1,bi,bj)*drF(K+1)*
-     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)+etaN(I,J,bi,bj))
 
               vVel(I,J+1,K+1,bi,bj)=((vVel(I,J+1,K,bi,bj)*(drF(K)+
      &        etaN(I,J,bi,bj)))+(vVel(I,J+1,K+1,bi,bj)*drF(K+1)*
-     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)+etaN(I,J,bi,bj))
 
               uVel(I,J,K+1,bi,bj)=((uVel(I,J,K,bi,bj)*(drF(K)+
      &        etaN(I,J,bi,bj)))+(uVel(I,J,K+1,bi,bj)*drF(K+1)*
-     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
-
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)+etaN(I,J,bi,bj))
+ 
               uVel(I+1,J,K+1,bi,bj)=((uVel(I+1,J,K,bi,bj)*(drF(K)+
      &        etaN(I,J,bi,bj)))+(uVel(I+1,J,K+1,bi,bj)*drF(K+1)*
-     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)+etaN(I,J,bi,bj))
 
               gunm1(I+1,J,K+1,bi,bj)=((gunm1(I+1,J,K,bi,bj)*(drF(K)+
      &        etaN(I,J,bi,bj)))+(gunm1(I+1,J,K+1,bi,bj)*drF(K+1)*
-     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)+etaN(I,J,bi,bj))
 
               gunm1(I,J,K+1,bi,bj)=((gunm1(I,J,K,bi,bj)*(drF(K)+
      &        etaN(I,J,bi,bj)))+(gunm1(I,J,K+1,bi,bj)*drF(K+1)*
-     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)+etaN(I,J,bi,bj))
 
               gvnm1(I,J+1,K+1,bi,bj)=((gvnm1(I,J+1,K,bi,bj)*(drF(K)+
      &        etaN(I,J,bi,bj)))+(gvnm1(I,J+1,K+1,bi,bj)*drF(K+1)*
-     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)+etaN(I,J,bi,bj))
  
               gvnm1(I,J,K+1,bi,bj)=((gvnm1(I,J,K,bi,bj)*(drF(K)+
      &        etaN(I,J,bi,bj)))+(gvnm1(I,J,K+1,bi,bj)*drF(K+1)*
-     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)+etaN(I,J,bi,bj))
 
               salt(I,J,K+1,bi,bj)=((salt(I,J,K,bi,bj)*(drF(K)+
      &        etaN(I,J,bi,bj)))+(salt(I,J,K+1,bi,bj)*drF(K+1)*
-     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)+etaN(I,J,bi,bj))
 
               theta(I,J,K+1,bi,bj)=((theta(I,J,K,bi,bj)*(drF(K)+
      &        etaN(I,J,bi,bj)))+(theta(I,J,K+1,bi,bj)*drF(K+1)*
-     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)+etaN(I,J,bi,bj))
+     &        hFacC(i,j,K+1,bi,bj)))/(drF(K)+drF(K+1)*
+     &        hFacC(i,j,K+1,bi,bj)+etaN(I,J,bi,bj))
               ENDIF  
              ENDIF 
             ENDIF
