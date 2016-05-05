@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_forcing_surf.F,v 1.3 2016/01/25 14:07:12 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_forcing_surf.F,v 1.4 2016/05/05 18:16:04 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
-#include "OBCS_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -25,14 +24,10 @@ C     == Global data ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
+c#include "DYNVARS.h"
 #include "SURFACE.h"
 #include "FFIELDS.h"
 #include "SHELFICE.h"
-! #include "OBCS_PARAMS.h"
-! #include "OBCS_GRID.h"
-! #include "OBCS_FIELDS.h"
-
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -52,8 +47,7 @@ C     myThid    :: Thread Id number
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j   :: Loop counters
-      INTEGER i, j, jsl
-      _RL etarelax, lambda_obcs_t
+      INTEGER i, j
 CEOP
 
 c     DO bj=myByLo(myThid),myByHi(myThid)
@@ -99,8 +93,6 @@ C     (calling SHELFICE_FORCING_T & _S from APPLY_FORCING_T & _S)
           ENDDO
          ENDDO
 
-        ENDIF
-
         IF ( useRealFreshWaterFlux.and.
      &    (SHELFICErealFWflux.or.(.not.shelficeboundarylayer))) THEN
 #ifdef ALLOW_AUTODIFF
@@ -111,28 +103,14 @@ C     (calling SHELFICE_FORCING_T & _S from APPLY_FORCING_T & _S)
 c           IF ( kTopC(i,j,bi,bj).NE.0 ) THEN
              EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj)
      &         + shelfIceFreshWaterFlux(i,j,bi,bj)
-c             IF (J .GT. 395) THEN
-c              
-c           IF ((myTime/86400) .EQ.
-c     &     INT (myTime/86400) .AND. myTime
-c     &      .NE. 0.0        ) THEN
-c            SeaLevelRestore(i,j,bi,bj) = etaN(i,j,bi,bj)*1030/86400
-c             ENDIF
-c           EmPmR(i,j,bi,bj)=SeaLevelRestore(i,j,bi,bj)
-c             ENDIF
-                  
 c           ENDIF
            ENDDO
           ENDDO
 #endif /* ALLOW_AUTODIFF */
-        ENDIF
-
-        CALL SHELFICE_RESTORE_SEALEVEL(
-     I           bi, bj, iMin, iMax, jMin, jMax,
-     I           myTime, myIter, myThid )
-
+         ENDIF
 
 C--   end if not SHELFICEboundaryLayer
+        ENDIF
 
 #ifdef EXACT_CONSERV
         IF ( staggerTimeStep ) THEN

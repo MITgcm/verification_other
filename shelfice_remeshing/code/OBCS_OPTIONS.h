@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/OBCS_OPTIONS.h,v 1.2 2016/01/22 16:09:33 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/OBCS_OPTIONS.h,v 1.3 2016/05/05 18:16:04 dgoldberg Exp $
 C $Name:  $
  
 C CPP options file for OBCS package
@@ -31,7 +31,8 @@ C This includes hooks to sponge layer treatment of uvel, vvel
 #define ALLOW_OBCS_SPONGE
 
 C balance barotropic velocity
-#undef ALLOW_OBCS_BALANCE
+C KS16 turn this on
+#define ALLOW_OBCS_BALANCE
 
 C     The following five CPP options are experimental and aim to deal
 C     with artifacts due to the low-frequency specification of sea-ice

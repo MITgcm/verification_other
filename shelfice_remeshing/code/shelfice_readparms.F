@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_readparms.F,v 1.5 2016/04/04 12:53:15 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_readparms.F,v 1.6 2016/05/05 18:16:04 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -51,7 +51,6 @@ CEOP
      &     SHELFICEthetaSurface,
      &     useISOMIPTD, no_slip_shelfice,
      &     SHELFICEconserve, SHELFICEboundaryLayer,
-     &     SHELFICEthickBoundaryLayer,
      &     SHELFICErealFWflux,
      &     SHELFICEwriteState,
      &     SHELFICE_dumpFreq,
@@ -71,7 +70,9 @@ CEOP
      &     shiPrandtl, shiSchmidt, shiKinVisc,
      &     shelficeEtaSponge, ShelficeEtaRelax,
      &     shelfice_etarestore_spongewidth,
-     &     SHELFICE_dig_ice
+     &     SHELFICE_dig_ice,
+C   KS16 add conserve_ssh
+     &     conserve_ssh
 #ifdef ALLOW_COST
      &     , mult_shelfice
      &     , mult_shifwflx, wshifwflx0, shifwflx_errfile
@@ -100,8 +101,6 @@ C Set defaults values for parameters in SHELFICE.h
       useISOMIPTD              = .FALSE.
       SHELFICEconserve         = .FALSE.
       SHELFICEboundaryLayer    = .FALSE.
-      SHELFICEthickBoundaryLayer 
-     &                         = .FALSE.
       SHELFICErealFWflux       = .FALSE.
       SHELFICEMassStepping     = .FALSE.
       SHELFICEDynMassOnly      = .FALSE.
@@ -132,6 +131,8 @@ C Set defaults values for parameters in SHELFICE.h
       shelfice_etarestore_spongewidth = 0
       shelficeEtaSponge        = .false.
       SHELFICE_dig_ice         = .true.
+C    KS16 initiliase conserve_ssh
+      conserve_ssh             = .false.
 C these params. are default of Holland and Jenkins (1999)
       shiCdrag                 = 0.0015 _d 0
       shiZetaN                 = 0.052 _d 0

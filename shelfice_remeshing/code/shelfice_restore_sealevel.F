@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_restore_sealevel.F,v 1.3 2016/01/31 23:08:17 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_restore_sealevel.F,v 1.4 2016/05/05 18:16:04 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -49,6 +49,7 @@ C     myThid    :: Thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_SHELFICE
+#ifndef ALLOW_SHELFICE
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j   :: Loop counters
@@ -73,7 +74,7 @@ C--   Zero out surface forcing terms below ice-shelf
 
 #ifdef ALLOW_OBCS_NORTH
        IF ( OBCSsponge_N .AND. shelficeEtaSponge ) THEN
-        DO i=iMin,iMax
+        DO i=1,sNx
          IF ( OB_Jn(i,bi,bj).NE.OB_indexNone ) THEN
           DO jsl= 1,shelfice_etarestore_spongewidth-1
            j=OB_Jn(i,bi,bj)-jsl
@@ -83,7 +84,7 @@ C--   Zero out surface forcing terms below ice-shelf
              ELSE
               etarelax=(
      &       float(shelfice_etarestore_spongewidth-jsl)*OBNeta(i,bi,bj)
-     &             + float(jsl)*etah(i,j,bi,bj) )
+     &             + float(jsl)*etan(i,j,bi,bj) )
      &             / float(shelfice_etarestore_spongewidth)
              ENDIF
              lambda_obcs_t = (
@@ -97,7 +98,7 @@ C--   Zero out surface forcing terms below ice-shelf
              ENDIF
              EmPmR(i,j,bi,bj) =
      &              maskInC(i,j,bi,bj) * lambda_obcs_t
-     &            * ( etah(i,j,bi,bj) - etarelax ) * rhoConst
+     &            * ( etan(i,j,bi,bj) - etarelax ) * rhoConst
            ENDIF
           ENDDO
          ENDIF
@@ -113,6 +114,7 @@ C--   Zero out surface forcing terms below ice-shelf
 c      ENDDO
 c     ENDDO
 
+#endif
 #endif /* ALLOW_SHELFICE */
       RETURN
       END

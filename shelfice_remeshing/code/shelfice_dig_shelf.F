@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_dig_shelf.F,v 1.1 2016/04/04 12:53:15 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_dig_shelf.F,v 1.2 2016/05/05 18:16:04 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -87,7 +87,7 @@ CEOP
 
           IF(maskInC(i,j,bi,bj).eq.1) THEN
            min_draft(i,j,bi,bj) = R_low(i,j,bi,bj) + 
-     &     1.5*hfacmin*drF(ktmp(i,j,bi,bj))
+     &     2.*hfacmin*drF(ktmp(i,j,bi,bj))
           ENDIF
 
          ENDDO

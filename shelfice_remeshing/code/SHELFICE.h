@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE.h,v 1.6 2016/04/04 12:53:15 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE.h,v 1.7 2016/05/05 18:16:04 dgoldberg Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -32,9 +32,6 @@ C     SHELFICEDynMassOnly      :: step ice mass ONLY with Shelficemassdyntendenc
 C                                 (not melting/freezing) def: F
 C     SHELFICEboundaryLayer    :: turn on vertical merging of cells to for a
 C                                 boundary layer of drF thickness, def: F
-C     SHELFICEthickboundaryLayer
-C                              :: similar to boundary layer but allow for a thicker
-C                                 layer, encompassing 3 cells in vertical, def: F
 C     SHELFICErealFWflux       :: ensure vert advective flux at bdry uses top cell
 C                                 value rather than "boundary layer" value   F
 C     SHELFICEadvDiffHeatFlux  :: use advective-diffusive heat flux into the
@@ -84,7 +81,6 @@ C
 C--   Fields
 C     ktopC                  :: index of the top "wet cell" (2D)
 C     R_shelfIce             :: shelfice topography [m]
-C     R_Grounding            :: "grounded" ice topography [m]
 C     shelficeMassInit       :: ice-shelf mass (per unit area) (kg/m^2)
 C     shelficeMass           :: ice-shelf mass (per unit area) (kg/m^2)
 C     shelfIceMassDynTendency :: other mass balance tendency  (kg/m^2/s)
@@ -97,6 +93,8 @@ C     shelficeForcingT       :: analogue of surfaceForcingT
 C                               units are  r_unit.Kelvin/s (=Kelvin.m/s if r=z)
 C     shelficeForcingS       :: analogue of surfaceForcingS
 C                               units are  r_unit.psu/s (=psu.m/s if r=z)
+C     conserve_ssh           :: KS16. Use the obcs to conserve net open
+C                               ocean eta to 0m
 C-----------------------------------------------------------------------
 C \ev
 CEOP
@@ -130,9 +128,11 @@ CEOP
       _RL rhoShelfice
       _RL SHELFICEkappa
       _RL SHELFICEDragLinear
-      _RL SHELFICEDragQuadratic, SHELFICEMergeThreshold
+      _RL SHELFICEDragQuadratic 
+      _RL SHELFICEMergeThreshold
       _RL SHELFICEthetaSurface, SHELFICESplitThreshold
-      _RL shiCdrag, shiZetaN, shiRc, SHELFICERemeshFrequency
+      _RL shiCdrag, shiZetaN, shiRc
+      _RL SHELFICERemeshFrequency
       _RL shiPrandtl, shiSchmidt, shiKinVisc
       _RL SHELFICEGroundW, SHELFICEGroundC, shelficeEtaRelax
       COMMON /SHELFICE_FIELDS_RL/
@@ -185,6 +185,8 @@ CEOP
       LOGICAL SHELFICEDynMassOnly
       LOGICAL SHELFICEEtaSponge
       LOGICAL SHELFICE_dig_ice
+C   KS16 put var here
+      LOGICAL conserve_ssh
       COMMON /SHELFICE_PARMS_L/
      &     SHELFICEisOn,
      &     useISOMIPTD,
@@ -203,7 +205,9 @@ CEOP
      &     SHELFICEMassStepping,
      &     SHELFICEDynMassOnly,
      &     SHELFICEEtaSponge,
-     &     SHELFICE_dig_ice
+     &     SHELFICE_dig_ice,
+C  KS16 and here;
+     &     conserve_ssh
 
       CHARACTER*(MAX_LEN_FNAM) SHELFICEloadAnomalyFile
       CHARACTER*(MAX_LEN_FNAM) SHELFICEmassFile

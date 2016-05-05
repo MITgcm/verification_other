@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_remeshing.F,v 1.4 2016/02/29 16:05:41 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_remeshing.F,v 1.5 2016/05/05 18:16:04 dgoldberg Exp $
 C $Name:  $
 #include "SHELFICE_OPTIONS.h"
 #ifdef ALLOW_CTRL
@@ -41,11 +41,12 @@ C     === Global variables ===
 
 
 #ifdef ALLOW_SHELFICE
+#ifdef ALLOW_SHELFICE_REMESHING
           IF ((myTime/ShelficeRemeshFrequency) .EQ.
      &     INT (myTime/ShelficeRemeshFrequency) .AND. myTime
      &      .NE. 0.0        ) THEN
-         CALL INI_MASKS_ETC_JJ (myThid)
-         CALL SHELFICE_INIT_FIXED_JJ ( myThid)
+         CALL INI_MASKS_REMESH (myThid)
+         CALL SHELFICE_INIT_FIXED_REMESH( myThid )
          CALL OBCS_INIT_FIXED( myThid )
          CALL INI_LINEAR_PHISURF(myThid)
          CALL INI_CG2D (myThid) 
@@ -55,6 +56,7 @@ C     === Global variables ===
          CALL UPDATE_CG2D(myTime,myIter, myThid)
          CALL INTEGR_CONTINUITY (uVel ,vVel, myTime, niter0, myThid)
          ENDIF 
+#endif /* ALLOW_SHELFICE_REMESHING */
 #endif /* ALLOW_SHELFICE */
 
       RETURN

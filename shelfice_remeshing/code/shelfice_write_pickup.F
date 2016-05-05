@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_write_pickup.F,v 1.4 2016/01/26 16:46:20 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_write_pickup.F,v 1.5 2016/05/05 18:16:04 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -82,6 +82,8 @@ C-    switch to 2-D fields:
      &                        nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'SHI_mass'
 
+#ifdef ALLOW_SHELFICE_REMESHING
+
         j = j + 1
         nj = nj-1
 
@@ -96,7 +98,7 @@ C-    switch to 2-D fields:
      &                        nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'RMinSurf'
 
-
+#endif
        
 
 c       nj = nj-1

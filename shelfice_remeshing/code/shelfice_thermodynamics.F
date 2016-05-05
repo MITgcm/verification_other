@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.15 2016/04/11 16:02:53 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.16 2016/05/05 18:16:04 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -37,7 +37,6 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "SHELFICE.h"
-#include "SURFACE.h"
 #include "SHELFICE_COST.h"
 #ifdef ALLOW_AUTODIFF
 # include "CTRL_SIZE.h"
@@ -86,39 +85,44 @@ C     a0, a1, a2, b, c0
 C     eps1, eps2, eps3, eps3a, eps4, eps5, eps6, eps7, eps8
 C     aqe, bqe, cqe, discrim, recip_aqe
 C     drKp1, recip_drLoc
-      INTEGER I,J,K,Kp1,kp2
+      INTEGER I,J,K,Kp1
       INTEGER bi,bj
       _RL tLoc(1:sNx,1:sNy)
       _RL sLoc(1:sNx,1:sNy)
       _RL pLoc(1:sNx,1:sNy)
+#ifndef SHI_USTAR_WETPOINT
       _RL uLoc(1:sNx,1:sNy)
       _RL vLoc(1:sNx,1:sNy)
-      _RL u_topdr(1:sNx+1,1:sNy+1,nSx,nSy)
+#endif
+#ifdef SHI_USTAR_TOPDR
+      _RL u_topdr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v_topdr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+      _RL velSq(1:sNx,1:sNy)
       _RL thetaFreeze, saltFreeze, recip_Cp
       _RL freshWaterFlux, convertFW2SaltLoc
       _RL a0, a1, a2, b, c0
       _RL eps1, eps2, eps3, eps3a, eps4, eps5, eps6, eps7, eps8
       _RL cFac, rFac, dFac, fwflxFac, realfwFac
       _RL aqe, bqe, cqe, discrim, recip_aqe
-      _RL drKp1, drKp2, recip_drLoc
+      _RL drKp1, recip_drLoc
       _RL recip_latentHeat
       _RL tmpFac
       _RL massMin, mass, DELZ
       _RL SHA,FACTOR1,FACTOR2,FACTOR3
-      _RL GMSL,ETACOUNT, SEALEVEL, oce_density
+      _RL ETA,SEALEVEL,oce_density
+
 #ifdef SHI_ALLOW_GAMMAFRICT
       _RL shiPr, shiSc, shiLo, recip_shiKarman, shiTwoThirds
       _RL gammaTmoleT, gammaTmoleS, gammaTurb, gammaTurbConst
-      _RL ustar, ustarSq, etastar, recipPi
-
+      _RL ustar, ustarSq, etastar
       PARAMETER ( shiTwoThirds = 0.66666666666666666666666666667D0 )
 #ifdef ALLOW_DIAGNOSTICS
       _RL uStarDiag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* ALLOW_DIAGNOSTICS */
 #endif
 
-#ifndef ALLOW_OPENAFD
+#ifndef ALLOW_OPENAD
       _RL SW_TEMP
       EXTERNAL SW_TEMP
 #endif
@@ -128,13 +132,10 @@ C     drKp1, recip_drLoc
 #endif
 
 #ifdef ALLOW_SHELFICE_REMESHING
-!       _RL EFFMASS(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL GrdFactor(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-      recipPi = 1./(PI)
 
 #ifdef SHI_ALLOW_GAMMAFRICT
 #ifdef ALLOW_AUTODIFF
@@ -187,9 +188,6 @@ C     are we doing the conservative form of Jenkins et al. (2001)?
       recip_Cp = 1. _d 0 / HeatCapacity_Cp
       cFac = 0. _d 0
       IF ( SHELFICEconserve ) cFac = 1. _d 0
-
-      realFWfac = 0. _d 0
-      IF ( SHELFICErealFWflux ) realFWfac = 1. _d 0
 C     with "real fresh water flux" (affecting ETAN),
 C     there is more to modify
       rFac = 1. _d 0
@@ -199,6 +197,11 @@ C     (Holland and Jenkins, 1999, eq.21)
       dFac = 0. _d 0
       IF ( SHELFICEadvDiffHeatFlux ) dFac = 1. _d 0
       fwflxFac = 0. _d 0
+C     if shelficeboundarylayer is used with real freshwater flux, 
+c     the T/S used for surface fluxes must be the cell T/S
+      realFWfac = 0. _d 0
+      IF ( SHELFICErealFWflux ) realFWfac = 1. _d 0
+
 C     linear dependence of freezing point on salinity
       a0 = -0.0575   _d  0
       a1 =  0.0      _d -0
@@ -259,20 +262,18 @@ C     where this value is part of the protocol
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
 
-      IF (.not.usestreamice) THEN
+        IF (.not.usestreamice) THEN
              oce_density = 1028.
-      ELSE
+        ELSE
              oce_density = streamice_density_ocean_avg
-      ENDIF
-
-C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
-
+        ENDIF
 
 #ifdef ALLOW_SHELFICE_REMESHING
 
-         SEALEVEL = 0. _d 0
-         CALL SHELFICE_SEA_LEVEL_AVG( SEALEVEL, myThid )
-c        print *, "GOT HERE AVG SEA LEVEL ", SEALEVEL
+       SEALEVEL = 0. _d 0
+C      KS16 ------ add ETA, initialize and in called S/R------
+       ETA = 0. _d 0
+       CALL SHELFICE_SEA_LEVEL_AVG( SEALEVEL, ETA, myThid )
 
          DO j = 1-OLy, sNy+OLy
           DO i = 1-OLx, sNx+OLx
@@ -287,13 +288,9 @@ c        print *, "GOT HERE AVG SEA LEVEL ", SEALEVEL
             delZ =  drF(Nr)
            endif
 
-!            massMin = -1*oce_density
-!      &         *(R_low(i,j,bi,bj)+2.*hfacMin*delZ)
-
            massMin = oce_density
      &      *(SEALEVEL-(R_low(i,j,bi,bj)+R_MWCT(i,j,bi,bj)))
 
-          
            mass = shelficemass(i,j,bi,bj)
 
            SHA=massMin/
@@ -306,18 +303,6 @@ c        print *, "GOT HERE AVG SEA LEVEL ", SEALEVEL
            EFFMASS(I,J,BI,BJ)=
      &       (FACTOR1*GrdFactor(i,j,bi,bj) + FACTOR2)*mass
 
-!           shelfIceHeatFlux(i,j,bi,bj) = 
-!      &     shelfIceHeatFlux(i,j,bi,bj)*(FACTOR3*0.5+0.5)
-!           shelfIceFreshWaterFlux(i,j,bi,bj) = 
-!      &     shelfIceFreshWaterFlux(i,j,bi,bj)*(FACTOR3*0.5+0.5)
-!           shelficeForcingT(i,j,bi,bj) = 
-!      &     shelfIceForcingT(i,j,bi,bj)*(FACTOR3*0.5+0.5)
-!           shelfIceForcingS(i,j,bi,bj) = 
-!      &     shelfIceForcingS(i,j,bi,bj)*(FACTOR3*0.5+0.5)
-
-!          shelficeLoadAnomaly(i,j,bi,bj) = gravity
-!      &      *( EFFMASS(I,J,BI,BJ) + rhoConst*Ro_surf(i,j,bi,bj) )
-
 #endif /* ALLOW_STREAMICE */
 
           ENDDO
@@ -325,7 +310,7 @@ c        print *, "GOT HERE AVG SEA LEVEL ", SEALEVEL
 #endif
 ! allow shelfice_remeshing      
 
-
+#ifdef SHI_USTAR_TOPDR
         IF ( SHELFICEBoundaryLayer ) THEN
 C--   average over boundary layer width
          DO J = 1, sNy+1
@@ -335,6 +320,7 @@ C--   average over boundary layer width
           ENDDO
          ENDDO
         ENDIF
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef SHI_ALLOW_GAMMAFRICT
@@ -359,107 +345,33 @@ C--   underneath the ice
 c         pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*1. _d -4
           tLoc(I,J) = theta(I,J,K,bi,bj)
           sLoc(I,J) = MAX(salt(I,J,K,bi,bj), zeroRL)
-          IF ( .not.SHELFICEBoundaryLayer ) THEN
-           uLoc(I,J) = recip_hFacC(I,J,K,bi,bj) *
+#ifdef SHI_USTAR_WETPOINT
+          velSq(I,J) = 0.
+          tmpFac = _hFacW(I,  J,K,bi,bj) + _hFacW(I+1,J,K,bi,bj)
+          IF ( tmpFac.GT.0. _d 0 )
+     &     velSq(I,J) = (
+     &     uVel( I, J,K,bi,bj)*uVel( I, J,K,bi,bj)*_hFacW( I, J,K,bi,bj)
+     &   + uVel(I+1,J,K,bi,bj)*uVel(I+1,J,K,bi,bj)*_hFacW(I+1,J,K,bi,bj)
+     &                  )/tmpFac
+          tmpFac = _hFacS(I,J,  K,bi,bj) + _hFacS(I,J+1,K,bi,bj)
+          IF ( tmpFac.GT.0. _d 0 )
+     &     velSq(I,J) = velSq(I,J) + (
+     &     vVel(I, J, K,bi,bj)*vVel(I, J, K,bi,bj)*_hFacS(I, J, K,bi,bj)
+     &   + vVel(I,J+1,K,bi,bj)*vVel(I,J+1,K,bi,bj)*_hFacS(I,J+1,K,bi,bj)
+     &                               )/tmpFac
+#else /* SHI_USTAR_WETPOINT */
+          uLoc(I,J) = recip_hFacC(I,J,K,bi,bj) * halfRL *
      &         ( uVel(I,  J,K,bi,bj) * _hFacW(I,  J,K,bi,bj)
      &         + uVel(I+1,J,K,bi,bj) * _hFacW(I+1,J,K,bi,bj) )
-           vLoc(I,J) = recip_hFacC(I,J,K,bi,bj) *
-     &         ( vVel(I,  J,K,bi,bj) * _hFacS(I,  J,K,bi,bj)
+          vLoc(I,J) = recip_hFacC(I,J,K,bi,bj) * halfRL *
+     &         ( vVel(I,J,  K,bi,bj) * _hFacS(I,J,  K,bi,bj)
      &         + vVel(I,J+1,K,bi,bj) * _hFacS(I,J+1,K,bi,bj) )
-          ENDIF
+          velSq(I,J) = uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)
+#endif /* SHI_USTAR_WETPOINT */
          ENDDO
         ENDDO
 
-!         IF ( SHELFICEBoundaryLayer ) THEN
-!          DO J = 1, sNy+1
-!           DO I = 1, sNx+1
-! 
-!            K = ksurfW(I,J,bi,bj)
-!            Kp1 = K+1
-!            Kp2 = K+2
-! 
-!            IF (ShelficeThickBoundaryLayer .and.
-!      &      (K.ne.0.and.K.LT.Nr-1)) THEN
-! 
-!             drKp1 = drF(K)*( 1.5 - _hFacW(I,J,K,bi,bj) )
-!             drKp2 = drKp1 - drF(kp1)*_hFacW(I,J,kp1,bi,bj)
-!             drKp2 = MAX( drKp2, 0. _d 0)
-!             drKp2 = MIN( drKp2, 
-!      &        drF(kp2)*_hFacW(I,J,kp2,bi,bj))
-!             drKp1 = drKp1 - drKp2
-!             drKp1 = MAX( drKp1, 0. _d 0)
-!             recip_drLoc = 1. _d 0 /
-!      &           (drF(K)*_hFacW(I,J,K,bi,bj)+drKp1+drKp2)            
-!             u_topdr(I,J,bi,bj) = 
-!      &       (drF(K)*_hFacW(I,J,K,bi,bj)*uVel(I,J,K,bi,bj) + 
-!      &        drKp1*uVel(I,J,Kp1,bi,bj)) * recip_drLoc
-!             u_topdr(I,J,bi,bj) = u_topdr(I,J,bi,bj) + 
-!      &        drKp2 * uVel(I,J,Kp2,bi,bj) * recip_drLoc
-! 
-!            ELSEIF ( (K .NE. 0 .AND. K.EQ.Nr-1) .OR.
-!      &      (.not.SHELFICEthickboundarylayer.AND.
-!      &       (K .NE. 0 .AND. K .LT. Nr) ) ) THEN
-! 
-!             drKp1 = drF(K)*(1. _d 0-_hFacW(I,J,K,bi,bj))
-!             drKp1 = max (drKp1, 0. _d 0)
-!             recip_drLoc = 1.0 / 
-!      &       (drF(K)*_hFacW(I,J,K,bi,bj)+drKp1)
-!             u_topdr(I,J,bi,bj) = 
-!      &       (drF(K)*_hFacW(I,J,K,bi,bj)*uVel(I,J,K,bi,bj) + 
-!      &        drKp1*uVel(I,J,Kp1,bi,bj)) 
-!      &      * recip_drLoc
-! 
-!            ELSE
-! 
-!             u_topdr(I,J,bi,bj) = 0. _d 0
-! 
-!            ENDIF
-!            
-!            K = ksurfS(I,J,bi,bj)
-!            Kp1 = K+1
-!            Kp2 = K+2
-! 
-!            IF (ShelficeThickBoundaryLayer .and.
-!      &      (K.ne.0.and.K.LT.Nr-1)) THEN
-! 
-!             drKp1 = drF(K)*( 1.5 - _hFacS(I,J,K,bi,bj) )
-!             drKp2 = drKp1 - drF(kp1)*_hFacS(I,J,kp1,bi,bj)
-!             drKp2 = MAX( drKp2, 0. _d 0)
-!             drKp2 = MIN( drKp2, 
-!      &        drF(kp2)*_hFacS(I,J,kp2,bi,bj))
-!             drKp1 = drKp1 - drKp2
-!             drKp1 = MAX( drKp1, 0. _d 0)
-!             recip_drLoc = 1. _d 0 /
-!      &           (drF(K)*_hFacS(I,J,K,bi,bj)+drKp1+drKp2)            
-!             v_topdr(I,J,bi,bj) = 
-!      &       (drF(K)*_hFacS(I,J,K,bi,bj)*vVel(I,J,K,bi,bj) + 
-!      &        drKp1*vVel(I,J,Kp1,bi,bj)) * recip_drLoc
-!             v_topdr(I,J,bi,bj) = v_topdr(I,J,bi,bj) + 
-!      &        drKp2 * vVel(I,J,Kp2,bi,bj) * recip_drLoc
-! 
-!            ELSEIF ( (K .NE. 0 .AND. K.EQ.Nr-1) .OR.
-!      &      ((.NOT.SHELFICEthickboundarylayer).AND.
-!      &       (K .NE. 0 .AND. K .LT. Nr) ) ) THEN
-! 
-!             drKp1 = drF(K)*(1. _d 0-_hFacS(I,J,K,bi,bj))
-!             drKp1 = max (drKp1, 0. _d 0)
-!             recip_drLoc = 1.0 / 
-!      &       (drF(K)*_hFacS(I,J,K,bi,bj)+drKp1)
-!             v_topdr(I,J,bi,bj) = 
-!      &       (drF(K)*_hFacS(I,J,K,bi,bj)*vVel(I,J,K,bi,bj) + 
-!      &        drKp1*vVel(I,J,Kp1,bi,bj)) 
-!      &      * recip_drLoc
-! 
-!            ELSE
-! 
-!             v_topdr(I,J,bi,bj) = 0. _d 0
-! 
-!            ENDIF
-! 
-!           ENDDO
-!          ENDDO
-!         ENDIF
-
+#ifdef SHI_USTAR_TOPDR
         IF ( SHELFICEBoundaryLayer ) THEN
          DO J = 1, sNy+1
           DO I = 1, sNx+1
@@ -496,6 +408,7 @@ c         pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*1. _d -4
           ENDDO
          ENDDO
         ENDIF
+#endif
 
         IF ( SHELFICEBoundaryLayer ) THEN
 C--   average over boundary layer width
@@ -506,10 +419,9 @@ C--   average over boundary layer width
             Kp1 = MIN(Nr,K+1)
 C--   overlap into lower cell
             drKp1 = drF(K)*( 1. _d 0 - _hFacC(I,J,K,bi,bj) )
-C-- Dans fix
-            drKp1 = MAX(drKp1, 0.)
 C--   lower cell may not be as thick as required
             drKp1 = MIN( drKp1, drF(Kp1) * _hFacC(I,J,Kp1,bi,bj) )
+            drKp1 = MAX( drKp1, 0. _d 0 )
             recip_drLoc = 1. _d 0 /
      &           ( drF(K)*_hFacC(I,J,K,bi,bj) + drKp1 )
             tLoc(I,J) = ( tLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
@@ -518,33 +430,25 @@ C--   lower cell may not be as thick as required
             sLoc(I,J) = ( sLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
      &           + MAX(salt(I,J,Kp1,bi,bj), zeroRL) * drKp1 )
      &           * recip_drLoc
-
-!              uLoc(I,J) = ( uLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
-!      &           + drKp1 * recip_hFacC(I,J,Kp1,bi,bj) *
-!      &           ( uVel(I,  J,Kp1,bi,bj) * _hFacW(I,  J,Kp1,bi,bj)
-!      &           + uVel(I+1,J,Kp1,bi,bj) * _hFacW(I+1,J,Kp1,bi,bj) )
-!      &           ) * recip_drLoc
-!             vLoc(I,J) = ( vLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
-!      &           + drKp1 * recip_hFacC(I,J,Kp1,bi,bj) *
-!      &           ( vVel(I,J,  Kp1,bi,bj) * _hFacS(I,J,  Kp1,bi,bj)
-!      &           + vVel(I,J+1,Kp1,bi,bj) * _hFacS(I,J+1,Kp1,bi,bj) )
-!      &           ) * recip_drLoc
+#ifndef SHI_USTAR_WETPOINT
+            uLoc(I,J) = ( uLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
+     &           + drKp1 * recip_hFacC(I,J,Kp1,bi,bj) * halfRL *
+     &           ( uVel(I,  J,Kp1,bi,bj) * _hFacW(I,  J,Kp1,bi,bj)
+     &           + uVel(I+1,J,Kp1,bi,bj) * _hFacW(I+1,J,Kp1,bi,bj) )
+     &           ) * recip_drLoc
+            vLoc(I,J) = ( vLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
+     &           + drKp1 * recip_hFacC(I,J,Kp1,bi,bj) * halfRL *
+     &           ( vVel(I,J,  Kp1,bi,bj) * _hFacS(I,J,  Kp1,bi,bj)
+     &           + vVel(I,J+1,Kp1,bi,bj) * _hFacS(I,J+1,Kp1,bi,bj) )
+     &           ) * recip_drLoc
+            velSq(I,J) = uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)
+#endif /* ndef SHI_USTAR_WETPOINT */
            ENDIF
           ENDDO
          ENDDO
         ENDIF
 
 
-        IF ( SHELFICEBoundaryLayer ) THEN
-         DO J = 1, sNy
-          DO I = 1, sNx
-           uLoc(I,J) = 
-     &      u_topdr(I,J,bi,bj) + u_topdr(I+1,J,bi,bj)
-           vLoc(I,J) = 
-     &      v_topdr(I,J,bi,bj) + v_topdr(I,J+1,bi,bj)
-          ENDDO
-         ENDDO
-        ENDIF
 
 C--   turn potential temperature into in-situ temperature relative
 C--   to the surface
@@ -564,17 +468,8 @@ C--   to the surface
           DO I = 1, sNx
            K = kTopC(I,J,bi,bj)
            IF ( K .NE. 0 .AND. pLoc(I,J) .GT. 0. _d 0 ) THEN
-            ustarSq = shiCdrag * MAX( 1.D-6,
-     &           0.25 _d 0 *(uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)) )
+            ustarSq = shiCdrag * MAX( 1.D-6, velSq(I,J) )
             ustar   = SQRT(ustarSq)
-
-          IF (kTopC(i,j,bi,bj) .GE.kLowC (i,j,bi,bj))THEN
-               ustar = 0 
-          ENDIF
-
-
-
-
 #ifdef ALLOW_DIAGNOSTICS
             uStarDiag(I,J,bi,bj) = ustar
 #endif /* ALLOW_DIAGNOSTICS */
@@ -602,18 +497,6 @@ C            gammaTurb = MAX(0.D0, gammaTurb)
          ENDDO
         ENDIF
 #endif /* SHI_ALLOW_GAMMAFRICT */
-
-
-
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          IF (kTopC(i,j,bi,bj) .GE.kLowC (i,j,bi,bj))THEN
-              shiTransCoeffT(i,j,bi,bj)=0
-              shiTransCoeffS (i,j,bi,bj)=0
-          ENDIF
-         ENDDO
-        ENDDO
-
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef SHI_ALLOW_GAMMAFRICT
@@ -766,9 +649,6 @@ cph     &           * ( saltFreeze - sLoc(I,J) ) / saltFreeze
 #ifdef ALLOW_SHIFWFLX_CONTROL
      &           + xx_shifwflx_loc(I,J,bi,bj)
 #endif /*  ALLOW_SHIFWFLX_CONTROL */
-C--   Calculate the upward heat and fresh water fluxes;
-C--   MITgcm sign conventions: downward (negative) fresh water flux
-C--   implies melting and due to upward (positive) heat flux
 
 
 #ifdef ALLOW_SHELFICE_REMESHING
@@ -776,6 +656,9 @@ C--   implies melting and due to upward (positive) heat flux
      &       freshWaterFlux*(GrdFactor(i,j,bi,bj)*0.5+0.5)
 #endif
 
+C--   Calculate the upward heat and fresh water fluxes;
+C--   MITgcm sign conventions: downward (negative) fresh water flux
+C--   implies melting and due to upward (positive) heat flux
             shelfIceHeatFlux(I,J,bi,bj) =
      &           ( eps3
      &           - freshWaterFlux*SHELFICEheatCapacity_Cp*fwflxFac )
@@ -811,13 +694,17 @@ C     endif (not) useISOMIPTD
        ENDDO
       ENDDO
 
+      IF (SHELFICEMassStepping) THEN
+       CALL SHELFICE_STEP_ICEMASS( myTime, myIter, myThid )
+      ENDIF
+
+C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
 #ifndef ALLOW_AUTODIFF
-
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j = 1-OLy, sNy+OLy
-         DO i = 1-OLx, sNx+OLx
-
+c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
 #ifndef ALLOW_SHELFICE_REMESHING
 
           shelficeLoadAnomaly(i,j,bi,bj) = gravity
@@ -829,20 +716,12 @@ C     endif (not) useISOMIPTD
      &      *( EFFMASS(I,J,BI,BJ) + rhoConst*Ro_surf(i,j,bi,bj) )
 
 #endif
-
+          ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
-
-
+c     ENDIF
 #endif /* ndef ALLOW_AUTODIFF */
-
-
-      IF (SHELFICEMassStepping) THEN
-       CALL SHELFICE_STEP_ICEMASS( myTime, myIter, myThid )
-      ENDIF
-
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
@@ -868,14 +747,14 @@ C     Friction velocity
        IF ( SHELFICEuseGammaFrict )
      &  CALL DIAGNOSTICS_FILL(uStarDiag,'SHIuStar',0,1,0,1,1,myThid)
 #endif /* SHI_ALLOW_GAMMAFRICT */
-      ENDIF
-        CALL DIAGNOSTICS_FILL(R_shelfice,'SHIRshel',
+#ifdef ALLOW_SHELFICE_REMESHING
+       CALL DIAGNOSTICS_FILL(R_shelfice,'SHIRshel',
      &      0,1,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(EFFMASS,'SHI_MEff',
+       CALL DIAGNOSTICS_FILL(EFFMASS,'SHI_MEff',
      &      0,1,0,1,1,myThid)
-        
 #endif
- 
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_SHELFICE */
       RETURN

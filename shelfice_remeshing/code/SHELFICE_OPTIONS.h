@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE_OPTIONS.h,v 1.1 2016/04/04 12:53:15 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE_OPTIONS.h,v 1.2 2016/05/05 18:16:04 dgoldberg Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -28,6 +28,7 @@ C     at grid-cell center
 #undef SHI_USTAR_WETPOINT
 
 #define ALLOW_SHELFICE_REMESHING
+#define SHI_USTAR_TOPDR
 
 #endif /* ALLOW_SHELFICE */
 #endif /* SHELFICE_OPTIONS_H */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_read_pickup.F,v 1.4 2016/01/26 16:46:20 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_read_pickup.F,v 1.5 2016/05/05 18:16:04 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -130,10 +130,13 @@ C---    read STREAMICE 2-D fields for restart
 
         CALL READ_MFLDS_3D_RL( 'SHI_mass', shelfIceMass,
      &                                 nj, fp, 1 , myIter, myThid )
+
+#ifdef ALLOW_SHELFICE_REMESHING
         CALL READ_MFLDS_3D_RL( 'R_Shelfi', R_shelfice,
      &                                 nj, fp, 1 , myIter, myThid )
         CALL READ_MFLDS_3D_RL( 'RMinSurf', Rmin_surf,
      &                                 nj, fp, 1 , myIter, myThid )
+#endif
 
 C--    end: new way to read pickup file
        ENDIF
@@ -165,8 +168,10 @@ C--    Check for missing fields:
 C--    Update overlap regions:
 
         CALL EXCH_XY_RL( shelfIceMass, myThid )
+#ifdef ALLOW_SHELFICE_REMESHING
         CALL EXCH_XY_RL( R_shelfice, myThid )
         CALL EXCH_XY_RL( Rmin_surf, myThid )
+#endif
         
 
 c       CALL EXCH_XY_RL( myPa_Surf2, myThid )

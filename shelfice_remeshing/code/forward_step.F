@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/forward_step.F,v 1.2 2016/01/22 16:09:33 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/forward_step.F,v 1.3 2016/05/05 18:16:04 dgoldberg Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -33,6 +33,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"
+#endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
 #endif
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
@@ -383,10 +386,12 @@ C     myIterBeg :: iteration number at beginning of time step
 CEOP
 
 #ifdef ALLOW_SHELFICE
+#ifdef ALLOW_SHELFICE_REMESHING
 C-- Remesh shelfice
         CALL TIMER_START('SHELFICE_REMESHING     [FORWARD_STEP]',myThid)
         CALL SHELFICE_REMESHING (myTime, myIter, myThid )
         CALL TIMER_STOP('SHELFICE_REMESHING     [FORWARD_STEP]',myThid)
+#endif /* ALLOW_SHELFICE_REMESHING */
 #endif /* ALLOW_SHELFICE */
 
 

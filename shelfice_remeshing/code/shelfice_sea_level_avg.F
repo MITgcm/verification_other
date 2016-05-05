@@ -1,10 +1,11 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_sea_level_avg.F,v 1.1 2016/01/25 14:08:44 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_sea_level_avg.F,v 1.2 2016/05/05 18:16:04 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
 
 CBOP
-      SUBROUTINE SHELFICE_SEA_LEVEL_AVG( avgSL, myThid )
+C    KS16, add sum_eta to subroutine fields
+      SUBROUTINE SHELFICE_SEA_LEVEL_AVG( avgSL, sum_eta, myThid )
 C     *============================================================*
 C     | SUBROUTINE SHELFICE_INIT_VARIA
 C     | o Routine to initialize SHELFICE variables.
@@ -34,6 +35,8 @@ C     - kTopC = 0
 C     - shelficemass = 0
 
       _RL avgSL
+C   KS16, put sum_eta here
+      _RL sum_eta
       INTEGER myThid
 
 CEndOfInterface
@@ -45,10 +48,13 @@ C     i,j,bi,bj - Loop counters
       _RL locsum_eta (nSx,nSy)
       _RL locsum_area (nSx,nSy)
       _RL eta_loc, area_loc
-      _RL sum_eta
+C    KS16 comment sum_eta here
+C      _RL sum_eta
       _RL sum_area
 CEOP
 
+C     KS16, initilized sum_eta to 0
+      sum_eta = 0. _d 0
       avgSL = 0. _d 0
 
       DO bj = myByLo(myThid), myByHi(myThid)
