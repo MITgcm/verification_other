@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_remeshing.F,v 1.5 2016/05/05 18:16:04 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_remeshing.F,v 1.6 2016/05/10 10:57:22 dgoldberg Exp $
 C $Name:  $
 #include "SHELFICE_OPTIONS.h"
 #ifdef ALLOW_CTRL
@@ -35,6 +35,8 @@ C     === Global variables ===
       INTEGER myThid
       INTEGER myIter
       _RL myTime
+
+
 
 
                  
