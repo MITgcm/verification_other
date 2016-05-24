@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.16 2016/05/05 18:16:04 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.17 2016/05/24 08:22:45 ksnow Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -108,9 +108,14 @@ C     drKp1, recip_drLoc
       _RL drKp1, recip_drLoc
       _RL recip_latentHeat
       _RL tmpFac
-      _RL massMin, mass, DELZ
+C      _RL massMin, mass, DELZ
+      _RL mass, DELZ
       _RL SHA,FACTOR1,FACTOR2,FACTOR3
       _RL ETA,SEALEVEL,oce_density
+C KS_dens, add massMin and EFFR, R_min, and remove above
+      _RL EFFR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL massMin(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL R_min(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef SHI_ALLOW_GAMMAFRICT
       _RL shiPr, shiSc, shiLo, recip_shiKarman, shiTwoThirds
@@ -275,38 +280,32 @@ C      KS16 ------ add ETA, initialize and in called S/R------
        ETA = 0. _d 0
        CALL SHELFICE_SEA_LEVEL_AVG( SEALEVEL, ETA, myThid )
 
+C KS_dens
+#ifdef ALLOW_STREAMICE
+       CALL SHELFICE_MASSMIN(R_min,massMin, myThid)
+
          DO j = 1-OLy, sNy+OLy
           DO i = 1-OLx, sNx+OLx
-           shelficeLoadAnomaly(i,j,bi,bj) = gravity
-     &      *( shelficeMass(i,j,bi,bj) + rhoConst*Ro_surf(i,j,bi,bj) )
-#ifdef ALLOW_STREAMICE
-
-           K = kLowC(i,j,bi,bj)
-           if (K .gt. 0) then
-            delZ = drF(kLowC(i,j,bi,bj))
-           else
-            delZ =  drF(Nr)
-           endif
-
-           massMin = oce_density
-     &      *(SEALEVEL-(R_low(i,j,bi,bj)+R_MWCT(i,j,bi,bj)))
 
            mass = shelficemass(i,j,bi,bj)
 
-           SHA=massMin/
-     &        SQRT(.01+mass**2)
+           GrdFactor(i,j,bi,bj) = tanh((massMin(i,j,bi,bj)
+     &            - mass)*1. _d 5)
 
-           FACTOR1 = ((1-sha)/2.)
-           FACTOR2 = (1+sha)/2.
-           GrdFactor(i,j,bi,bj) = tanh((massMin - mass)*4./delZ)
-
-           EFFMASS(I,J,BI,BJ)=
-     &       (FACTOR1*GrdFactor(i,j,bi,bj) + FACTOR2)*mass
-
-#endif /* ALLOW_STREAMICE */
+           IF (GrdFactor(i,j,bi,bj) .GT. 0. _d 0) THEN
+            EFFMASS(i,j,bi,bj) = mass
+            EFFR(i,j,bi,bj) = Ro_surf(i,j,bi,bj)
+           ELSE
+            EFFMASS(i,j,bi,bj) = massMin(i,j,bi,bj)
+            EFFR(i,j,bi,bj) = R_min(i,j,bi,bj)
+           ENDIF
 
           ENDDO
          ENDDO
+#endif /* ALLOW_STREAMICE */
+C KS_dens -----------------------------------------------
+
+
 #endif
 ! allow shelfice_remeshing      
 
@@ -712,8 +711,12 @@ c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
 
 #else
 
+C KS_dens
           shelficeLoadAnomaly(i,j,bi,bj) = gravity
-     &      *( EFFMASS(I,J,BI,BJ) + rhoConst*Ro_surf(i,j,bi,bj) )
+     &      *( EFFMASS(I,J,BI,BJ) + rhoConst*EFFR(i,j,bi,bj) )
+
+C          shelficeLoadAnomaly(i,j,bi,bj) = gravity
+C     &      *( EFFMASS(I,J,BI,BJ) + rhoConst*Ro_surf(i,j,bi,bj) )
 
 #endif
           ENDDO
