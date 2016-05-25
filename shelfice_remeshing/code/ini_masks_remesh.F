@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/ini_masks_remesh.F,v 1.1 2016/05/05 18:17:26 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/ini_masks_remesh.F,v 1.2 2016/05/25 13:10:42 dgoldberg Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -56,6 +56,7 @@ C     tmpfld  :: Temporary array used to compute & write Total Depth
       _RL hFacCtmp
       _RL hFacMnSz
       _RS hhm, hhp
+      _RL Rmin_tmp
 CEOP
 
 
@@ -440,6 +441,43 @@ c           IF(ks.EQ.kSurfC(i,j,bi,bj))   hhp = rSurftmp(i,j)
         ENDDO
        ENDDO
       ENDDO
+
+#ifdef NONLIN_FRSURF
+
+      DO bj=myByLo(myThid), myByHi(myThid)
+       DO bi=myBxLo(myThid), myBxHi(myThid)
+
+C-- Compute the mimimum value of r_surf (used for computing hFac_surfC)
+         DO j=1,sNy
+          DO i=1,sNx
+           ks = kSurfC(i,j,bi,bj)
+           IF (ks.LE.Nr) THEN
+             Rmin_tmp = rF(ks+1)
+             IF ( ks.EQ.kSurfW(i,j,bi,bj))
+     &          Rmin_tmp = MAX(Rmin_tmp, R_low(i-1,j,bi,bj))
+             IF ( ks.EQ.kSurfW(i+1,j,bi,bj))
+     &          Rmin_tmp = MAX(Rmin_tmp, R_low(i+1,j,bi,bj))
+             IF ( ks.EQ.kSurfS(i,j,bi,bj))
+     &          Rmin_tmp = MAX(Rmin_tmp, R_low(i,j-1,bi,bj))
+             IF ( ks.EQ.kSurfS(i,j+1,bi,bj))
+     &          Rmin_tmp = MAX(Rmin_tmp, R_low(i,j+1,bi,bj))
+
+             Rmin_surf(i,j,bi,bj) =
+     &        MAX( MAX(rF(ks+1),R_low(i,j,bi,bj)) + hFacInf*drF(ks),
+     &                                Rmin_tmp + hFacInf*drF(ks)
+     &           )
+             
+           ENDIF
+          ENDDO
+         ENDDO
+
+C-    end bi,bj loop.
+       ENDDO
+      ENDDO
+
+      CALL EXCH_XY_RL( Rmin_surf, myThid )
+
+#endif /* NONLIN_FRSURF */
 
 
 c #if

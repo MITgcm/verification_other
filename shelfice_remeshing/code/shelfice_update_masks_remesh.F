@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_update_masks_remesh.F,v 1.1 2016/05/05 18:17:26 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_update_masks_remesh.F,v 1.2 2016/05/25 13:10:42 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -75,8 +75,8 @@ C- Update etaN
              etaN(I,J,bi,bj) = etaN(I,J,bi,bj)- drF(K-1)
              etaH(I,J,bi,bj) = etaH(I,J,bi,bj)- drF(K-1)
              R_shelfIce(I,J,bi,bj) = R_shelfIce(I,J,bi,bj)+drF(K-1)
-             Rmin_surf(I,J,bi,bj) = Rmin_surf(I,J,bi,bj)+
-     &       drF(K-1)*hFacC(I,J,K-1,bi,bj)
+!             Rmin_surf(I,J,bi,bj) = Rmin_surf(I,J,bi,bj)+
+!     &       drF(K-1)*hFacC(I,J,K-1,bi,bj)
 
              uVel(I,J,K-1,bi,bj)=uVel(I,J,K,bi,bj)
              uVel(I+1,J,K-1,bi,bj)=uVel(I+1,J,K,bi,bj)
@@ -104,8 +104,8 @@ C- Update etaN
      &        hFacC(i,j,K+1,bi,bj)
               R_shelfice(I,J,bi,bj) = R_shelfice(I,J,bi,bj) -drF(K+1)*
      &        hFacC(i,j,K+1,bi,bj)
-              Rmin_surf(I,J,bi,bj) = Rmin_surf(I,J,bi,bj) -drF(K+1)*
-     &        hFacC(i,j,K+1,bi,bj)
+!              Rmin_surf(I,J,bi,bj) = Rmin_surf(I,J,bi,bj) -drF(K+1)*
+!     &        hFacC(i,j,K+1,bi,bj)
              
               vVel(I,J,K+1,bi,bj)=((vVel(I,J,K,bi,bj)*(drF(K)+
      &        etaN(I,J,bi,bj)))+(vVel(I,J,K+1,bi,bj)*drF(K+1)*
@@ -200,7 +200,7 @@ C- Update etaN
        CALL EXCH_XY_RL(EtaH,myThid)
        CALL EXCH_XY_RL(EtaHnm1,myThid)
        CALL EXCH_XY_RL(R_shelfice,myThid)
-       CALL EXCH_XY_RL(Rmin_surf,myThid)
+!       CALL EXCH_XY_RL(Rmin_surf,myThid)
        CALL EXCH_XY_RL(hFac_surfC,myThid)
 
            
