@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.17 2016/05/24 08:22:45 ksnow Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.18 2016/05/26 11:31:34 ksnow Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -292,13 +292,13 @@ C KS_dens
            GrdFactor(i,j,bi,bj) = tanh((massMin(i,j,bi,bj)
      &            - mass)*1. _d 5)
 
-           IF (GrdFactor(i,j,bi,bj) .GT. 0. _d 0) THEN
-            EFFMASS(i,j,bi,bj) = mass
-            EFFR(i,j,bi,bj) = Ro_surf(i,j,bi,bj)
-           ELSE
-            EFFMASS(i,j,bi,bj) = massMin(i,j,bi,bj)
-            EFFR(i,j,bi,bj) = R_min(i,j,bi,bj)
-           ENDIF
+           SHA=massMin(i,j,bi,bj)/
+     &        SQRT(.01+mass**2)
+           FACTOR1 = ((1-sha)/2.)
+           FACTOR2 = (1+sha)/2.
+
+           EFFMASS(I,J,BI,BJ)=
+     &       (FACTOR1*GrdFactor(i,j,bi,bj) + FACTOR2)*mass
 
           ENDDO
          ENDDO
@@ -711,12 +711,8 @@ c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
 
 #else
 
-C KS_dens
           shelficeLoadAnomaly(i,j,bi,bj) = gravity
-     &      *( EFFMASS(I,J,BI,BJ) + rhoConst*EFFR(i,j,bi,bj) )
-
-C          shelficeLoadAnomaly(i,j,bi,bj) = gravity
-C     &      *( EFFMASS(I,J,BI,BJ) + rhoConst*Ro_surf(i,j,bi,bj) )
+     &      *( EFFMASS(I,J,BI,BJ) + rhoConst*Ro_surf(i,j,bi,bj) )
 
 #endif
           ENDDO
