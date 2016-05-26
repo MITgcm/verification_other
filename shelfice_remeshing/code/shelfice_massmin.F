@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_massmin.F,v 1.1 2016/05/24 08:25:41 ksnow Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_massmin.F,v 1.2 2016/05/26 11:32:17 ksnow Exp $
 C $Name:  $
 
 C KS_dens------
@@ -45,6 +45,7 @@ C     i,j,bi,bj - Loop counters
       _RL phiHydC(Nr)
       _RL vert_rho(Nr)
       _RL drLoc, pLoad_min, sum_hFac
+      _RL SEALEVEL, ETA
 CEOP
 
 C Initialize variables
@@ -66,11 +67,16 @@ C Initialize variables
 
 C First need vertical profile of density anomaly;
       CALL SHELFICE_VERT_DENS( vert_rho, myThid )
+C Get the average open ocean ssh
+      SEALEVEL = 0. _d 0
+      ETA = 0. _d 0
+      CALL SHELFICE_SEA_LEVEL_AVG( SEALEVEL,ETA, myThid )
 C calcaulte hydrostatic pressure based on density profile
       DO k = 1,Nr
        drho(k) = vert_rho(k)
         IF (k.EQ.1) THEN
           phiHydF(k) = 0.
+C          phiHydF(k) = SEALEVEL*gravity*drho(k)*recip_rhoConst
         ENDIF
           phiHydC(k)=phiHydF(k) + halfRL*drF(k)*gravity*drho(k)
      &                                        *recip_rhoConst
@@ -88,17 +94,14 @@ C based on R_MCWT
            DO k =1,Nr
             IF ((R_min(i,j,bi,bj) .GT. rF(k+1)) .AND.
      &          (R_min(i,j,bi,bj) .LE. rF(k)))  THEN
-             drLoc = 1 - hFacC(i,j,k,bi,bj)
-             sum_hFac = 0. _d 0
-             DO k2 =k,Nr
-              sum_hFac = sum_hFac + hFacC(i,j,k2,bi,bj)*drF(k2)
-             ENDDO
+              drLoc = (rF(k)-R_min(i,j,bi,bj))/drF(k)
 
              pLoad_min = (phiHydF(k) + drLoc*
      &           (phiHydF(k+1)-phiHydF(k)))*rhoConst
+     &           + gravity*rhoConst*(drLoc*drF(k))
+
              massMin(i,j,bi,bj) = pLoad_min*recip_gravity - 
-     &            (sum_hFac+R_Low(i,j,bi,bj))*rhoConst
-             R_min(i,j,bi,bj) = sum_hFac+R_Low(i,j,bi,bj)
+     &             rF(k)*rhoConst
             ENDIF
            ENDDO
           ENDDO
