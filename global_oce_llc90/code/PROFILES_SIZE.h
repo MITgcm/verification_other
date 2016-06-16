@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/PROFILES_SIZE.h,v 1.3 2015/10/20 00:50:41 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/PROFILES_SIZE.h,v 1.4 2016/06/16 22:06:52 gforget Exp $
 C $Name:  $
 
 C============================================================
@@ -10,7 +10,7 @@ C NUM_INTERP_POINTS   :: number of points used in horizontal averaging
 C============================================================
 
       INTEGER  NOBSGLOB
-      PARAMETER ( NOBSGLOB = 200000  )
+      PARAMETER ( NOBSGLOB = 500  )
       INTEGER NFILESPROFMAX
       PARAMETER ( NFILESPROFMAX=20 )
       INTEGER NVARMAX

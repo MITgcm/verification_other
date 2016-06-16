@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/tamc.h,v 1.3 2015/10/20 00:50:41 gforget Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/tamc.h,v 1.4 2016/06/16 22:06:52 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -63,9 +63,9 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
       integer    nchklev_1
       parameter( nchklev_1      =    4 )
       integer    nchklev_2
-      parameter( nchklev_2      =  220 )
+      parameter( nchklev_2      =    8 )
       integer    nchklev_3
-      parameter( nchklev_3      =  220 )
+      parameter( nchklev_3      =    8 )
 
 c--   Note always check for the correct sizes of the common blocks!
 
@@ -115,7 +115,7 @@ c     and writing data.
       INTEGER act0, act1, act2, act3, act4
       INTEGER max0, max1, max2, max3
       INTEGER iikey, kkey, passkey, igadkey, 
-     &        itdkey, idynkey, igmkey, iptrkey
+     &        itdkey, idynkey, igmkey
 
 c     ================================================================
 c     END OF HEADER TAMC
