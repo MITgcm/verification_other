@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/CPP_OPTIONS.h,v 1.2 2016/01/22 16:09:33 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/CPP_OPTIONS.h,v 1.3 2016/07/06 18:03:40 dgoldberg Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -47,6 +47,9 @@ C          because the old code did not have no-slip BCs
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
+
+!#define ALLOW_PRESSURE_RELEASE_CODE
+
 
 C o Include/exclude code specific to the ECCO/SEALION version.
 C   AUTODIFF or EXF package.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE.h,v 1.7 2016/05/05 18:16:04 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE.h,v 1.8 2016/07/06 18:03:40 dgoldberg Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -185,6 +185,7 @@ CEOP
       LOGICAL SHELFICEDynMassOnly
       LOGICAL SHELFICEEtaSponge
       LOGICAL SHELFICE_dig_ice
+      LOGICAL SHELFICE_massmin_truedens
 C   KS16 put var here
       LOGICAL conserve_ssh
       COMMON /SHELFICE_PARMS_L/
@@ -206,6 +207,7 @@ C   KS16 put var here
      &     SHELFICEDynMassOnly,
      &     SHELFICEEtaSponge,
      &     SHELFICE_dig_ice,
+     &     SHELFICE_massmin_truedens,
 C  KS16 and here;
      &     conserve_ssh
 
