@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/obcs_balance_flow.F,v 1.1 2016/05/05 18:17:26 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/obcs_balance_flow.F,v 1.2 2016/07/06 18:03:40 dgoldberg Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -307,7 +307,6 @@ C    KS16 is adding a velocity adjustment here --------------------
 C    I need the sealevel average values, restore mean sealevel to 0 for
 C    now? Or should that be a variable too?
 #ifdef ALLOW_SHELFICE
-#ifdef ALLOW_SHELFICE_REMESHING
       IF ( conserve_ssh ) THEN
           SEALEVEL = 0. _d 0
           ETA = 0. _d 0
@@ -317,7 +316,6 @@ C    Restore the open ocean ETA sum to 0
               inFlow = inFlow + ETA/deltaT
           ENDIF
       ENDIF
-#endif /*  */
 #endif /* ALLOW_SHELFICE */
 C     KS16 end-----------------------------------------------------
 

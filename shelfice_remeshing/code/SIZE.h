@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SIZE.h,v 1.4 2016/02/29 16:05:41 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SIZE.h,v 1.5 2016/07/06 18:03:40 dgoldberg Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -37,7 +37,7 @@ C     Nr  - No. points in Z for full process domain.
       INTEGER Nr
       PARAMETER (
      &           sNx =  3,
-     &           sNy =  400,
+     &           sNy =  200,
      &           OLx =   3,
      &           OLy =   3,
      &           nSx =   1,
@@ -46,7 +46,7 @@ C     Nr  - No. points in Z for full process domain.
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
-     &           Nr  =  130)
+     &           Nr  =  90)
 
 C     MAX_OLX  - Set to the maximum overlap region size of any array
 C     MAX_OLY    that will be exchanged. Controls the sizing of exch

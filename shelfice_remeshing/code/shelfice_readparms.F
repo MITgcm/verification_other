@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_readparms.F,v 1.6 2016/05/05 18:16:04 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_readparms.F,v 1.7 2016/07/06 18:03:40 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -70,8 +70,7 @@ CEOP
      &     shiPrandtl, shiSchmidt, shiKinVisc,
      &     shelficeEtaSponge, ShelficeEtaRelax,
      &     shelfice_etarestore_spongewidth,
-     &     SHELFICE_dig_ice,
-C   KS16 add conserve_ssh
+     &     SHELFICE_dig_ice, SHELFICE_massmin_trueDens,
      &     conserve_ssh
 #ifdef ALLOW_COST
      &     , mult_shelfice
@@ -108,6 +107,7 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICEmassFile         = ' '
       SHELFICEloadAnomalyFile  = ' '
       SHELFICEMassDynTendFile  = ' '
+      SHELFICETransCoeffTFile  = ' '
       SHELFICElatentHeat       =  334.0 _d 3
       SHELFICEHeatCapacity_Cp  = 2000.0 _d 0
       rhoShelfIce              =  917.0 _d 0
@@ -130,7 +130,8 @@ C Set defaults values for parameters in SHELFICE.h
       shelficeEtaRelax         = 0.
       shelfice_etarestore_spongewidth = 0
       shelficeEtaSponge        = .false.
-      SHELFICE_dig_ice         = .true.
+      SHELFICE_dig_ice         = .false.
+      SHELFICE_massmin_trueDens = .false. 
 C    KS16 initiliase conserve_ssh
       conserve_ssh             = .false.
 C these params. are default of Holland and Jenkins (1999)

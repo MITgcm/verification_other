@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.18 2016/05/26 11:31:34 ksnow Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.19 2016/07/06 18:03:40 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -273,7 +273,7 @@ C     where this value is part of the protocol
              oce_density = streamice_density_ocean_avg
         ENDIF
 
-#ifdef ALLOW_SHELFICE_REMESHING
+#ifdef ALLOW_SHELFICE_GROUNDED_ICE
 
        SEALEVEL = 0. _d 0
 C      KS16 ------ add ETA, initialize and in called S/R------
@@ -281,8 +281,20 @@ C      KS16 ------ add ETA, initialize and in called S/R------
        CALL SHELFICE_SEA_LEVEL_AVG( SEALEVEL, ETA, myThid )
 
 C KS_dens
-#ifdef ALLOW_STREAMICE
-       CALL SHELFICE_MASSMIN(R_min,massMin, myThid)
+         IF (shelfice_massmin_trueDens) then
+           CALL SHELFICE_MASSMIN(R_min,massMin,bi,bj,myThid)
+         ELSE
+           DO j = 1-OLy, sNy+OLy
+            DO i = 1-OLx, sNx+OLx
+        
+             massMin(i,j,bi,bj) = oce_density * 
+     &        (SEALEVEL-(R_low(i,j,bi,bj)+R_MWCT(i,j,bi,bj))) 
+
+ 
+            ENDDO
+           ENDDO
+         ENDIF
+
 
          DO j = 1-OLy, sNy+OLy
           DO i = 1-OLx, sNx+OLx
@@ -302,12 +314,11 @@ C KS_dens
 
           ENDDO
          ENDDO
-#endif /* ALLOW_STREAMICE */
 C KS_dens -----------------------------------------------
 
 
 #endif
-! allow shelfice_remeshing      
+! allow shelfice_grounded_ice
 
 #ifdef SHI_USTAR_TOPDR
         IF ( SHELFICEBoundaryLayer ) THEN
@@ -446,6 +457,20 @@ C--   lower cell may not be as thick as required
           ENDDO
          ENDDO
         ENDIF
+
+#ifdef SHI_USTAR_TOPDR
+        IF ( SHELFICEBoundaryLayer ) THEN
+         DO J = 1, sNy
+          DO I = 1, sNx
+           uLoc(I,J) = 
+     &      u_topdr(I,J,bi,bj) + u_topdr(I+1,J,bi,bj)
+           vLoc(I,J) = 
+     &      v_topdr(I,J,bi,bj) + v_topdr(I,J+1,bi,bj)
+           velSq(I,J) = uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif
 
 
 
@@ -650,7 +675,7 @@ cph     &           * ( saltFreeze - sLoc(I,J) ) / saltFreeze
 #endif /*  ALLOW_SHIFWFLX_CONTROL */
 
 
-#ifdef ALLOW_SHELFICE_REMESHING
+#ifdef ALLOW_SHELFICE_GROUNDED_ICE
            freshWaterFlux = 
      &       freshWaterFlux*(GrdFactor(i,j,bi,bj)*0.5+0.5)
 #endif
@@ -704,7 +729,7 @@ c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j = 1-OLy, sNy+OLy
           DO i = 1-OLx, sNx+OLx
-#ifndef ALLOW_SHELFICE_REMESHING
+#ifndef ALLOW_SHELFICE_GROUNDED_ICE
 
           shelficeLoadAnomaly(i,j,bi,bj) = gravity
      &      *( shelficeMass(i,j,bi,bj) + rhoConst*Ro_surf(i,j,bi,bj) )
@@ -721,6 +746,8 @@ c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
        ENDDO
 c     ENDIF
 #endif /* ndef ALLOW_AUTODIFF */
+
+
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
@@ -749,6 +776,8 @@ C     Friction velocity
 #ifdef ALLOW_SHELFICE_REMESHING
        CALL DIAGNOSTICS_FILL(R_shelfice,'SHIRshel',
      &      0,1,0,1,1,myThid)
+#endif
+#ifdef ALLOW_SHELFICE_GROUNDED_ICE
        CALL DIAGNOSTICS_FILL(EFFMASS,'SHI_MEff',
      &      0,1,0,1,1,myThid)
 #endif
