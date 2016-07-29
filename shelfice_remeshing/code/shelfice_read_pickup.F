@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_read_pickup.F,v 1.5 2016/05/05 18:16:04 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_read_pickup.F,v 1.6 2016/07/29 12:44:21 ksnow Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -134,8 +134,8 @@ C---    read STREAMICE 2-D fields for restart
 #ifdef ALLOW_SHELFICE_REMESHING
         CALL READ_MFLDS_3D_RL( 'R_Shelfi', R_shelfice,
      &                                 nj, fp, 1 , myIter, myThid )
-        CALL READ_MFLDS_3D_RL( 'RMinSurf', Rmin_surf,
-     &                                 nj, fp, 1 , myIter, myThid )
+C        CALL READ_MFLDS_3D_RL( 'RMinSurf', Rmin_surf,
+C     &                                 nj, fp, 1 , myIter, myThid )
 #endif
 
 C--    end: new way to read pickup file

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_write_pickup.F,v 1.5 2016/05/05 18:16:04 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_write_pickup.F,v 1.6 2016/07/29 12:44:52 ksnow Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -91,12 +91,12 @@ C-    switch to 2-D fields:
      &                        nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'R_Shelfi'
 
-        j = j + 1
-        nj = nj-1
-
-        CALL WRITE_REC_3D_RL( fn, fp, 1, Rmin_surf,
-     &                        nj, myIter, myThid )
-        IF (j.LE.listDim) wrFldList(j) = 'RMinSurf'
+C        j = j + 1
+C        nj = nj-1
+C
+C        CALL WRITE_REC_3D_RL( fn, fp, 1, Rmin_surf,
+C     &                        nj, myIter, myThid )
+C        IF (j.LE.listDim) wrFldList(j) = 'RMinSurf'
 
 #endif
        
