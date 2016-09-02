@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.19 2016/07/06 18:03:40 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.20 2016/09/02 08:19:49 ksnow Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -389,6 +389,7 @@ c         pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*1. _d -4
            Kp1 = K+1
            IF (K.lt.Nr) then
             drKp1 = drF(K)*(1. _d 0-_hFacW(I,J,K,bi,bj))
+            drKp1 = MIN( drKp1, drF(Kp1)*_hFacW(I,J,Kp1,bi,bj))
             drKp1 = max (drKp1, 0. _d 0)
             recip_drLoc = 1.0 / 
      &       (drF(K)*_hFacW(I,J,K,bi,bj)+drKp1)
@@ -396,6 +397,10 @@ c         pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*1. _d -4
      &       (drF(K)*_hFacW(I,J,K,bi,bj)*uVel(I,J,K,bi,bj) + 
      &        drKp1*uVel(I,J,Kp1,bi,bj)) 
      &      * recip_drLoc
+C zero out u_topdr under grounded ice as uLoc is average of u_topdr
+C in adjacent cells.
+           u_topdr(i,j,bi,bj) =
+     &       u_topdr(i,j,bi,bj)*(GrdFactor(i,j,bi,bj)*0.5+0.5)
            ELSE
             u_topdr(I,J,bi,bj) = 0. _d 0
            ENDIF
@@ -404,6 +409,7 @@ c         pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*1. _d -4
            Kp1 = K+1
            IF (K.lt.Nr) then
             drKp1 = drF(K)*(1. _d 0-_hFacS(I,J,K,bi,bj))
+            drKp1 = MIN( drKp1, drF(Kp1)*_hFacS(I,J,Kp1,bi,bj))
             drKp1 = max (drKp1, 0. _d 0)
             recip_drLoc = 1.0 / 
      &       (drF(K)*_hFacS(I,J,K,bi,bj)+drKp1)
@@ -411,6 +417,10 @@ c         pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*1. _d -4
      &       (drF(K)*_hFacS(I,J,K,bi,bj)*vVel(I,J,K,bi,bj) + 
      &        drKp1*vVel(I,J,Kp1,bi,bj)) 
      &      * recip_drLoc
+C zero out v_topdr under grounded ice as uLoc is average of v_topdr
+C in adjacent cells.
+           v_topdr(i,j,bi,bj) =
+     &       v_topdr(i,j,bi,bj)*(GrdFactor(i,j,bi,bj)*0.5+0.5)
            ELSE
             v_topdr(I,J,bi,bj) = 0. _d 0
            ENDIF
@@ -462,10 +472,10 @@ C--   lower cell may not be as thick as required
         IF ( SHELFICEBoundaryLayer ) THEN
          DO J = 1, sNy
           DO I = 1, sNx
-           uLoc(I,J) = 
-     &      u_topdr(I,J,bi,bj) + u_topdr(I+1,J,bi,bj)
-           vLoc(I,J) = 
-     &      v_topdr(I,J,bi,bj) + v_topdr(I,J+1,bi,bj)
+           uLoc(I,J) = halfRL*
+     &      (u_topdr(I,J,bi,bj) + u_topdr(I+1,J,bi,bj))
+           vLoc(I,J) = halfRL*
+     &      (v_topdr(I,J,bi,bj) + v_topdr(I,J+1,bi,bj))
            velSq(I,J) = uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)
           ENDDO
          ENDDO
@@ -705,6 +715,14 @@ C--   compute surface tendencies
      &           - realFWfac*shelfIceFreshWaterFlux(I,J,bi,bj)*
      &             mass2rUnit*
      &             ( sLoc(I,J) - salt(I,J,K,bi,bj) )
+#ifdef ALLOW_SHELFICE_GROUNDED_ICE
+           shelfIceHeatFlux(i,j,bi,bj) =
+     &       shelfIceHeatFlux(i,j,bi,bj)*(GrdFactor(i,j,bi,bj)*0.5+0.5)
+           shelfIceForcingT(i,j,bi,bj) =
+     &       shelfIceForcingT(i,j,bi,bj)*(GrdFactor(i,j,bi,bj)*0.5+0.5)
+           shelfIceForcingS(i,j,bi,bj) =
+     &       shelfIceForcingS(i,j,bi,bj)*(GrdFactor(i,j,bi,bj)*0.5+0.5)
+#endif
            ELSE
             shelfIceHeatFlux      (I,J,bi,bj) = 0. _d 0
             shelfIceFreshWaterFlux(I,J,bi,bj) = 0. _d 0
