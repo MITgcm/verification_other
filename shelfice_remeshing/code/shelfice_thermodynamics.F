@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.20 2016/09/02 08:19:49 ksnow Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.21 2016/09/04 08:32:04 ksnow Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -399,8 +399,10 @@ c         pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*1. _d -4
      &      * recip_drLoc
 C zero out u_topdr under grounded ice as uLoc is average of u_topdr
 C in adjacent cells.
+#ifdef ALLOW_SHELFICE_GROUNDED_ICE
            u_topdr(i,j,bi,bj) =
      &       u_topdr(i,j,bi,bj)*(GrdFactor(i,j,bi,bj)*0.5+0.5)
+#endif
            ELSE
             u_topdr(I,J,bi,bj) = 0. _d 0
            ENDIF
@@ -419,8 +421,10 @@ C in adjacent cells.
      &      * recip_drLoc
 C zero out v_topdr under grounded ice as uLoc is average of v_topdr
 C in adjacent cells.
+#ifdef ALLOW_SHELFICE_GROUNDED_ICE
            v_topdr(i,j,bi,bj) =
      &       v_topdr(i,j,bi,bj)*(GrdFactor(i,j,bi,bj)*0.5+0.5)
+#endif
            ELSE
             v_topdr(I,J,bi,bj) = 0. _d 0
            ENDIF
@@ -472,9 +476,11 @@ C--   lower cell may not be as thick as required
         IF ( SHELFICEBoundaryLayer ) THEN
          DO J = 1, sNy
           DO I = 1, sNx
-           uLoc(I,J) = halfRL*
+           uLoc(I,J) = 
+C halfRL*
      &      (u_topdr(I,J,bi,bj) + u_topdr(I+1,J,bi,bj))
-           vLoc(I,J) = halfRL*
+           vLoc(I,J) = 
+C halfRL*
      &      (v_topdr(I,J,bi,bj) + v_topdr(I,J+1,bi,bj))
            velSq(I,J) = uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)
           ENDDO
