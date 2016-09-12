@@ -1,14 +1,9 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/profiles_readparms.F,v 1.1 2014/06/05 21:41:21 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/profiles_readparms.F,v 1.2 2016/09/12 20:02:35 mmazloff Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
-CAV(
-#ifdef ALLOW_BLING
-# include "BLING_OPTIONS.h"
-#endif
-CAV)
 
-      subroutine profiles_readparms( mythid )
+      subroutine profiles_readparms( myThid )
 
 c     ==================================================================
 c     SUBROUTINE profiles_readparms
@@ -30,18 +25,24 @@ c     == global variables ==
 #include "GRID.h"
 #include "PARAMS.h"
 
-cph#include "ecco_cost.h"
+#include "PROFILES_SIZE.h"
 #include "profiles.h"
 
 c     == routine arguments ==
 
-      integer mythid
+      integer myThid
 
 c     == local variables ==
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf      - Informational/error message buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit, num_file, num_var
+      INTEGER iUnit, num_file, num_var, IL
+      LOGICAL exst, specifiedNames
+      character*(128) fname
+
+C     !FUNCTIONS
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 c     == end of interface ==
 
@@ -50,91 +51,49 @@ c--   Read the namelist input.
      &                   profilesDir,
      &                   profilesfiles,
      &                   mult_profiles,
+     &                   prof_facmod,
+     &                   prof_names,
+     &                   prof_namesmod,
+     &                   prof_itracer,
      &                   profilesDoNcOutput,
      &                   profilesDoGenGrid
+
+      IF ( .NOT.usePROFILES ) THEN
+C-    pkg PROFILES is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.profiles is found
+         CALL PACKAGES_UNUSED_MSG( 'usePROFILES', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER( myThid )
 
 c--     Set default values.
-        profilesDir=' '
+      profilesDir=' '
 
-        do num_file=1,NFILESPROFMAX
+      do num_file=1,NFILESPROFMAX
           profilesfiles(num_file)      =    ' '
-        enddo
+      enddo
 
-        do num_file=1,NFILESPROFMAX
-         do num_var=1,NVARMAX
-          mult_profiles(num_file,num_var) = 0. _d 0
-         enddo
-        enddo
+      do num_file=1,NFILESPROFMAX
+       do num_var=1,NVARMAX
+        mult_profiles(num_file,num_var) = 1. _d 0
+        prof_facmod(num_file,num_var)  = 1. _d 0
+        prof_names(num_file,num_var)='empty'
+        prof_itracer(num_file,num_var)=1
+        prof_namesmod(num_file,num_var)='empty'
+       enddo
+      enddo
 
-      prof_names(1)='prof_T'
-      prof_names(2)='prof_S'
-      prof_names(3)='prof_U'
-      prof_names(4)='prof_V'
-      prof_names(5)='prof_ptr'
-      prof_names(6)='prof_ssh'
-      prof_namesmask(1)='prof_Tmask'
-      prof_namesmask(2)='prof_Smask'
-      prof_namesmask(3)='prof_Umask'
-      prof_namesmask(4)='prof_Vmask'
-      prof_namesmask(5)='prof_ptrmask'
-      prof_namesmask(6)='prof_sshmask'
-      prof_namesweight(1)='prof_Tweight'
-      prof_namesweight(2)='prof_Sweight'
-      prof_namesweight(3)='prof_Uweight'
-      prof_namesweight(4)='prof_Vweight'
-      prof_namesweight(5)='prof_ptrweight'
-      prof_namesweight(6)='prof_sshweight'
-CMM(
-CMM:  7=DIC 8=ALK 9=PO4 10=O2 11= FE
-CMM: DIC diags: 14=CHLA 12=PCO2 13=PH 
-      prof_names(7)='prof_DIC'
-      prof_namesmask(7)='prof_ptrmask'
-      prof_namesweight(7)='prof_DICweight'
-      prof_names(8)='prof_ALK'
-      prof_namesmask(8)='prof_ptrmask'
-      prof_namesweight(8)='prof_ALKweight'
-#ifdef NITROGEN_CURRENCY
-      prof_names(9)='prof_NO3'
-      prof_namesmask(9)='prof_ptrmask'
-      prof_namesweight(9)='prof_NO3weight'
-#else
-      prof_names(9)='prof_PO4'
-      prof_namesmask(9)='prof_ptrmask'
-      prof_namesweight(9)='prof_PO4weight'
-#endif
-      prof_names(10)='prof_O2'
-      prof_namesmask(10)='prof_ptrmask'
-      prof_namesweight(10)='prof_O2weight'
-      prof_names(11)='prof_FE'
-      prof_namesmask(11)='prof_ptrmask'
-      prof_namesweight(11)='prof_FEweight'
-      prof_names(12)='prof_PCO'
-      prof_namesmask(12)='prof_ptrmask'
-      prof_namesweight(12)='prof_PCOweight'
-      prof_names(13)='prof_PH'
-      prof_namesmask(13)='prof_ptrmask'
-      prof_namesweight(13)='prof_PHweight'
-C      prof_names(12)='prof_CHLA'
-C      prof_namesmask(12)='prof_ptrmask'
-C      prof_namesweight(12)='prof_CHLAweight'
-CMM)
       profilesDoNcOutput=.false.
-#ifdef ALLOW_PROFILES_GENERICGRID
-      profilesDoGenGrid=.true.
-#else
-      profilesDoGenGrid=.false.
-#endif
 
-CMM(      if (NVARMAX.GT.6) then
-      if (NVARMAX.GT.14) then
-CMM)
-        WRITE(msgBuf,'(A)')
-     & 'PROFILES_READPARMS: you need to define variables 7 to NVARMAX'
-        CALL PRINT_ERROR( msgBuf, myThid)
-        STOP 'ABNORMAL END: S/R PROFILES_READPARMS'
-      endif
+      IF ( (.NOT.usingSphericalPolarGrid .OR. rotateGrid) ) THEN
+        profilesDoGenGrid=.true.
+      ELSE
+        profilesDoGenGrid=.false.
+      ENDIF
 
 c--     Next, read the cost data file.
         WRITE(msgBuf,'(A)') 'PROFILES_READPARMS: opening data.profiles'
@@ -155,8 +114,110 @@ c--     Next, read the cost data file.
 
         CLOSE( iUnit )
 
-      _END_MASTER( mythid )
+        do num_file=1,NFILESPROFMAX
+
+          specifiedNames=.FALSE.
+          do num_var=1,NVARMAX
+            if (prof_names(num_file,num_var).NE.'empty')
+     &         specifiedNames=.TRUE.
+          enddo
+
+          if (.NOT.specifiedNames) then
+c            prof_names(num_file,1)='prof_T'
+c            prof_names(num_file,2)='prof_S'
+c            prof_namesmod(num_file,1)='theta'
+c            prof_namesmod(num_file,2)='salt'
+CMM(
+       prof_names(num_file,1)='prof_T'
+       prof_names(num_file,2)='prof_S'
+       prof_names(num_file,3)='prof_U'
+       prof_names(num_file,4)='prof_V'
+       prof_names(num_file,5)='prof_ptr'
+       prof_names(num_file,6)='prof_ssh'
+       prof_names(num_file,7)='prof_DIC'
+       prof_names(num_file,8)='prof_ALK'
+       prof_names(num_file,9)='prof_O2'
+       prof_names(num_file,10)='prof_NO3'
+       prof_names(num_file,11)='prof_PO4'
+       prof_names(num_file,12)='prof_FE'
+       prof_names(num_file,13)='prof_PCO'
+       prof_names(num_file,14)='prof_PH'
+       prof_names(num_file,15)='prof_CHL'
+       prof_itracer(num_file,1)=1
+       prof_itracer(num_file,2)=1
+       prof_itracer(num_file,3)=1
+       prof_itracer(num_file,4)=1
+       prof_itracer(num_file,5)=1
+       prof_itracer(num_file,6)=1
+       prof_itracer(num_file,7)=1
+       prof_itracer(num_file,8)=2
+       prof_itracer(num_file,9)=3
+       prof_itracer(num_file,10)=4
+       prof_itracer(num_file,11)=5
+       prof_itracer(num_file,12)=6
+       prof_itracer(num_file,13)=1
+       prof_itracer(num_file,14)=1
+       prof_itracer(num_file,15)=1
+       prof_namesmod(num_file,1)='theta'
+       prof_namesmod(num_file,2)='salt'
+       prof_namesmod(num_file,3)='uVel'
+       prof_namesmod(num_file,4)='vVel'
+       prof_namesmod(num_file,5)='pTracer'
+       prof_namesmod(num_file,6)='etaN'
+       prof_namesmod(num_file,7)='pTracer'
+       prof_namesmod(num_file,8)='pTracer'
+       prof_namesmod(num_file,9)='pTracer'
+       prof_namesmod(num_file,10)='pTracer'
+       prof_namesmod(num_file,11)='pTracer'
+       prof_namesmod(num_file,12)='pTracer'
+       prof_namesmod(num_file,13)='PCO'
+       prof_namesmod(num_file,14)='PH'
+       prof_namesmod(num_file,15)='CHL'
+CMM)
+          endif
+
+          do num_var=1,NVARMAX
+            if (((prof_names(num_file,num_var).NE.'empty').AND.
+     &           (prof_namesmod(num_file,num_var).EQ.'empty')).OR.
+     &          ((prof_names(num_file,num_var).EQ.'empty').AND.
+     &           (prof_namesmod(num_file,num_var).NE.'empty'))) then
+             print*,'prof_names=',prof_names(num_file,num_var),' ',
+     &         prof_namesmod(num_file,num_var),' ',num_file,num_var
+             WRITE(errorMessageUnit,'(2A)')
+     &         'ERROR in PROFILES_READPARMS: inconsistent ',
+     &         'prof_names and prof_namesmod'
+             STOP 'ABNORMAL END: S/R PROFILES_READPARMS'
+            endif
+          enddo
+
+          do num_var=1,NVARMAX
+            IL  = ILNBLNK( prof_names(num_file,num_var) )
+            WRITE(prof_namesmask(num_file,num_var),'(2A)')
+     &        prof_names(num_file,num_var)(1:IL),'mask'
+            WRITE(prof_namesweight(num_file,num_var),'(2A)')
+     &        prof_names(num_file,num_var)(1:IL),'weight'
+          enddo
+
+          if ( profilesfiles(num_file) .NE. ' ' ) then
+            IL  = ILNBLNK( profilesfiles(num_file) )
+            fname = profilesfiles(num_file)(1:IL)//'.nc'
+            inquire( file=fname, exist=exst )
+            if (.NOT.exst) then
+c warn user as we override profilesfiles
+             WRITE(msgBuf,'(3A)')
+     &       '** WARNING ** PROFILES_READPARMS: missing file: ',
+     &       profilesfiles(num_file)(1:IL),' gets switched off'
+             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+c switch off this file (and potential cost function term)
+              profilesfiles(num_file) = ' '
+            endif
+          endif
+        enddo
+
+      _END_MASTER( myThid )
 
       _BARRIER
 
-      end
+      RETURN
+      END
