@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/CTRL_SIZE.h,v 1.1 2014/06/05 21:41:20 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/CTRL_SIZE.h,v 1.2 2016/09/12 20:02:35 mmazloff Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -13,6 +13,7 @@ C
 C     maxCtrlArr2D :: number of 2-d generic init. ctrl variables
 C     maxCtrlArr3D :: number of 3-d generic init. ctrl variables
 C     maxCtrlTim2D :: number of 2-d generic tim-varying ctrl variables
+C     maxCtrlProc  :: number of pre-processing options per ctrl variable
 
       integer     maxCtrlArr2D
       parameter ( maxCtrlArr2D = 1 )
@@ -22,6 +23,9 @@ C     maxCtrlTim2D :: number of 2-d generic tim-varying ctrl variables
 
       integer     maxCtrlTim2D
       parameter ( maxCtrlTim2D = 1 )
+
+      integer     maxCtrlProc
+      parameter ( maxCtrlProc = 1 )
 
 #endif
 

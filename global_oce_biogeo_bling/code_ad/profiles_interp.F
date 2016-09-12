@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/profiles_interp.F,v 1.1 2014/06/05 21:41:21 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/profiles_interp.F,v 1.2 2016/09/12 20:02:35 mmazloff Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
+#endif
 
 C     o==========================================================o
 C     | subroutine profiles_interp                               |
@@ -12,9 +15,11 @@ C     o==========================================================o
 
       SUBROUTINE profiles_interp(
      O traj_cur_out,
-     I lon_cur,
-     I lat_cur,
-     I type_cur,
+     I i_cur,
+     I j_cur,
+     I weights_cur,
+     I var_cur,
+     I itr_cur,
      I file_cur,
      I mytime,
      I bi,
@@ -31,371 +36,124 @@ C ==================== Global Variables ===========================
 #include "DYNVARS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_CAL
-#include "cal.h"
+# include "cal.h"
+#endif
+#ifdef ALLOW_ECCO
+# include "ecco.h"
 #endif
 #ifdef ALLOW_PROFILES
+# include "PROFILES_SIZE.h"
 # include "profiles.h"
-#else
-      integer NLEVELMAX
-      parameter (NLEVELMAX=1)
 #endif
 #ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_FIELDS.h"
 #endif
 CMM(
-#ifdef ALLOW_DIC
-#include "DIC_VARS.h"
-#endif
-CMM)
-CAV(
 #ifdef ALLOW_BLING
 #include "BLING_VARS.h"
 #endif
-CAV)
+CMM)
 C ==================== Routine Variables ==========================
       _RL  mytime
       integer mythid
-      integer type_cur,file_cur 
+      integer file_cur, itr_cur
+      character*(8) var_cur
+#ifndef ALLOW_PROFILES
+      _RL  traj_cur_out, weights_cur
+      integer  i_cur, j_cur
+#else
       _RL  traj_cur_out(NLEVELMAX)
-      _RL  lon_cur,lat_cur
-CMM(
-      integer iptri
-CMM)
-#ifdef ALLOW_PROFILES
+      _RL  weights_cur(NUM_INTERP_POINTS)
+      integer  i_cur(NUM_INTERP_POINTS)
+      integer  j_cur(NUM_INTERP_POINTS)
+#endif
 
 C ==================== Local Variables ==========================
-      _RL tab_coeffs1(2,2),tab_coeffs2(2,2),tab_coeffs3(2,2)
-      _RL ponderations(2,2),pondsSUM,distance1,distance2
-      integer i,j,k,kk,kcur,bi,bj
+      _RL tab_coeffs1(NUM_INTERP_POINTS)
+      _RL tab_coeffs3(NUM_INTERP_POINTS)
+      _RL ponderations(NUM_INTERP_POINTS),pondsSUM
+      integer q,k,kk,kcur,bi,bj
       _RL traj_cur(nR),mask_cur(nR)
-      integer prof_i,prof_j
-      _RL lon_tmp1,lon_tmp2,lon_1,lon_2,lat_1,lat_2,tmp_coeff
+      _RL tmp_coeff
+
+c     == external functions ==
+      integer ILNBLNK
+      EXTERNAL ILNBLNK
+
 c--   == end of interface ==
 
-CMM(
-       iptri = 1
-CMM)
-       prof_i=-10
-       prof_j=-10
-       lon_1=-10
-       lon_2=-10
-       lat_1=-10
-       lat_2=-10
-
-        DO j=1,sNy+1
-         DO i=1,sNx+1
-
-cgf value of j, south of the data point:
-      if (type_cur.NE.4) then
-        if ((yC(i,j,bi,bj).LE.lat_cur).AND.
-     &  (yC(i,j+1,bi,bj).GT.lat_cur)) then
-          prof_j=j
-          lat_1=yC(i,j,bi,bj)
-          lat_2=yC(i,j+1,bi,bj)
-        else
-          prof_j=prof_j
-          lat_1=lat_1
-          lat_2=lat_2
-        endif
-      else
-        if ((yG(i,j,bi,bj).LE.lat_cur).AND.
-     &  (yG(i,j+1,bi,bj).GT.lat_cur)) then
-          prof_j=j
-          lat_1=yG(i,j,bi,bj)
-          lat_2=yG(i,j+1,bi,bj)
-        else
-          prof_j=prof_j
-          lat_1=lat_1
-          lat_2=lat_2
-        endif
-      endif
-
-cgf value of i, west of the data point:
-      if (type_cur.NE.3) then
-         if (xC(i+1,j,bi,bj).LT.xC(1,j,bi,bj)) then
-         lon_tmp2=xC(i+1,j,bi,bj)+360
-         else
-         lon_tmp2=xC(i+1,j,bi,bj)
-         endif
-         if (xC(i,j,bi,bj).LT.xC(1,j,bi,bj)) then
-         lon_tmp1=xC(i,j,bi,bj)+360
-         else
-         lon_tmp1=xC(i,j,bi,bj)
-         endif
-      else
-         if (xG(i+1,j,bi,bj).LT.xG(1,j,bi,bj)) then
-         lon_tmp2=xG(i+1,j,bi,bj)+360
-         else
-         lon_tmp2=xG(i+1,j,bi,bj)
-         endif
-         if (xG(i,j,bi,bj).LT.xG(1,j,bi,bj)) then
-         lon_tmp1=xG(i,j,bi,bj)+360
-         else
-         lon_tmp1=xG(i,j,bi,bj)
-         endif
-      endif 
-      if ((lon_tmp1.LE.lon_cur).AND.
-     &(lon_tmp2.GT.lon_cur)) then
-         prof_i=i
-         lon_1=lon_tmp1
-         lon_2=lon_tmp2
-      else
-         prof_i=prof_i
-         lon_1=lon_1
-         lon_2=lon_2
-      endif
-
-        ENDDO
-       ENDDO
-
-
-      if ((prof_i.NE.-10).AND.(prof_j.NE.-10)) then
-cgf) spatial interpolation 
-
-        distance1=(lat_cur-lat_1)/(lat_2-lat_1)
-        distance2=(lon_cur-lon_1)/(lon_2-lon_1) 
-        tab_coeffs2(1,1)=(1-distance2)*(1-distance1)
-        tab_coeffs2(1,2)=distance2*(1-distance1)
-        tab_coeffs2(2,1)=(1-distance2)*distance1
-        tab_coeffs2(2,2)=distance2*distance1
-
-       do k=1,nr
-       if (type_cur.EQ.1) then
-               tab_coeffs1(1,1)=theta(prof_i,prof_j,k,bi,bj) !SO
-               tab_coeffs1(1,2)=theta(prof_i+1,prof_j,k,bi,bj) !SE
-               tab_coeffs1(2,1)=theta(prof_i,prof_j+1,k,bi,bj) !NO
-               tab_coeffs1(2,2)=theta(prof_i+1,prof_j+1,k,bi,bj) !NZ              
-               tab_coeffs3(1,1)=maskC(prof_i,prof_j,k,bi,bj) !SO
-               tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,k,bi,bj) !SE
-               tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,k,bi,bj) !NO
-               tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,k,bi,bj) !NZ
-       elseif (type_cur.EQ.2) then
-               tab_coeffs1(1,1)=salt(prof_i,prof_j,k,bi,bj) !SO
-               tab_coeffs1(1,2)=salt(prof_i+1,prof_j,k,bi,bj) !SE
-               tab_coeffs1(2,1)=salt(prof_i,prof_j+1,k,bi,bj) !NO
-               tab_coeffs1(2,2)=salt(prof_i+1,prof_j+1,k,bi,bj) !NZ         
-               tab_coeffs3(1,1)=maskC(prof_i,prof_j,k,bi,bj) !SO
-               tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,k,bi,bj) !SE
-               tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,k,bi,bj) !NO
-               tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,k,bi,bj) !NZ
-       elseif (type_cur.EQ.3) then
-               tab_coeffs1(1,1)=uVel(prof_i,prof_j,k,bi,bj) !SO
-               tab_coeffs1(1,2)=uVel(prof_i+1,prof_j,k,bi,bj) !SE
-               tab_coeffs1(2,1)=uVel(prof_i,prof_j+1,k,bi,bj) !NO
-               tab_coeffs1(2,2)=uVel(prof_i+1,prof_j+1,k,bi,bj) !NZ
-               tab_coeffs3(1,1)=maskW(prof_i,prof_j,k,bi,bj) !SO 
-               tab_coeffs3(1,2)=maskW(prof_i+1,prof_j,k,bi,bj) !SE
-               tab_coeffs3(2,1)=maskW(prof_i,prof_j+1,k,bi,bj) !NO
-               tab_coeffs3(2,2)=maskW(prof_i+1,prof_j+1,k,bi,bj) !NZ 
-       elseif (type_cur.EQ.4) then
-               tab_coeffs1(1,1)=vVel(prof_i,prof_j,k,bi,bj) !SO
-               tab_coeffs1(1,2)=vVel(prof_i+1,prof_j,k,bi,bj) !SE
-               tab_coeffs1(2,1)=vVel(prof_i,prof_j+1,k,bi,bj) !NO
-               tab_coeffs1(2,2)=vVel(prof_i+1,prof_j+1,k,bi,bj) !NZ
-               tab_coeffs3(1,1)=maskS(prof_i,prof_j,k,bi,bj) !SO 
-               tab_coeffs3(1,2)=maskS(prof_i+1,prof_j,k,bi,bj) !SE
-               tab_coeffs3(2,1)=maskS(prof_i,prof_j+1,k,bi,bj) !NO
-               tab_coeffs3(2,2)=maskS(prof_i+1,prof_j+1,k,bi,bj) !NZ 
-       elseif (type_cur.EQ.5) then
+c horizontal interpolation:
+      do k=1,nr
+        pondsSUM=0. _d 0
+        do q=1,NUM_INTERP_POINTS
+        if (var_cur.EQ.'theta') then
+               tab_coeffs1(q)=theta(i_cur(q),j_cur(q),k,bi,bj)
+        elseif (var_cur.EQ.'salt') then
+               tab_coeffs1(q)=salt(i_cur(q),j_cur(q),k,bi,bj)
+        elseif (var_cur.EQ.'pTracer') then
 #ifdef ALLOW_PTRACERS
-cgf if this gets used, an additional common block could be defined, containing
-cgf the pTracer number (now 1, hard-coded), that would be read from the .nc input file
-c               tab_coeffs1(1,1)=pTracer(prof_i,prof_j,k,bi,bj,1) !SO
-c               tab_coeffs1(1,2)=pTracer(prof_i+1,prof_j,k,bi,bj,1) !SE
-c               tab_coeffs1(2,1)=pTracer(prof_i,prof_j+1,k,bi,bj,1) !NO
-c               tab_coeffs1(2,2)=pTracer(prof_i+1,prof_j+1,k,bi,bj,1) !NZ
-CAV( generic tracer is now tracer 7
-               tab_coeffs1(1,1)=pTracer(prof_i,prof_j,k,bi,bj,7) !SO
-               tab_coeffs1(1,2)=pTracer(prof_i+1,prof_j,k,bi,bj,7) !SE
-               tab_coeffs1(2,1)=pTracer(prof_i,prof_j+1,k,bi,bj,7) !NO
-               tab_coeffs1(2,2)=pTracer(prof_i+1,prof_j+1,k,bi,bj,7) !NZ
-CAV)
+               tab_coeffs1(q)=pTracer(i_cur(q),j_cur(q),k,bi,bj,
+     &            itr_cur)
 #else
-               tab_coeffs1(1,1)=0 !SO
-               tab_coeffs1(1,2)=0 !SE
-               tab_coeffs1(2,1)=0 !NO
-               tab_coeffs1(2,2)=0 !NZ
+               tab_coeffs1(q)=0. _d 0
 #endif
-               tab_coeffs3(1,1)=maskC(prof_i,prof_j,k,bi,bj) !SO
-               tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,k,bi,bj) !SE
-               tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,k,bi,bj) !NO
-               tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,k,bi,bj) !NZ
-       elseif (type_cur.EQ.6) then
-               tab_coeffs1(1,1)=etan(prof_i,prof_j,bi,bj) !SO
-               tab_coeffs1(1,2)=etan(prof_i+1,prof_j,bi,bj) !SE
-               tab_coeffs1(2,1)=etan(prof_i,prof_j+1,bi,bj) !NO
-               tab_coeffs1(2,2)=etan(prof_i+1,prof_j+1,bi,bj) !NZ
-               tab_coeffs3(1,1)=maskC(prof_i,prof_j,1,bi,bj) !SO
-               tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,1,bi,bj) !SE
-               tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,1,bi,bj) !NO
-               tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,1,bi,bj) !NZ
-CMM( 
-#ifdef ALLOW_PTRACERS
-CMM: BLING tracers:  7=DIC 8=ALK 9=NUT 10=O2 11=FE
-CMM: BLING diags:    12=PCO2 13=PH 14=CHL 
-C               if (type_cur.EQ. 7) iptri = 1
-C               if (type_cur.EQ. 8) iptri = 2 
-C               if (type_cur.EQ. 9) iptri = 3
-C               if (type_cur.EQ.10) iptri = 5
-C               if (type_cur.EQ.11) iptri = 6
 
-        elseif (type_cur.EQ.7) then
-               tab_coeffs1(1,1)=pTracer(prof_i,prof_j,k,bi,bj,1) !SO
-               tab_coeffs1(1,2)=pTracer(prof_i+1,prof_j,k,bi,bj,1) !SE
-               tab_coeffs1(2,1)=pTracer(prof_i,prof_j+1,k,bi,bj,1) !NO
-               tab_coeffs1(2,2)=pTracer(prof_i+1,prof_j+1,k,bi,bj,1) !NZ
+CMM(
+#ifdef ALLOW_BLING
+        elseif (var_cur.EQ.'PCO') then
+               tab_coeffs1(q)=pCO2(i_cur(q),j_cur(q),bi,bj)
+        elseif (var_cur.EQ.'PH') then
+               tab_coeffs1(q)=pH(i_cur(q),j_cur(q),k,bi,bj)
+        elseif (var_cur.EQ.'CHL') then
+               tab_coeffs1(q)=CHL(i_cur(q),j_cur(q),k,bi,bj)
+#endif
+CMM)
 
-               tab_coeffs3(1,1)=maskC(prof_i,prof_j,k,bi,bj) !SO
-               tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,k,bi,bj) !SE
-               tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,k,bi,bj) !NO
-               tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,k,bi,bj) !NZ
-
-        elseif (type_cur.EQ.8) then
-               tab_coeffs1(1,1)=pTracer(prof_i,prof_j,k,bi,bj,2) !SO
-               tab_coeffs1(1,2)=pTracer(prof_i+1,prof_j,k,bi,bj,2) !SE
-               tab_coeffs1(2,1)=pTracer(prof_i,prof_j+1,k,bi,bj,2) !NO
-               tab_coeffs1(2,2)=pTracer(prof_i+1,prof_j+1,k,bi,bj,2) !NZ
-
-               tab_coeffs3(1,1)=maskC(prof_i,prof_j,k,bi,bj) !SO
-               tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,k,bi,bj) !SE
-               tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,k,bi,bj) !NO
-               tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,k,bi,bj) !NZ
-
-        elseif (type_cur.EQ.9) then
-               tab_coeffs1(1,1)=pTracer(prof_i,prof_j,k,bi,bj,3) !SO
-               tab_coeffs1(1,2)=pTracer(prof_i+1,prof_j,k,bi,bj,3) !SE
-               tab_coeffs1(2,1)=pTracer(prof_i,prof_j+1,k,bi,bj,3) !NO
-               tab_coeffs1(2,2)=pTracer(prof_i+1,prof_j+1,k,bi,bj,3) !NZ
-
-               tab_coeffs3(1,1)=maskC(prof_i,prof_j,k,bi,bj) !SO
-               tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,k,bi,bj) !SE
-               tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,k,bi,bj) !NO
-               tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,k,bi,bj) !NZ
-
-        elseif (type_cur.EQ.10) then
-               tab_coeffs1(1,1)=pTracer(prof_i,prof_j,k,bi,bj,5) !SO
-               tab_coeffs1(1,2)=pTracer(prof_i+1,prof_j,k,bi,bj,5) !SE
-               tab_coeffs1(2,1)=pTracer(prof_i,prof_j+1,k,bi,bj,5) !NO
-               tab_coeffs1(2,2)=pTracer(prof_i+1,prof_j+1,k,bi,bj,5) !NZ
-
-               tab_coeffs3(1,1)=maskC(prof_i,prof_j,k,bi,bj) !SO
-               tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,k,bi,bj) !SE
-               tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,k,bi,bj) !NO
-               tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,k,bi,bj) !NZ
-
-        elseif (type_cur.EQ.11) then
-               tab_coeffs1(1,1)=pTracer(prof_i,prof_j,k,bi,bj,6) !SO
-               tab_coeffs1(1,2)=pTracer(prof_i+1,prof_j,k,bi,bj,6) !SE
-               tab_coeffs1(2,1)=pTracer(prof_i,prof_j+1,k,bi,bj,6) !NO
-               tab_coeffs1(2,2)=pTracer(prof_i+1,prof_j+1,k,bi,bj,6) !NZ
-               
-               tab_coeffs3(1,1)=maskC(prof_i,prof_j,k,bi,bj) !SO
-               tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,k,bi,bj) !SE
-               tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,k,bi,bj) !NO
-               tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,k,bi,bj) !NZ
-
-        elseif (type_cur.EQ.12) then
-               tab_coeffs1(1,1)=pCO2(prof_i,prof_j,bi,bj) !SO
-               tab_coeffs1(1,2)=pCO2(prof_i+1,prof_j,bi,bj) !SE
-               tab_coeffs1(2,1)=pCO2(prof_i,prof_j+1,bi,bj) !NO
-               tab_coeffs1(2,2)=pCO2(prof_i+1,prof_j+1,bi,bj) !NZ
-
-               tab_coeffs3(1,1)=maskC(prof_i,prof_j,1,bi,bj) !SO
-               tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,1,bi,bj) !SE
-               tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,1,bi,bj) !NO
-               tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,1,bi,bj) !NZ
-
-        elseif (type_cur.EQ.13) then
-               tab_coeffs1(1,1)=pH(prof_i,prof_j,k,bi,bj) !SO
-               tab_coeffs1(1,2)=pH(prof_i+1,prof_j,k,bi,bj) !SE
-               tab_coeffs1(2,1)=pH(prof_i,prof_j+1,k,bi,bj) !NO
-               tab_coeffs1(2,2)=pH(prof_i+1,prof_j+1,k,bi,bj) !NZ
-
-               tab_coeffs3(1,1)=maskC(prof_i,prof_j,k,bi,bj) !SO
-               tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,k,bi,bj) !SE
-               tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,k,bi,bj) !NO
-               tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,k,bi,bj) !NZ
-
-CMM need to implement CHL
-
-CMM)          
+#ifdef ALLOW_ECCO
+        elseif (var_cur.EQ.'eta') then
+               tab_coeffs1(q)=m_eta(i_cur(q),j_cur(q),bi,bj)
+        elseif (var_cur.EQ.'UE') then
+               tab_coeffs1(q)=m_UE(i_cur(q),j_cur(q),k,bi,bj)
+        elseif (var_cur.EQ.'VN') then
+               tab_coeffs1(q)=m_VN(i_cur(q),j_cur(q),k,bi,bj)
 #endif
         else
-               tab_coeffs1(1,1)=0.
-               tab_coeffs1(2,1)=0.
-               tab_coeffs1(1,2)=0.
-               tab_coeffs1(2,2)=0.
-               tab_coeffs3(1,1)=0.
-               tab_coeffs3(2,1)=0.
-               tab_coeffs3(1,2)=0.
-               tab_coeffs3(2,2)=0.
+               tab_coeffs1(q)=0. _d 0
         endif
+        tab_coeffs3(q)=maskC(i_cur(q),j_cur(q),k,bi,bj)
 
-        ponderations(1,1)=tab_coeffs3(1,1)*tab_coeffs2(1,1)
-        ponderations(1,2)=tab_coeffs3(1,2)*tab_coeffs2(1,2)
-        ponderations(2,1)=tab_coeffs3(2,1)*tab_coeffs2(2,1)
-        ponderations(2,2)=tab_coeffs3(2,2)*tab_coeffs2(2,2)
-        pondsSUM=ponderations(1,1)+ponderations(2,1)+ponderations(1,2)+
-     &  ponderations(2,2)
-
-
-CAV( zero-out weight when in shallow water
-       if ( abs(R_low(prof_i,prof_j,bi,bj)).lt.51  ) then
-        pondsSUM = 0.
-       endif 
-CAV)
+        ponderations(q)=tab_coeffs3(q)*weights_cur(q)
+        pondsSUM=pondsSUM+ponderations(q)
+        enddo
 
         if (pondsSUM.GT.0) then
-         tab_coeffs1(1,1)=tab_coeffs1(1,1)*ponderations(1,1)/pondsSUM
-         tab_coeffs1(1,2)=tab_coeffs1(1,2)*ponderations(1,2)/pondsSUM
-         tab_coeffs1(2,1)=tab_coeffs1(2,1)*ponderations(2,1)/pondsSUM
-         tab_coeffs1(2,2)=tab_coeffs1(2,2)*ponderations(2,2)/pondsSUM
-         traj_cur(k)=tab_coeffs1(1,1)+tab_coeffs1(2,1)+
-     &   tab_coeffs1(1,2)+tab_coeffs1(2,2)   
-         mask_cur(k)=1
+         traj_cur(k)=0. _d 0
+         mask_cur(k)=1. _d 0
+         do q=1,NUM_INTERP_POINTS
+           traj_cur(k)=traj_cur(k)
+     &     +tab_coeffs1(q)*ponderations(q)/pondsSUM
+         enddo
         else
-         traj_cur(k)=0
-         mask_cur(k)=0
+         traj_cur(k)=0. _d 0
+         mask_cur(k)=0. _d 0
         endif
-       enddo
+      enddo
 
-      else  
-       do k=1,nr 
-         traj_cur(k)=0
-         mask_cur(k)=0
-       enddo
-      endif
-
-cgf vertical interpolation:
+c vertical interpolation:
       do kk=1,NLEVELMAX
          traj_cur_out(kk)=0
          prof_mask1D_cur(kk,bi,bj)=0
       enddo
-
-CAV( pCO2: 2D field, only consider obs within first layer
-c      if (type_cur.EQ.12) then
-c       do kk=1,ProfDepthNo(file_cur,bi,bj)
-c        if (prof_depth(file_cur,1,bi,bj).LT.-rF(1)) then
-c          traj_cur_out(kk)=traj_cur(1)
-c          prof_mask1D_cur(kk,bi,bj)=mask_cur(1)
-c        else
-c          traj_cur_out(kk)=0
-c          prof_mask1D_cur(kk,bi,bj)=0
-c        endif
-c       enddo
-c      else
-CAV)
-
       do kk=1,ProfDepthNo(file_cur,bi,bj)
-c case 1: above first grid center=> first grid center value 
+c case 1: above first grid center=> first grid center value
         if (prof_depth(file_cur,kk,bi,bj).LT.-rC(1)) then
           traj_cur_out(kk)=traj_cur(1)
           prof_mask1D_cur(kk,bi,bj)=mask_cur(1)
 c case 2: just below last grid center=> last cell value
         elseif (prof_depth(file_cur,kk,bi,bj).GE.-rC(nr)) then
-          if ( prof_depth(file_cur,kk,bi,bj) .LT. 
-     &    (-rC(nr)+drC(nr)/2) ) then  
+          if ( prof_depth(file_cur,kk,bi,bj) .LT.
+     &    (-rC(nr)+drC(nr)/2) ) then
             traj_cur_out(kk)=traj_cur(nr)
             prof_mask1D_cur(kk,bi,bj)=mask_cur(nr)
           endif
@@ -433,11 +191,5 @@ c  subcase 2: only 1 wet point just above=>upper cell value
         endif
       enddo
 
-CAV(
-c      endif
-CAV)
-
-#endif
-
-      end
-
+      RETURN
+      END

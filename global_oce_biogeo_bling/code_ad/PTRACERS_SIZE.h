@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/PTRACERS_SIZE.h,v 1.1 2014/06/05 21:41:20 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/PTRACERS_SIZE.h,v 1.2 2016/09/12 20:02:35 mmazloff Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -16,7 +16,7 @@ C  and is set here (default 1)
 C
 C     Number of tracers
       INTEGER PTRACERS_num
-      PARAMETER(PTRACERS_num = 7 )
+      PARAMETER(PTRACERS_num = 8 )
 
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER    iptrkey
