@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/CTRL_SIZE.h,v 1.2 2016/09/12 20:02:35 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/CTRL_SIZE.h,v 1.3 2016/09/14 21:17:36 mmazloff Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -19,7 +19,7 @@ C     maxCtrlProc  :: number of pre-processing options per ctrl variable
       parameter ( maxCtrlArr2D = 1 )
 
       integer     maxCtrlArr3D
-      parameter ( maxCtrlArr3D = 6 )
+      parameter ( maxCtrlArr3D = 8 )
 
       integer     maxCtrlTim2D
       parameter ( maxCtrlTim2D = 1 )
