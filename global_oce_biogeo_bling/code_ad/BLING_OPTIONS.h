@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/BLING_OPTIONS.h,v 1.2 2016/09/12 20:02:35 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/BLING_OPTIONS.h,v 1.3 2016/09/30 16:41:10 mmazloff Exp $
 C $Name:  $
 
 #ifndef BLING_OPTIONS_H
@@ -32,7 +32,7 @@ c #undef  USE_EXFCO2
 
 c Simplify some parts of the code that are problematic 
 c when using the adjoint
-#undef  BLING_ADJOINT_SAFE
+#define  BLING_ADJOINT_SAFE
 
 #endif /* ALLOW_BLING */
 #endif /* BLING_OPTIONS_H */
