@@ -8,7 +8,6 @@ cvs co -P -d global_oce_cs32 MITgcm_contrib/verification_other/global_oce_cs32
 cd global_oce_cs32
 
 ln -s code code_ad
-cvs co -P -d input_fields MITgcm_contrib/gael/verification/global_oce_cs32/input_fields
 wget http://mitgcm.org/~gforget/core2_cnyf.tar
 tar xf core2_cnyf.tar
 \rm -f core2_cnyf.tar
