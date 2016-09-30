@@ -9,7 +9,7 @@ cd global_oce_llc90
 
 ln -s code code_ad
 
-cvs co -P -d input_fields MITgcm_contrib/gael/verification/global_oce_llc90/input_fields
+cvs co -P -d input_fields MITgcm_contrib/gael/verification/ECCO_v4_r2/input_fields
 
 cd input_fields
 ./gunzip_files
