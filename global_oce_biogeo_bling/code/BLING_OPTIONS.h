@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code/BLING_OPTIONS.h,v 1.4 2016/10/20 15:39:53 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code/BLING_OPTIONS.h,v 1.5 2016/11/16 18:23:41 mmazloff Exp $
 C $Name:  $
 
 #ifndef BLING_OPTIONS_H
@@ -42,6 +42,8 @@ c For exf undefined cannot use exf fields
 c  this one ok. In FFIELDS.h. #undef USE_EXFQSW
 #endif
 
+c  apply remineralization from diel vertical migration
+#define USE_BLING_DVM
 c In the DVM routine, assume fixed mixed layer depth 
 c (so no need to calc MLD in bling_production)
 #undef FIXED_MLD_DVM
