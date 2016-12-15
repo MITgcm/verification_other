@@ -15,14 +15,14 @@ cd input_fields
 ./gunzip_files
 cd ..
 
-wget http://mitgcm.org/~gforget/global_oce_input_fields.tar.gz
+wget ftp://mit.ecco-group.org/ecco_for_las/version_4/checkpoints/global_oce_input_fields.tar.gz
 gunzip global_oce_input_fields.tar.gz
 tar xf global_oce_input_fields.tar
 \rm -f global_oce_input_fields.tar
 
 mv global_oce_input_fields input_verifs
 
-wget http://mitgcm.org/~gforget/core2_cnyf.tar
+wget ftp://mit.ecco-group.org/ecco_for_las/version_4/checkpoints/core2_cnyf.tar
 tar xf core2_cnyf.tar
 \rm -f core2_cnyf.tar
 
@@ -31,6 +31,7 @@ mv core2_cnyf input_verifs/.
 cd ..
 
 #history:
+#2016/12/15   Gael Forget         get tar balls from ftp://mit.ecco-group.org rather than http://mitgcm.org
 #2016/09/26   Gael Forget         mv global_oce_input_fields to input_verifs inside global_oce_llc90
 #2016/09/26   Gael Forget         add wget core2_cnyf.tar
 #2016/09/26   Gael Forget         remove cs32 related commands
