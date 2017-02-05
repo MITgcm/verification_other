@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_massmin.F,v 1.2 2016/05/26 11:32:17 ksnow Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_massmin.F,v 1.3 2017/02/05 15:48:45 dgoldberg Exp $
 C $Name:  $
 
 C KS_dens------
@@ -6,7 +6,7 @@ C KS_dens------
 #include "SHELFICE_OPTIONS.h"
 
 CBOP
-      SUBROUTINE SHELFICE_MASSMIN( R_min, massMin, myThid )
+      SUBROUTINE SHELFICE_MASSMIN( R_min, massMin, bi, bj, myThid )
 C     *============================================================*
 C     | SUBROUTINE SHELFICE_MASSMIN
 C     | o Routine to determine the minimum mass based on MCWT
@@ -32,6 +32,8 @@ C     under the grounded ice.
 
       _RL massMin(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL R_min(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER bi
+      INTEGER bj
       INTEGER myThid
 
 CEndOfInterface
@@ -39,7 +41,7 @@ CEndOfInterface
 #ifdef ALLOW_SHELFICE
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
-      INTEGER i, j, k, bi, bj, k2
+      INTEGER i, j, k, k2
       _RL drho (Nr)
       _RL phiHydF(Nr+1)
       _RL phiHydC(Nr)
@@ -55,15 +57,11 @@ C Initialize variables
       DO k=1,Nr
        vert_rho(k) = 0 _d 0
       ENDDO
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           massMin(i,j,bi,bj) = 0 _d 0
          ENDDO
         ENDDO
-       ENDDO
-      ENDDO
 
 C First need vertical profile of density anomaly;
       CALL SHELFICE_VERT_DENS( vert_rho, myThid )
@@ -82,15 +80,13 @@ C          phiHydF(k) = SEALEVEL*gravity*drho(k)*recip_rhoConst
      &                                        *recip_rhoConst
           phiHydF(k+1)=phiHydC(k) + halfRL*drF(k)*gravity*drho(k)
      &                                        *recip_rhoConst
-       ENDDO
+      ENDDO
 
 C calculate the level of minimum pressure and from that massMin
 C based on R_MCWT
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           R_min(i,j,bi,bj)=R_Low(i,j,bi,bi)+R_MWCT(i,j,bi,bj)
+         DO j=1,sNy
+          DO i=1,sNx
+           R_min(i,j,bi,bj)=R_Low(i,j,bi,bj)+R_MWCT(i,j,bi,bj)
            DO k =1,Nr
             IF ((R_min(i,j,bi,bj) .GT. rF(k+1)) .AND.
      &          (R_min(i,j,bi,bj) .LE. rF(k)))  THEN
@@ -106,8 +102,7 @@ C based on R_MCWT
            ENDDO
           ENDDO
          ENDDO
-        ENDDO
-       ENDDO
+
 
 #endif /* ALLOW_SHELFICE */
 
