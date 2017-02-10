@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_massmin.F,v 1.3 2017/02/05 15:48:45 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_massmin.F,v 1.4 2017/02/10 18:52:46 dgoldberg Exp $
 C $Name:  $
 
 C KS_dens------
@@ -6,7 +6,7 @@ C KS_dens------
 #include "SHELFICE_OPTIONS.h"
 
 CBOP
-      SUBROUTINE SHELFICE_MASSMIN( R_min, massMin, bi, bj, myThid )
+      SUBROUTINE SHELFICE_MASSMIN( R_min, massMin, myThid )
 C     *============================================================*
 C     | SUBROUTINE SHELFICE_MASSMIN
 C     | o Routine to determine the minimum mass based on MCWT
@@ -84,6 +84,8 @@ C          phiHydF(k) = SEALEVEL*gravity*drho(k)*recip_rhoConst
 
 C calculate the level of minimum pressure and from that massMin
 C based on R_MCWT
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
            R_min(i,j,bi,bj)=R_Low(i,j,bi,bj)+R_MWCT(i,j,bi,bj)
@@ -102,6 +104,8 @@ C based on R_MCWT
            ENDDO
           ENDDO
          ENDDO
+        ENDDO
+       ENDDO
 
 
 #endif /* ALLOW_SHELFICE */
