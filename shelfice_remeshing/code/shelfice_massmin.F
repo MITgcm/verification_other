@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_massmin.F,v 1.4 2017/02/10 18:52:46 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_massmin.F,v 1.5 2017/02/12 13:34:10 dgoldberg Exp $
 C $Name:  $
 
 C KS_dens------
@@ -57,11 +57,15 @@ C Initialize variables
       DO k=1,Nr
        vert_rho(k) = 0 _d 0
       ENDDO
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           massMin(i,j,bi,bj) = 0 _d 0
          ENDDO
         ENDDO
+       ENDDO
+      ENDDO
 
 C First need vertical profile of density anomaly;
       CALL SHELFICE_VERT_DENS( vert_rho, myThid )
