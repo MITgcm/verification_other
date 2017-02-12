@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_vert_dens.F,v 1.1 2016/05/24 08:26:37 ksnow Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_vert_dens.F,v 1.2 2017/02/12 13:34:10 dgoldberg Exp $
 C $Name:  $
 
 C KS_dens------
@@ -58,8 +58,6 @@ C     initilized variables
       ENDDO
 
       DO k = 1,Nr
-       locsum_dens(bi,bj) = 0. _d 0
-       locsum_thick(bi,bj) = 0. _d 0
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j = 1, sNy
