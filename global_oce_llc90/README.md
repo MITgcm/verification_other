@@ -1,7 +1,7 @@
 
 #object: directions to install the global_oce_llc90 verification experiments
 
-cd MITgcm/verification/ 
+cd MITgcm/verification
 
 cvs co -P -d global_oce_llc90 MITgcm_contrib/verification_other/global_oce_llc90
 
@@ -20,7 +20,8 @@ gunzip global_oce_input_fields.tar.gz
 tar xf global_oce_input_fields.tar
 \rm -f global_oce_input_fields.tar
 
-mv global_oce_input_fields input_verifs
+mv global_oce_input_fields/* input_verifs
+rmdir global_oce_input_fields
 
 wget ftp://mit.ecco-group.org/ecco_for_las/version_4/checkpoints/core2_cnyf.tar
 tar xf core2_cnyf.tar
