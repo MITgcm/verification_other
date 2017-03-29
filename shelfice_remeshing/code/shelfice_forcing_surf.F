@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_forcing_surf.F,v 1.4 2016/05/05 18:16:04 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_forcing_surf.F,v 1.5 2017/03/29 09:20:16 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -93,6 +93,8 @@ C     (calling SHELFICE_FORCING_T & _S from APPLY_FORCING_T & _S)
           ENDDO
          ENDDO
 
+        ENDIF
+
         IF ( useRealFreshWaterFlux.and.
      &    (SHELFICErealFWflux.or.(.not.shelficeboundarylayer))) THEN
 #ifdef ALLOW_AUTODIFF
@@ -107,10 +109,12 @@ c           ENDIF
            ENDDO
           ENDDO
 #endif /* ALLOW_AUTODIFF */
-         ENDIF
+        ENDIF
+
+
 
 C--   end if not SHELFICEboundaryLayer
-        ENDIF
+!        ENDIF
 
 #ifdef EXACT_CONSERV
         IF ( staggerTimeStep ) THEN
