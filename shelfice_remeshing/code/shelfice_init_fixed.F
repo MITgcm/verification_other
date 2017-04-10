@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_init_fixed.F,v 1.5 2016/03/01 10:35:25 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_init_fixed.F,v 1.6 2017/04/10 23:55:33 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -45,9 +45,11 @@ C     i, j, bi, bj :: Loop counters
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
 #endif /* ALLOW_DIAGNOSTICS */
-#if  (defined (ALLOW_SHIFWFLX_COST_CONTRIBUTION) && \
-      defined (ALLOW_SHIFWFLX_CONTROL))
+#ifdef ALLOW_SHIFWFLX_CONTROL
+      INTEGER k
+# ifdef ALLOW_SHIFWFLX_COST_CONTRIBUTION
       _RL dummy
+# endif
 #endif
 
 #ifdef ALLOW_MNC
@@ -82,6 +84,36 @@ C-----------------------------------------------------------------------
         ENDDO
        ENDDO
       ENDDO
+
+#ifdef ALLOW_SHIFWFLX_CONTROL
+C     maskSHI is a hack to play along with the general ctrl-package
+C     infrastructure, where only the k=1 layer of a 3D mask is used
+C     for 2D fields. We cannot use maskInC instead, because routines
+C     like ctrl_get_gen and ctrl_set_unpack_xy require 3D masks.
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           maskSHI(i,j,k,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           IF ( R_shelfIce(i,j,bi,bj).LT.zeroRS
+     &          .AND. hFacC(i,j,k,bi,bj).NE.zeroRS ) THEN
+            maskSHI(i,j,k,bi,bj) = 1. _d 0
+            maskSHI(i,j,1,bi,bj) = 1. _d 0
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* ALLOW_SHIFWFLX_CONTROL */
+
 #ifdef ALLOW_COST
 #if  (defined (ALLOW_SHIFWFLX_COST_CONTRIBUTION) && \
       defined (ALLOW_SHIFWFLX_CONTROL))
@@ -138,12 +170,9 @@ c--   use weight as mask
       CALL WRITE_FLD_XY_RL ( 'shelficemassinit', ' ',
      &                       shelficeMassInit, 0, myThid )
 
-  
-
-
 c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
 C-   In case we need shelficeLoadAnomaly in phi0surf for initial pressure
-C    calculation when useDynP_inEos_Zc
+C    calculation (if using selectP_inEOS_Zc=2 or 3)
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j = 1-OLy, sNy+OLy
@@ -241,23 +270,20 @@ c     ENDIF
        diagCode  = 'SM      L1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-     
+
        diagName  = 'SHIRshel'
        diagTitle = 'depth of shelfice'
        diagUnits = 'm          '
        diagCode  = 'SM      L1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
- 
+
        diagName  = 'SHI_MEff'
        diagTitle = 'dynamic ice shelf mass for surface load anomaly'
        diagUnits = 'kg/m^2          '
        diagCode  = 'SM      L1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-
-
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /* ALLOW_SHELFICE */
