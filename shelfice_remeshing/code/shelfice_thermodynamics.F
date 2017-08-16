@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.21 2016/09/04 08:32:04 ksnow Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_thermodynamics.F,v 1.22 2017/08/16 16:53:15 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -266,12 +266,15 @@ C     where this value is part of the protocol
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
-
+#ifdef ALLOW_STREAMICE
         IF (.not.usestreamice) THEN
+#endif
              oce_density = 1028.
+#ifdef ALLOW_STREAMICE
         ELSE
              oce_density = streamice_density_ocean_avg
         ENDIF
+#endif 
 
 #ifdef ALLOW_SHELFICE_GROUNDED_ICE
 
