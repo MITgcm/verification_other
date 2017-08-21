@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/forward_step.F,v 1.3 2016/05/05 18:16:04 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/forward_step.F,v 1.4 2017/08/21 16:06:48 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -110,7 +110,7 @@ C     \ev
 
 C     !CALLING SEQUENCE:
 C     FORWARD_STEP
-C       | 
+C       |
 C       |-- SHELFICE_REMESHING
 C       |
 C       |-- AUTODIFF_INADMODE_UNSET
@@ -308,6 +308,10 @@ C     == Global variables ==
 #  include "DIC_ATMOS.h"
 #  include "DIC_COST.h"
 # endif
+# ifdef ALLOW_BLING
+#  include "BLING_VARS.h"
+#  include "BLING_LOAD.h"
+# endif
 # ifdef ALLOW_OBCS
 #  include "OBCS_PARAMS.h"
 #  include "OBCS_FIELDS.h"
@@ -394,10 +398,6 @@ C-- Remesh shelfice
 #endif /* ALLOW_SHELFICE_REMESHING */
 #endif /* ALLOW_SHELFICE */
 
-
-
-
-
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('FORWARD_STEP',myThid)
 #endif
@@ -453,7 +453,6 @@ CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
         CALL UPDATE_SURF_DR( .FALSE., myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_SURF_DR      [FORWARD_STEP]',myThid)
        ENDIF
-
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hFacC, hFacS, hFacW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
@@ -538,8 +537,11 @@ C-    calculate qnet (and wind stress)
 
 #ifdef ALLOW_CTRL
 C--   Add control vector for forcing and parameter fields
-      IF ( ( useCTRL ).AND.( myIter .EQ. nIter0 ) )
-     &     CALL CTRL_MAP_FORCING (myThid)
+      IF ( useCTRL ) THEN
+       CALL TIMER_START('CTRL_MAP_FORCING  [FORWARD_STEP]',myThid)
+       CALL CTRL_MAP_FORCING( myTime, myIter, myThid )
+       CALL TIMER_STOP ('CTRL_MAP_FORCING  [FORWARD_STEP]',myThid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_AUTODIFF_MONITOR
@@ -857,7 +859,7 @@ C     Load new Offline fields and update state-variable
 C--   Update geometric factors:
 #ifdef NONLIN_FRSURF
 C-    update hfacC,W,S and recip_hFac according to etaH(n+1) :
-       IF ( select_rStar.GT.0 ) THEN
+      IF ( select_rStar.GT.0 ) THEN
 # ifndef DISABLE_RSTAR_CODE
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE rStarFacC, rStarFacS, rStarFacW =
@@ -867,24 +869,20 @@ CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
         CALL UPDATE_R_STAR( .TRUE., myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_R_STAR       [FORWARD_STEP]',myThid)
 # endif /* DISABLE_RSTAR_CODE */
-       ELSEIF ( selectSigmaCoord.NE.0 ) THEN
+      ELSEIF ( selectSigmaCoord.NE.0 ) THEN
 # ifndef DISABLE_SIGMA_CODE
         CALL UPDATE_SIGMA( etaH, myTime, myIter, myThid )
 # endif /* DISABLE_RSTAR_CODE */
-       ELSE
+      ELSE
 # ifdef ALLOW_AUTODIFF_TAMC
-
-
 CADJ STORE hFac_surfC, hFac_surfS, hFac_surfW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
         CALL TIMER_START('UPDATE_SURF_DR      [FORWARD_STEP]',myThid)
         CALL UPDATE_SURF_DR( .TRUE., myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_SURF_DR      [FORWARD_STEP]',myThid)
-       ENDIF
+      ENDIF
 # ifdef ALLOW_AUTODIFF_TAMC
-      
-
 CADJ STORE hFacC, hFacS, hFacW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW  =
@@ -896,20 +894,23 @@ CADJ STORE pC, pS, pW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 #  endif
 # endif
+#endif /* NONLIN_FRSURF */
 
-C-    update also CG2D matrix (and preconditioner)
-      IF ( momStepping .AND. nonlinFreeSurf.GT.2 ) THEN
+#if ( defined NONLIN_FRSURF || defined ALLOW_SOLVE4_PS_AND_DRAG )
+C-    update CG2D matrix (and preconditioner)
+      IF ( momStepping .AND.
+     &     ( nonlinFreeSurf.GT.2 .OR. selectImplicitDrag.EQ.2 ) ) THEN
         CALL TIMER_START('UPDATE_CG2D         [FORWARD_STEP]',myThid)
         CALL UPDATE_CG2D( myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_CG2D         [FORWARD_STEP]',myThid)
       ENDIF
-#endif /* NONLIN_FRSURF */
+#endif /* NONLIN_FRSURF or ALLOW_SOLVE4_PS_AND_DRAG */
 
 C--   Apply Filters to u*,v* before SOLVE_FOR_PRESSURE
 #ifdef ALLOW_SHAP_FILT
       IF (useSHAP_FILT .AND. shap_filt_uvStar) THEN
         CALL TIMER_START('SHAP_FILT_UV        [FORWARD_STEP]',myThid)
-        IF (implicDiv2Dflow.LT.1.) THEN
+        IF (implicDiv2DFlow.LT.1.) THEN
 C--   Explicit+Implicit part of the Barotropic Flow Divergence
 C      => Filtering of uVel,vVel is necessary
           CALL SHAP_FILT_APPLY_UV( uVel,vVel,
@@ -922,7 +923,7 @@ C      => Filtering of uVel,vVel is necessary
 #ifdef ALLOW_ZONAL_FILT
       IF (useZONAL_FILT .AND. zonal_filt_uvStar) THEN
         CALL TIMER_START('ZONAL_FILT_UV       [FORWARD_STEP]',myThid)
-        IF (implicDiv2Dflow.LT.1.) THEN
+        IF (implicDiv2DFlow.LT.1.) THEN
 C--   Explicit+Implicit part of the Barotropic Flow Divergence
 C      => Filtering of uVel,vVel is necessary
           CALL ZONAL_FILT_APPLY_UV( uVel, vVel, myThid )
@@ -1032,11 +1033,6 @@ C--   State-variables diagnostics
           CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
         ENDIF
 #endif
-
-
-
-
-
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE wVel = comlev1, key = ikey_dynamics, kind = isbyte
@@ -1198,6 +1194,11 @@ C--     this is done after exchanges to allow interpolation
       CALL TIMER_STOP ('COST_TILE           [FORWARD_STEP]',myThid)
 #endif
 
+#ifdef ALLOW_ECCO
+C--   Diagnoze variables for pkg/ecco averaging and cost function purposes
+      IF ( useECCO ) CALL ECCO_PHYS( myThid )
+#endif
+
 C--   Check if it has reached the end of simulation
       modelEnd = myTime.EQ.endTime .OR. myIter.EQ.nEndIter
 #ifdef HAVE_SIGREG
@@ -1246,10 +1247,6 @@ C--   Save state for restarts
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('FORWARD_STEP',myThid)
 #endif
-
-
- 
-
 
       RETURN
       END
