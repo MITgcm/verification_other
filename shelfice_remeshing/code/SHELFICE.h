@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE.h,v 1.8 2016/07/06 18:03:40 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE.h,v 1.9 2017/12/15 20:06:21 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -48,6 +48,7 @@ C     -----------------------------------------------------------------------
 C     SHELFICEuseGammaFrict    :: use velocity dependent exchange coefficients,
 C                                 see Holland and Jenkins (1999), eq.11-18,
 C                                 with the following parameters (def: F):
+C     SHELFICE_oldCalcUStar    :: use old uStar averaging expression
 C     shiCdrag                 :: quadratic drag coefficient to compute uStar
 C                                 (def: 0.0015)
 C     shiZetaN                 :: ??? (def: 0.052)
@@ -56,7 +57,7 @@ C     shiPrandtl, shiSchmidt   :: constant Prandtl (13.8) and Schmidt (2432.0)
 C                                 numbers used to compute gammaTurb
 C     shiKinVisc               :: constant kinetic viscosity used to compute
 C                                 gammaTurb (def: 1.95e-5)
-C     SHELFICERemeshFrequency  :: Frequency that size of etaN is checked to 
+C     SHELFICERemeshFrequency  :: Frequency that size of etaN is checked to
 C                                 trigger remesh
 C     SHELFICESplitThreshold   :: Max size of etaN allowed before a remesh
 C     SHELFICEMergeThreshold   :: Min size of etaN allowed before a remesh
@@ -110,7 +111,7 @@ CEOP
      &     SHELFICE_dumpFreq, SHELFICE_taveFreq,
      &     SHELFICEheatTransCoeff, SHELFICEsaltTransCoeff,
      &     rhoShelfice, SHELFICEkappa,
-     &     SHELFICElatentHeat, 
+     &     SHELFICElatentHeat,
      &     SHELFICEheatCapacity_Cp,
      &     SHELFICEthetaSurface,
      &     SHELFICEDragLinear, SHELFICEDragQuadratic,
@@ -128,7 +129,7 @@ CEOP
       _RL rhoShelfice
       _RL SHELFICEkappa
       _RL SHELFICEDragLinear
-      _RL SHELFICEDragQuadratic 
+      _RL SHELFICEDragQuadratic
       _RL SHELFICEMergeThreshold
       _RL SHELFICEthetaSurface, SHELFICESplitThreshold
       _RL shiCdrag, shiZetaN, shiRc
@@ -136,10 +137,10 @@ CEOP
       _RL shiPrandtl, shiSchmidt, shiKinVisc
       _RL SHELFICEGroundW, SHELFICEGroundC, shelficeEtaRelax
       COMMON /SHELFICE_FIELDS_RL/
-     &     shelficeMass, shelficeMassInit, 
+     &     shelficeMass, shelficeMassInit,
      &     shelficeLoadAnomaly,
      &     shelficeForcingT, shelficeForcingS,
-     &     shiTransCoeffT, shiTransCoeffS, EFFMASS 
+     &     shiTransCoeffT, shiTransCoeffS, EFFMASS
       _RL shelficeMass          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeMassInit      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeLoadAnomaly   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -181,6 +182,7 @@ CEOP
       LOGICAL SHELFICE_tave_mnc
       LOGICAL SHELFICEadvDiffHeatFlux
       LOGICAL SHELFICEuseGammaFrict
+      LOGICAL SHELFICE_oldCalcUStar
       LOGICAL SHELFICEMassStepping
       LOGICAL SHELFICEDynMassOnly
       LOGICAL SHELFICEEtaSponge
@@ -203,6 +205,7 @@ C   KS16 put var here
      &     SHELFICE_tave_mnc,
      &     SHELFICEadvDiffHeatFlux,
      &     SHELFICEuseGammaFrict,
+     &     SHELFICE_oldCalcUStar,
      &     SHELFICEMassStepping,
      &     SHELFICEDynMassOnly,
      &     SHELFICEEtaSponge,
@@ -217,8 +220,7 @@ C  KS16 and here;
       CHARACTER*(MAX_LEN_FNAM) SHELFICEtopoFile
       CHARACTER*(MAX_LEN_FNAM) SHELFICEMassDynTendFile
       CHARACTER*(MAX_LEN_FNAM) SHELFICEGroundInitFile
-      CHARACTER*(MAX_LEN_FNAM) SHELFICETransCoeffTFile 
-
+      CHARACTER*(MAX_LEN_FNAM) SHELFICETransCoeffTFile
 
       COMMON /SHELFICE_PARM_C/
      &     SHELFICEloadAnomalyFile,
@@ -227,6 +229,6 @@ C  KS16 and here;
      &     SHELFICEGroundTopoFile,
      &     SHELFICEMassDynTendFile,
      &     SHELFICEGroundInitFile,
-     &     SHELFICETransCoeffTFile 
+     &     SHELFICETransCoeffTFile
 
 #endif /* ALLOW_SHELFICE */
