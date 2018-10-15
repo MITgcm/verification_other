@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/offline_cheapaml/code/SEAICE_SIZE.h,v 1.2 2014/05/27 22:59:38 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_SEAICE
 
 CBOP

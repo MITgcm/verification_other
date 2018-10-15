@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/profiles_interp.F,v 1.2 2016/09/12 20:02:35 mmazloff Exp $
-C $Name:  $
-
 #include "PROFILES_OPTIONS.h"
 #ifdef ALLOW_ECCO
 # include "ECCO_OPTIONS.h"

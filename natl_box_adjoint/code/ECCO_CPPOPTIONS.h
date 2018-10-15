@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/natl_box_adjoint/code/ECCO_CPPOPTIONS.h,v 1.1 2012/02/04 02:15:44 jmc Exp $
-C $Name:  $
-
 C
 C CPP flags controlling which code is included in the files that
 C will be compiled.

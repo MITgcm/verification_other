@@ -1,5 +1,3 @@
-C $Header:
-
 C     /==========================================================\
 C     | SEAICE_OPTIONS.h                                         |
 C     | o CPP options file for sea ice package.                  |

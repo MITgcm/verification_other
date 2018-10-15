@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/natl_box_adjoint/code_seaice/GMREDI_OPTIONS.h,v 1.1 2012/02/04 02:15:44 jmc Exp $
-C $Name:  $
-
 C CPP options file for GM/Redi package
 C
 C Use this file for selecting options within the GM/Redi package

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_restore_sealevel.F,v 1.4 2016/05/05 18:16:04 dgoldberg Exp $
-C $Name:  $
-
 #include "SHELFICE_OPTIONS.h"
 #include "OBCS_OPTIONS.h"
 

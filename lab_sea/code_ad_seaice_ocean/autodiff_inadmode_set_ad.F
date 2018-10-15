@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/lab_sea/code_ad_seaice_ocean/autodiff_inadmode_set_ad.F,v 1.1 2012/02/03 20:56:55 jmc Exp $
-
 #include "AUTODIFF_OPTIONS.h"
 
       subroutine adautodiff_inadmode_set( myThid )

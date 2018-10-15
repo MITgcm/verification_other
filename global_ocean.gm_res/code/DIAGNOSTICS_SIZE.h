@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_ocean.gm_res/code/DIAGNOSTICS_SIZE.h,v 1.1 2015/01/14 22:25:21 jmc Exp $
-C $Name:  $
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

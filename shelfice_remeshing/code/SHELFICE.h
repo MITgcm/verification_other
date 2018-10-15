@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/SHELFICE.h,v 1.9 2017/12/15 20:06:21 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_SHELFICE
 
 CBOP

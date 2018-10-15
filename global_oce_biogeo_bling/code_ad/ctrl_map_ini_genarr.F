@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/ctrl_map_ini_genarr.F,v 1.4 2016/09/12 20:02:35 mmazloff Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 #ifdef ALLOW_GMREDI
 # include "GMREDI_OPTIONS.h"

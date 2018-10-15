@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code/BLING_OPTIONS.h,v 1.5 2016/11/16 18:23:41 mmazloff Exp $
-C $Name:  $
-
 #ifndef BLING_OPTIONS_H
 #define BLING_OPTIONS_H
 #include "PACKAGES_CONFIG.h"

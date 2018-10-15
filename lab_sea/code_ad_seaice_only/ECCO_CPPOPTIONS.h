@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/lab_sea/code_ad_seaice_only/ECCO_CPPOPTIONS.h,v 1.1 2012/02/03 20:57:58 jmc Exp $
-C $Name:  $
-
 C CPP flags controlling which code is included in the files that
 C will be compiled.
 C

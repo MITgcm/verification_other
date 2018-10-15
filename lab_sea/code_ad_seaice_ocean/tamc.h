@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/lab_sea/code_ad_seaice_ocean/tamc.h,v 1.1 2012/02/03 20:56:55 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 
 
