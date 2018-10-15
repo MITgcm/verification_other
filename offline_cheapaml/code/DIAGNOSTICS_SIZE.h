@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/offline_cheapaml/code/DIAGNOSTICS_SIZE.h,v 1.2 2013/06/11 01:59:20 jmc Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

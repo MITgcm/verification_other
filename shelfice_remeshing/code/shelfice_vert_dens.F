@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_vert_dens.F,v 1.2 2017/02/12 13:34:10 dgoldberg Exp $
-C $Name:  $
-
 C KS_dens------
 
 #include "SHELFICE_OPTIONS.h"

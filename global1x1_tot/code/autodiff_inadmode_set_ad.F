@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global1x1_tot/code/autodiff_inadmode_set_ad.F,v 1.1 2012/02/04 02:45:01 jmc Exp $
-C $Name:  $
-
 #include "AUTODIFF_OPTIONS.h"
 
       subroutine adautodiff_inadmode_set( myThid )

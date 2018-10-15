@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/ini_masks_remesh.F,v 1.4 2018/05/20 13:04:08 dgoldberg Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #include "SHELFICE_OPTIONS.h"

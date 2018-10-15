@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global1x1_tot/code_taueddy/ecco_cost_weights.F,v 1.1 2012/02/04 02:45:03 jmc Exp $
-
 #include "COST_CPPOPTIONS.h"
 
 

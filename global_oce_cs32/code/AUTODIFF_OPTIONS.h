@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_cs32/code/AUTODIFF_OPTIONS.h,v 1.1 2016/05/29 12:37:27 gforget Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: AUTODIFF_OPTIONS.h
 C !INTERFACE:

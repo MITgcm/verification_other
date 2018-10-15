@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global1x1_tot/code_bulk_adj/KPP_OPTIONS.h,v 1.1 2012/02/04 02:45:02 jmc Exp $
-C $Name:  $
-
 C     /==========================================================\
 C     | KPP_OPTIONS.h                                            |
 C     | o CPP options file for KPP package.                      |

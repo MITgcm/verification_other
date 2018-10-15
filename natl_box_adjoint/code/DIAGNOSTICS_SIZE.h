@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/natl_box_adjoint/code/DIAGNOSTICS_SIZE.h,v 1.1 2012/02/04 02:15:44 jmc Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

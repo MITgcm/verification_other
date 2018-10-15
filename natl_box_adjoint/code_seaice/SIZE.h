@@ -1,4 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/natl_box_adjoint/code_seaice/SIZE.h,v 1.1 2012/02/04 02:15:45 jmc Exp $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |

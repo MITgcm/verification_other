@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_cs32/code/MOM_COMMON_OPTIONS.h,v 1.3 2016/05/29 12:37:27 gforget Exp $
-C $Name:  $
-
 C CPP options file for mom_common package
 C Use this file for selecting CPP options within the mom_common package
 

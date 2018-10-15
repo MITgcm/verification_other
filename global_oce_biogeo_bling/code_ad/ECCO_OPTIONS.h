@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad/ECCO_OPTIONS.h,v 1.1 2016/09/14 21:18:41 mmazloff Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: ECCO_OPTIONS.h
 C !INTERFACE:

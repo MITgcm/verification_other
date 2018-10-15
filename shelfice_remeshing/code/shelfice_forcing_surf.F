@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_forcing_surf.F,v 1.5 2017/03/29 09:20:16 dgoldberg Exp $
-C $Name:  $
-
 #include "SHELFICE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

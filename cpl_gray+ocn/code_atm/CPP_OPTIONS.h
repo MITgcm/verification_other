@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/cpl_gray+ocn/code_atm/CPP_OPTIONS.h,v 1.1 2013/09/25 19:28:28 jmc Exp $
-C $Name:  $
-
 #ifndef CPP_OPTIONS_H
 #define CPP_OPTIONS_H
 

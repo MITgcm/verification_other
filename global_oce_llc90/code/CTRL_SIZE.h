@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/CTRL_SIZE.h,v 1.5 2015/05/26 22:44:56 gforget Exp $
-C $Name:  $
-
 c     ==================================================================
 c     CTRL_SIZE.h
 c     ==================================================================

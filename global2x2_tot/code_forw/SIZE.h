@@ -1,4 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global2x2_tot/code_forw/SIZE.h,v 1.1 2012/02/04 02:58:13 jmc Exp $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |

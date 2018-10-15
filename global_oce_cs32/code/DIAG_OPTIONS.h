@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_cs32/code/DIAG_OPTIONS.h,v 1.3 2016/05/29 12:37:27 gforget Exp $
-C $Name:  $
-
 #ifndef DIAG_OPTIONS_H
 #define DIAG_OPTIONS_H
 #include "PACKAGES_CONFIG.h"

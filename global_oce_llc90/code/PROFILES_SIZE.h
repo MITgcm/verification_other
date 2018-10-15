@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_llc90/code/PROFILES_SIZE.h,v 1.4 2016/06/16 22:06:52 gforget Exp $
-C $Name:  $
-
 C============================================================
 C NOBSGLOB            :: maximum number of profiles per file and tile
 C NFILESPROFMAX       :: maximum number of files

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/global_oce_cs32/code/GGL90_OPTIONS.h,v 1.3 2016/05/29 12:37:27 gforget Exp $
-C $Name:  $
-
 C     *=============================================================*
 C     | GGL90_OPTIONS.h
 C     | o CPP options file for GGL90 package.

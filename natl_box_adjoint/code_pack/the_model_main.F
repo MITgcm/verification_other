@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/natl_box_adjoint/code_pack/the_model_main.F,v 1.1 2012/02/04 02:15:44 jmc Exp $
-C $Name:  $
-
 CBOI
 C
 C !TITLE: MITGCM KERNEL CODE SYNOPSIS

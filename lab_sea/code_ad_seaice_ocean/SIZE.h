@@ -1,4 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/lab_sea/code_ad_seaice_ocean/SIZE.h,v 1.1 2012/02/03 20:56:55 jmc Exp $
 C
 CBOP
 C    !ROUTINE: SIZE.h
