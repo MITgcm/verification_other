@@ -1,0 +1,101 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+#- MK: reference theta calculated from US Standard Atmosphere:
+ tRef= 287.7, 288.4, 289.3, 290.2, 291.3, 292.8, 294.5, 296.4, 298.5, 300.7,
+       303.1, 305.7, 308.7, 312.0, 315.7, 320.1, 325.2, 330.9, 348.4, 371.0,
+       397.3, 428.0, 463.5, 503.9, 553.4, 607.6, 665.2, 732.8, 807.8, 886.5,
+       988.5, 1109.4, 1258.1, 1460.5, 1750.6, 2119.0, 2463.9, 2878.4, 3470.2, 4327.7,
+ sRef=40*0.,
+ viscAr=0.E1,
+ viscAh=0.E6,
+ viscA4=0.E17,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ diffKhT=0.E3,
+ diffKrT=0.,
+ diffK4T=0.E17,
+ diffKrS=0.E2,
+ diffKhS=0.E3,
+ diffK4S=0.E17,
+ buoyancyRelation='ATMOSPHERIC',
+ eosType='IDEALG',
+ atm_Cp=1004.64,
+ atm_Rq=0.6078,
+ integr_GeoPot=2,
+ selectFindRoSurf=1,
+ gravity=9.80,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+ select_rStar=2,
+ nonlinFreeSurf=4,
+ hFacInf=0.2,
+ hFacSup=2.0,
+ hFacMin=1.0,
+ uniformLin_PhiSurf=.FALSE.,
+ vectorInvariantMomentum=.TRUE.,
+ useAbsVorticity=.TRUE.,
+ selectVortScheme=3,
+ selectKEscheme=3,
+ addFrictionHeating=.TRUE.,
+#tempAdvScheme=77,
+ saltAdvScheme=77,
+ staggerTimeStep=.TRUE.,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+#globalFiles=.TRUE.,
+ useSingleCpuIO=.TRUE.,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=200,
+ cg2dTargetResWunit=1.E-17,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=4320000,
+# to run 25 years:
+ nTimeSteps=4320000,
+ deltaTMom=36.,
+ deltaTtracer=180.,
+ deltaTFreeSurf=180.,
+ deltaTClock=180.,
+ abEps=0.1,
+ forcing_In_AB=.FALSE.,
+ cAdjFreq=0.,
+#- long run (> 1.yr):
+# chkptFreq =15552000.,
+# pChkptFreq=31104000.,
+# dumpFreq  =15552000.,
+# monitorFreq= 864000.,
+#- short run (~ months):
+ chkptFreq = 86400.,
+ pChkptFreq=2592000.,
+ dumpFreq  = 2592000.,
+#- for testing:
+ nTimeSteps=10,
+ monitorFreq= 1.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCurvilinearGrid=.TRUE.,
+ horizGridFile='dxC1_dXYa',
+ radius_fromHorizGrid=6370.E3,
+ delR= 2000., 3000., 3000., 3000., 4000., 5000., 5000., 5000., 5000., 5000.,
+       5000., 5000., 5000., 5000., 5000., 5000., 5000., 4000., 4000., 3500.,
+       3000., 2500., 2000., 1500., 1200., 800., 650., 500., 350., 250.,
+       200., 150., 125., 100., 75., 50., 25., 15., 6., 3.,
+ top_Pres=1.,
+ &
+
+# Input datasets
+ &PARM05
+# hydrogThetaFile='',
+# hydrogSaltFile ='',
+ &
