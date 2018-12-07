@@ -1,11 +1,12 @@
 
 #object: directions to install the global_oce_llc90 verification experiments
 
-cd MITgcm/verification
+git clone https://github.com/MITgcm/verification_other
+mv verification_other MITgcm/
 
-cvs co -P -d global_oce_llc90 MITgcm_contrib/verification_other/global_oce_llc90
+cd MITgcm/verification_other/global_oce_llc90
 
-cd global_oce_llc90
+###[begin; stuff below should also be rellocated]
 
 ln -s code code_ad
 
@@ -29,9 +30,15 @@ tar xf core2_cnyf.tar
 
 mv core2_cnyf input_verifs/.
 
-cd ..
+###[end; stuff above should also be rellocated]
+
+cd ../../..
+
+cd MITgcm/verification
+ln -s ../verification_other/global_oce_llc90 .
 
 #history:
+#2018/11/14   Gael Forget         use https://github.com/MITgcm/verification_other instead of old MITgcm_contrib
 #2016/12/15   Gael Forget         get tar balls from ftp://mit.ecco-group.org rather than http://mitgcm.org
 #2016/09/26   Gael Forget         mv global_oce_input_fields to input_verifs inside global_oce_llc90
 #2016/09/26   Gael Forget         add wget core2_cnyf.tar
