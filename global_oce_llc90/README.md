@@ -2,10 +2,10 @@
 # install `global_oce_llc90` experiments:
 
 ```
+cd MITgcm
 git clone https://github.com/MITgcm/verification_other
-mv verification_other MITgcm/
 
-cd MITgcm/verification_other/global_oce_llc90
+cd verification_other/global_oce_llc90
 
 ###[begin; stuff below should also be rellocated]
 
@@ -33,15 +33,13 @@ mv core2_cnyf input_verifs/.
 
 ###[end; stuff above should also be rellocated]
 
-cd ../../..
-
-cd MITgcm/verification
 ln -s ../verification_other/global_oce_llc90 .
 
 ```
 
 # README file history:
 
+- `2018/12/10` (GF) simplify directions (cd, mv, etc.)
 - `2018/11/14` (GF) use [verification_other](https://github.com/MITgcm/verification_other) instead of old [MITgcm_contrib](http://wwwcvs.mitgcm.org/viewvc/MITgcm/MITgcm_contrib/verification_other/)
 - `2016/12/15` (GF) [ECCO ftp](ftp://mit.ecco-group.org) rather than `MITgcm_contrib`
 - `2016/09/26` (GF) mv `global_oce_input_fields` to `global_oce_llc90/input_verifs`
