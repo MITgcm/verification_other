@@ -1,5 +1,4 @@
 C CPP options file for GM/Redi package
-C
 C Use this file for selecting options within the GM/Redi package
 
 #ifndef GMREDI_OPTIONS_H
@@ -12,7 +11,6 @@ C     Package-specific Options & Macros go here
 
 C Designed to simplify the Ajoint code:
 #define GMREDI_WITH_STABLE_ADJOINT
-
 C -- exclude the clipping/tapering part of the code that is not used
 #define GM_EXCLUDE_CLIPPING
 #define GM_EXCLUDE_FM07_TAP
@@ -45,6 +43,9 @@ C  instead of the Skew-Flux form (=default)
 
 C Allows to use the Boundary-Value-Problem method to evaluate GM Bolus transport
 #undef GM_BOLUS_BVP
+
+C Allow QG Leith variable viscosity to be added to GMRedi coefficient
+#undef ALLOW_GM_LEITH_QG
 
 #endif /* ALLOW_GMREDI */
 #endif /* GMREDI_OPTIONS_H */
