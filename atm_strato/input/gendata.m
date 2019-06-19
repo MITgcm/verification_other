@@ -3,9 +3,9 @@ kwr=0;
 %kwr=1;
 
 %gDir='../run_26l/';
-%gDir='../cs_grid/';
-gDir='../run/';
-G=load_grid(gDir,0);
+gDir='../grid_cs32/';
+%gDir='~/grid_cs96/';
+G=load_grid(gDir,10);
 
 nx=G.dims(1); ny=G.dims(2); nc=ny;
 xc=G.xC; yc=G.yC; xg=G.xG; yg=G.yG;
@@ -17,37 +17,40 @@ y1d=[-89.5:1:90];
 %colorbar
 
 %-- make SST field (cos shape, no noise) from grid-output file YC:
-yy=yc*pi/90; sst1=9+19*cos(yy);
+ yy=yc*pi/90; sst1=9+19*cos(yy);
 %sst=273.15+sst1;
-%fname='SST_cos0.bin';
-yy=y1d*pi/90; sst1_1d=9+19*cos(yy); %- just for doing a plot
+%pfx='SST_cos0';
+%- just for doing a plot
+ yy=y1d*pi/90; sst1_1d=9+19*cos(yy); %- just for doing a plot
 
 %-- follow APE profile:
-yy=yc*pi/180;
-var=sin(1.5*yy); var=1.-var.*var;
-var(find(abs(yc) > 60.))=0.; sst2=27*var;
+ yy=yc*pi/180;
+ var=sin(1.5*yy); var=1.-var.*var;
+ var(find(abs(yc) > 60.))=0.; sst2=27*var;
 %sst=273.15+sst2;
-%fname='SST_APE_1.bin';
+%pfx='SST_APE_1';
 %- just for doing a plot
-yy=y1d*pi/180;
-var=sin(1.5*yy); var=1.-var.*var;
-var(find(abs(y1d) > 60.))=0.; sst2_1d=27*var;
+ yy=y1d*pi/180;
+ var=sin(1.5*yy); var=1.-var.*var;
+ var(find(abs(y1d) > 60.))=0.; sst2_1d=27*var;
 
 %-- close to Symetric zonally-average current SST:
-yyp=abs(yc/90); phi=yyp.^3.;
-sst3=27.8*exp(-7*phi) - 1 ;
-sst=273.15+sst3;
-fname='SST_symEx3.bin';
+ yyp=abs(yc/90); phi=yyp.^3.;
+ sst3=27.8*exp(-7*phi) - 1 ;
+ sst=273.15+sst3;
+ pfx='SST_symEx3';
 %- just for doing a plot
-yyp=abs(y1d/90); phi=yyp.^3.;
-sst3_1d=27.8*exp(-7*phi) - 1 ;
+ yyp=abs(y1d/90); phi=yyp.^3.;
+ sst3_1d=27.8*exp(-7*phi) - 1 ;
 
 if kwr > 0,
+ fname=sprintf('%s_cs%i%s',pfx,nc,'.bin');
  fid=fopen(fname,'w','b'); fwrite(fid,sst,'real*8'); fclose(fid);
  fprintf(['write file: ',fname,'\n']);
 end
 
 figure(1);clf;
+colormap('jet');
 subplot(211)
 var=sst;
 grph_CS(var,xc,yc,xg,yg,ccB(1),ccB(2),shift,cbV,AxBx,kEnv);
@@ -72,84 +75,89 @@ yy=yy.*yy;
 qflx=qflx_ampl*(1-2*yy);
 qflx=qflx.*exp(-yy);
 
-figure(2);clf;
-var=qflx;
-grph_CS(var,xc,yc,xg,yg,ccB(1),ccB(2),shift,cbV,AxBx,kEnv);
-title('Q-flux [W/m^2]');
+%figure(2);clf;
+%colormap('jet');
+%var=qflx;
+%grph_CS(var,xc,yc,xg,yg,ccB(1),ccB(2),shift,cbV,AxBx,kEnv);
+%title('Q-flux [W/m^2]');
 
-if kwr > 0,
- fname='Qflux_w90.bin';
- fid=fopen(fname,'w','b'); fwrite(fid,qflx,'real*8'); fclose(fid);
- fprintf(['write file: ',fname,'\n']);
-end
+%if kwr > 0,
+% fname='Qflux_w90.bin';
+% fid=fopen(fname,'w','b'); fwrite(fid,qflx,'real*8'); fclose(fid);
+% fprintf(['write file: ',fname,'\n']);
+%end
 %return
 
-%-- make initial pot-temp field by adding noise to T(iter=0) output file:
+%-- make initial pot-temp field from Held & Suarez T*
+atm_cst;
+rF=squeeze(rdmds('RF'));
+rC=squeeze(rdmds('RC')); nr=length(rC);
 
-rDir=gDir;
-namf='T'; it=0;
-tini=rdmds([rDir,namf],it);
-nr=size(tini,3);
+%-- first just try a 2-D map to plot:
+ nn1=length(y1d);
+ hcol=ones(1,nn1).*rF(1);
+ [th2d]=calc_hs_forcing(y1d,hcol,rF,rC,kappa);
+ th2d=squeeze(th2d);
 
-var=rand([nx,ny]); var=var-mean(var(:));
-yy=yc*pi/90;
-var=var.*(2+cos(yy))/3;
 figure(3);clf;
-%var=sst0;
-grph_CS(var,xc,yc,xg,yg,ccB(1),ccB(2),shift,cbV,AxBx,kEnv);
+ colormap('jet');
+subplot(211);
+ var=th2d;
+%var=log10(var);
+ yax=rC/100;
+%yax=[1:nr];
+ imagesc(y1d,yax,var');
+%set(gca,'YDir','normal');
+ colorbar
 
-noise=1.e-3;
-tini1=tini+noise*reshape(reshape(var,[nx*ny 1])*ones(1,nr),[nx ny nr]);
-%size(tini1)
+ ti=(rC/atm_Po).^kappa;
+ ti=ones(nn1,1)*ti';
+ ti=ti.*th2d;
+
+subplot(212);
+ var=ti;
+ imagesc(y1d,yax,var');
+%set(gca,'YDir','normal');
+ colorbar
+%return
+
+fprintf('New Theta profile (tRef):\n')
+is=45;
+for js=1:10:nr,
+ je=min(nr,js-1+10);
+ var=th2d(is,js:je);
+%fprintf(' %6.2f,',var); fprintf('\n');
+ if th2d(is,je) > 1000,
+   fprintf(' %4.0f.,',var);
+ else
+   fprintf(' %5.1f,',var);
+ end
+ fprintf('\n');
+end
+
+%-- then do it for CS-grid:
+ hcol=ones(nx,ny).*rF(1);
+ [th3d]=calc_hs_forcing(yc,hcol,rF,rC,kappa);
 
 if kwr > 0,
- fname='ini_theta.bin';
- fid=fopen(fname,'w','b'); fwrite(fid,tini1,'real*8'); fclose(fid);
+ pfx='theta_hs94';
+ fname=sprintf('%s_cs%i_%il%s',pfx,nc,nr,'.bin');
+ fid=fopen(fname,'w','b'); fwrite(fid,th3d,'real*8'); fclose(fid);
  fprintf(['write file: ',fname,'\n']);
 end
 
-%- spec-humid : put constant Rel-Humid in the lowest troposphere
-relhum=0.8 ; pHum=800.e+2;
-relhum=0.4 ; pHum=700.e+2;
-khum=max(find(G.rC > pHum));
-
-%- taken from AIM -> qsat in g/kg, pIn = normalised Pressure
-P0=1.e+5; pIn=G.rC/P0;
-qsat=calc_Qsat(1,pIn,tini);
-qsat=reshape(qsat,[nx ny nr]);
-qini=qsat*1.e-3*relhum;
-qini(:,:,khum+1:end)=0;
-
-figure(4);clf;
-pax=G.rC/100; %- in mb
-i1=1; j1=1;
-var=squeeze(qini(i1,j1,:));
-plot(var,pax,'k-'); hold on;
-i1=nc/2; j1=nc/2;
-var=squeeze(qini(i1,j1,:));
-plot(var,pax,'r-');
-i1=nc*2.5; j1=nc*0.5;
-var=squeeze(qini(i1,j1,:));
-plot(var,pax,'b-');
-hold off
-set(gca,'YDir','reverse');
-grid
-legend('mid','eq','pol');
-title('Q-ini profile');
+%-- initial surf. pressure (similar shape as SST-sym):
+ yyp=abs(yc/90); phi=yyp.^3.;
+ eta0=35-55*exp(-7*phi); %- in mb
+ var=eta0.*G.rAc;
+ etAv=sum(var(:))./sum(G.rAc(:));
+ fprintf('Eta0 glob-mean = %8.6f [mb]\n',etAv);
+ eta1=(eta0-etAv)*100.;
 
 if kwr > 0,
- fname=['ini_specQ_',int2str(nr),'l.bin'];
- fid=fopen(fname,'w','b'); fwrite(fid,qini,'real*8'); fclose(fid);
+ pfx='psAnom_ini';
+ fname=sprintf('%s_cs%i%s',pfx,nc,'.bin');
+ fid=fopen(fname,'w','b'); fwrite(fid,eta1,'real*8'); fclose(fid);
  fprintf(['write file: ',fname,'\n']);
 end
 
-var=reshape(tini,[nx*ny nr]);
-var=mean(var);
-for n=1:ceil(nr/10)
-  is=1+(n-1)*10; ie=min(nr,n*10);
-  if n == 1, fprintf(' tRef='); else fprintf('      '); end
-  fprintf(' %5.1f,',round(10*var(is:ie))/10);
-  fprintf('\n')
-end
-
-return

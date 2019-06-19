@@ -19,15 +19,17 @@
 #--------------------
  &DIAGNOSTICS_LIST
 # diag_mnc     = .FALSE.,
+  dumpAtLast   = .TRUE.,
 #--
-  fields(1:16,1) = 'ETAN    ','ETANSQ  ','DETADT2 ',
+  fields(1:17,1) = 'ETAN    ','ETANSQ  ','DETADT2 ','PHI_SURF',
                    'AtPhCnvP','AtPhLscP','AtPhCAPE',
                    'AtPhSens','AtPhEvap','AtPhTauX','AtPhTauY',
                    'AtPh_SST','AtPhNTSR','AtPhOLR ',
                    'AtPhNSSR','AtPhDSLR','AtPhUSLR',
    fileName(1) = 'surfDiag',
 # fileFlags(1) = 'D       ',
-  frequency(1) = 2592000.,
+  frequency(1) =  7776000.,
+# frequency(1) =  2592000.,
 # ( = 1 month)
 #- 
   fields(1:21,2) = 'UVEL    ','VVEL    ','WVEL    ','THETA   ','SALT    ',
@@ -38,54 +40,42 @@
 #                  'ADVx_TH ','ADVy_TH ','ADVr_TH ',
 #                  'ADVx_SLT','ADVy_SLT','ADVr_SLT',
    fileName(2) = 'dynDiag',
-  frequency(2) = 2592000.,
-# ( = 1 month)
+  frequency(2) =  7776000.,
+# frequency(2) =  2592000.,
 #- 
   fields(1:11,3) = 'AtPhdTdt','AtPhdQdt','AtPhdUdt','AtPhdVdt',
 #                  'AtPhdtTg','AtPhdtQg','AtPhDifT','AtPhDifM',
                    'AtPhDisH','HeatDiss','MoistCor','SHAP_dKE',
                    'AtPhdTrd','AtPhdTlc','AtPhdTcv',
    fileName(3) = 'physDiag',
-  frequency(3) = 2592000.,
-# ( = 1 month)
+  frequency(3) =  7776000.,
+# frequency(3) =  2592000.,
 #- 
   fields(1:8,4)  = 'AtPhCnvP','AtPhLscP','AtPhCAPE',
                    'AtPhCnIn','AtPhKlzb','AtPhConv',
                    'AtPhRlxT','AtPhRlxQ',
-  fileName(4) = 'convDiag',
-# timePhase(4) =  31103600.,
-#  frequency(4) = -172800.,
-  frequency(4) = 2592000.,
-# ( = 1 month)
+# fileName(4) = 'convDiag',
+  frequency(4) =  7776000.,
+# frequency(4) =  2592000.,
 #- 
   fields(1:4,5)  = 'AtPhNSR ','AtPhNLR ','AtPhDSR ','AtPhDLR ',
    fileName(5) = 'radDiag',
-# timePhase(5) =  31103600.,
-#  frequency(5) = -172800.,
-  frequency(5) = 2592000.,
-# ( = 1 month)
+  frequency(5) =  7776000.,
+# frequency(5) =  2592000.,
 #-
-#  fields(1:17,6) = 'UVEL    ','VVEL    ','AtPhdUdt','AtPhdVdt',
-#                   'Um_Advec','Vm_Advec','Um_dPHdx','Vm_dPHdy',
-#                   'Um_Ext  ','Vm_Ext  ','SHAP_dU ','SHAP_dV ',
-#                   'Um_AdvRe','Vm_AdvZ3','Um_AdvZ3','Vm_AdvRe',
-#                   'momKE   ',
-#   fileName(6) = 'momDiag',
-#  frequency(6) = 2592000.,
-## ( = 1 month)
-#  fields(1:14,7) = 'UVEL    ','VVEL    ','WVEL    ',
-#                   'THETA   ','SALT    ','UE_VEL_C',
-#                   'VN_VEL_C','UV_VEL_C','WU_VEL  ','WV_VEL  ',
-#                   'UVELTH  ','VVELTH  ','WVELTH  ','AtPhdTdt',
-#   fileName(7) = 'daily3dDiag',
-#  frequency(7) = 86400.,
-## ( = 1 day)
-#  fields(1:4,8) = 'ETAN    ','AtPh_SST','AtPhCnvP','AtPhLscP',
-#   fileName(8) = 'dailySurfDiag',
-#  frequency(8) = 86400.,
-## ( = 1 day)
-#
-
+  fields(1:18,6) = 'Um_Advec','Vm_Advec','Um_dPHdx','Vm_dPHdy',
+                   'Um_Ext  ','Vm_Ext  ','SHAP_dU ','SHAP_dV ',
+                   'Um_AdvRe','Vm_AdvRe','Um_AdvZ3','Vm_AdvZ3',
+                   'AB_gU   ','AB_gV   ',
+                   'AtPhdUdt','AtPhdVdt',
+                   'Um_Cori ','Vm_Cori ',
+#                  'UVEL    ','VVEL    ','momKE   ',
+  fileFlags(6) = '  h     ',
+   fileName(6) = 'momDiag',
+  frequency(6) = 15552000.,
+# frequency(6) =  7776000.,
+# frequency(6) =  2592000.,
+#-
  &
 
 #--------------------
@@ -110,30 +100,22 @@
                        'UE_VEL_C','VN_VEL_C','WVEL    ',
                        'AtPhdTdt','AtPhdQdt','AtPhdUdt','AtPhdVdt',
   stat_fName(1) = 'dynStDiag',
-#  stat_freq(1) = 432000.,
-#  stat_freq(1) = 43200.,
-  stat_freq(1) = 21600.,
+   stat_freq(1) = 86400.,
 #  stat_freq(1) = 3600.,
 #  stat_phase(1) = 0.,
- stat_fields(1:11,2) = 'AtPhdtTg','AtPhdtQg','AtPhDifT','AtPhDifM',
+ stat_fields(1:15,2) = 'AtPhdtTg','AtPhdtQg','AtPhDifT','AtPhDifM',
                        'AtPhDisH','HeatDiss','MoistCor','SHAP_dKE',
                        'AtPhdTrd','AtPhdTlc','AtPhdTcv',
+                       'AtPhNSR ','AtPhNLR ','AtPhDSR ','AtPhDLR ',
   stat_fName(2) = 'phyStDiag',
-#  stat_freq(2) = 432000.,
-#  stat_freq(2) = 43200.,
-   stat_freq(2) = 21600.,
+   stat_freq(2) = 86400.,
 #  stat_freq(2) = 3600.,
-#  stat_phase(2) = 0.,
- stat_fields(1:17,3) = 'AtPhSens','AtPhEvap','AtPhTauX','AtPhTauY',
+ stat_fields(1:13,3) = 'AtPhSens','AtPhEvap','AtPhTauX','AtPhTauY',
                        'AtPhCnvP','AtPhLscP','AtPhCAPE',
                        'AtPh_SST','AtPhNTSR','AtPhOLR ',
                        'AtPhNSSR','AtPhDSLR','AtPhUSLR',
-                       'AtPhNSR ','AtPhNLR ','AtPhDSR ','AtPhDLR ',
   stat_fName(3) = 'flxStDiag',
-#  stat_freq(3) = 432000.,
-#  stat_freq(3) = 43200.,
-   stat_freq(3) = 21600.,
+   stat_freq(3) = 86400.,
 #  stat_freq(3) = 3600.,
-#  stat_phase(3) = 0.,
  &
 

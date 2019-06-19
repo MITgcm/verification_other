@@ -4,23 +4,14 @@
 #
 # Continuous equation parameters
  &PARM01
-#- MK: reference theta calculated from US Standard Atmosphere:
- tRef= 287.7, 288.4, 289.3, 290.2, 291.3, 292.8, 294.5, 296.4, 298.5, 300.7,
-       303.1, 305.7, 308.7, 312.0, 315.7, 320.1, 325.2, 330.9, 348.4, 371.0,
-       397.3, 428.0, 463.5, 503.9, 553.4, 607.6, 665.2, 732.8, 807.8, 886.5,
-       988.5, 1109.4, 1258.1, 1460.5, 1750.6, 2119.0, 2463.9, 2878.4, 3470.2, 4327.7,
+#- from Theta-Ini @ lat 45:
+ tRef= 284.5, 284.6, 284.7, 284.9, 285.2, 285.6, 286.0, 286.4, 287.0, 287.5,
+       288.2, 288.9, 289.8, 290.7, 305.7, 325.4, 347.4, 372.3, 400.9, 434.8,
+        475.,  521.,  573.,  631.,  696.,  767.,  845.,  932., 1027., 1132.,
+       1247., 1376., 1521., 1686., 1877., 2104., 2388., 2771., 3369., 4778.,
  sRef=40*0.,
- viscAr=0.E1,
- viscAh=0.E6,
- viscA4=0.E17,
  no_slip_sides=.FALSE.,
  no_slip_bottom=.FALSE.,
- diffKhT=0.E3,
- diffKrT=0.,
- diffK4T=0.E17,
- diffKrS=0.E2,
- diffKhS=0.E3,
- diffK4S=0.E17,
  buoyancyRelation='ATMOSPHERIC',
  eosType='IDEALG',
  atm_Cp=1004.64,
@@ -37,9 +28,10 @@
  hFacMin=1.0,
  uniformLin_PhiSurf=.FALSE.,
  vectorInvariantMomentum=.TRUE.,
- useAbsVorticity=.TRUE.,
- selectVortScheme=3,
- selectKEscheme=3,
+#useAbsVorticity=.TRUE.,
+ selectCoriScheme=2,
+ selectVortScheme=2,
+ selectKEscheme=2,
  addFrictionHeating=.TRUE.,
 #tempAdvScheme=77,
  saltAdvScheme=77,
@@ -58,27 +50,24 @@
 
 # Time stepping parameters
  &PARM03
- nIter0=4320000,
-# to run 25 years:
- nTimeSteps=4320000,
- deltaTMom=36.,
- deltaTtracer=180.,
- deltaTFreeSurf=180.,
- deltaTClock=180.,
+ nIter0=129600,
+#nTimeSteps=129600,
+#endTime=31104000.,
+ deltaTClock=240.,
  abEps=0.1,
  forcing_In_AB=.FALSE.,
- cAdjFreq=0.,
 #- long run (> 1.yr):
-# chkptFreq =15552000.,
-# pChkptFreq=31104000.,
-# dumpFreq  =15552000.,
-# monitorFreq= 864000.,
+  chkptFreq = 7776000.,
+  pChkptFreq=31104000.,
+  dumpFreq  =15552000.,
+  monitorFreq= 864000.,
 #- short run (~ months):
- chkptFreq = 86400.,
- pChkptFreq=2592000.,
- dumpFreq  = 2592000.,
-#- for testing:
- nTimeSteps=10,
+#chkptFreq = 864000.,
+#pChkptFreq=2592000.,
+#dumpFreq  = 2592000.,
+#monitorFreq=86400.,
+#- very short run:
+ nTimeSteps= 8,
  monitorFreq= 1.,
  &
 
@@ -87,15 +76,14 @@
  usingCurvilinearGrid=.TRUE.,
  horizGridFile='dxC1_dXYa',
  radius_fromHorizGrid=6370.E3,
- delR= 2000., 3000., 3000., 3000., 4000., 5000., 5000., 5000., 5000., 5000.,
-       5000., 5000., 5000., 5000., 5000., 5000., 5000., 4000., 4000., 3500.,
-       3000., 2500., 2000., 1500., 1200., 800., 650., 500., 350., 250.,
-       200., 150., 125., 100., 75., 50., 25., 15., 6., 3.,
- top_Pres=1.,
+ delR= 1500,  2122,  3000,  4242,  5900,  6400,  6600,  6600,  6600,  6600,
+       6600,  6600,  6300,  5840,  4870,  4060,  3390,  2830,  2360,  1970,
+       1518,  1170,   840,   600,   428,   306,   218,   155,   110,    78,
+       56.0,  40.0,  29.0,  21.0,  15.0,  11.0,   8.0,   5.8,   4.2,   3.0,
  &
 
 # Input datasets
  &PARM05
-# hydrogThetaFile='',
-# hydrogSaltFile ='',
+  pSurfInitFile  ='psAnom_ini_cs32.bin',
+  hydrogThetaFile='theta_hs94_cs32_40l.bin',
  &
