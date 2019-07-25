@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.22 2015/08/16 14:48:34 gforget Exp $
+C $Name:  $
+
 #include "PROFILES_OPTIONS.h"
 
       subroutine profiles_readparms( myThid )
@@ -140,6 +143,7 @@ CMM(
        prof_names(num_file,13)='prof_PCO'
        prof_names(num_file,14)='prof_PH'
        prof_names(num_file,15)='prof_CHL'
+       prof_names(num_file,16)='prof_POC'
        prof_itracer(num_file,1)=1
        prof_itracer(num_file,2)=1
        prof_itracer(num_file,3)=1
@@ -155,6 +159,7 @@ CMM(
        prof_itracer(num_file,13)=1
        prof_itracer(num_file,14)=1
        prof_itracer(num_file,15)=1
+       prof_itracer(num_file,16)=1
        prof_namesmod(num_file,1)='theta'
        prof_namesmod(num_file,2)='salt'
        prof_namesmod(num_file,3)='uVel'
@@ -170,6 +175,7 @@ CMM(
        prof_namesmod(num_file,13)='PCO'
        prof_namesmod(num_file,14)='PH'
        prof_namesmod(num_file,15)='CHL'
+       prof_namesmod(num_file,16)='POC'
 CMM)
           endif
 

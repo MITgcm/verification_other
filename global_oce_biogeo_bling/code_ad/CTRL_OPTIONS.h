@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm_contrib/gael/verification/global_oce_llc90/code/CTRL_OPTIONS.h,v 1.1 2014/10/20 03:29:00 gforget Exp $
+C $Name:  $
+
 CBOP
 C !ROUTINE: CTRL_OPTIONS.h
 C !INTERFACE:
@@ -35,8 +38,8 @@ CMM(
 CMM)
 
 C o sets of controls
-#undef ALLOW_GENTIM2D_CONTROL
-#undef ALLOW_GENARR2D_CONTROL
+#define ALLOW_GENTIM2D_CONTROL
+#define ALLOW_GENARR2D_CONTROL
 #define ALLOW_GENARR3D_CONTROL
 
 C  o use pkg/smooth correlation operator (incl. smoother) for 3D controls (Weaver, Courtier 01)
