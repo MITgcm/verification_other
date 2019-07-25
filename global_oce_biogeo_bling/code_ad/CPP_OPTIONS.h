@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm_contrib/gael/verification/global_oce_llc90/code/CPP_OPTIONS.h,v 1.5 2014/10/20 03:29:00 gforget Exp $
+C $Name:  $
+
 #ifndef CPP_OPTIONS_H
 #define CPP_OPTIONS_H
 
@@ -17,7 +20,7 @@ C CPP flags controlling particular source code features
 
 C o Shortwave heating as extra term in external_forcing.F
 C Note: this should be a run-time option
-#undef SHORTWAVE_HEATING
+#define SHORTWAVE_HEATING
 
 C o Include/exclude Geothermal Heat Flux at the bottom of the ocean
 #undef ALLOW_GEOTHERMAL_FLUX
@@ -32,16 +35,16 @@ C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
 
 C o Allow full 3D specification of vertical diffusivity
-#define ALLOW_3D_DIFFKR
+#undef ALLOW_3D_DIFFKR
 
 C o Allow latitudinally varying BryanLewis79 vertical diffusivity
 #undef ALLOW_BL79_LAT_VARY
 
 C o Include/exclude Implicit vertical advection code
-#undef INCLUDE_IMPLVERTADV_CODE
+#define INCLUDE_IMPLVERTADV_CODE
 
 C o Include/exclude AdamsBashforth-3rd-Order code
-#undef ALLOW_ADAMSBASHFORTH_3
+#define ALLOW_ADAMSBASHFORTH_3
 
 C o Include/exclude nonHydrostatic code
 #undef ALLOW_NONHYDROSTATIC
@@ -72,14 +75,13 @@ C o Include/exclude GM-like eddy stress in momentum code
 
 C o Use "Exact Convervation" of fluid in Free-Surface formulation
 C   so that d/dt(eta) is exactly equal to - Div.Transport
-#define EXACT_CONSERV
+#undef EXACT_CONSERV
 
 C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that surface thickness (hFactors) vary with time
 #undef NONLIN_FRSURF
-
-C o Use Non Self-Adjoint (NSA) conjugate-gradient solver
-#undef ALLOW_CG2D_NSA
+#undef DISABLE_RSTAR_CODE
+#define DISABLE_SIGMA_CODE
 
 C o Include/exclude code for single reduction Conjugate-Gradient solver
 #undef ALLOW_SRCG
@@ -88,7 +90,7 @@ C o Choices for implicit solver routines solve_*diagonal.F
 C   The following has low memory footprint, but not suitable for AD
 #undef SOLVE_DIAGONAL_LOWMEMORY
 C   The following one suitable for AD but does not vectorize
-#undef SOLVE_DIAGONAL_KINNER
+#define SOLVE_DIAGONAL_KINNER
 
 C o ALLOW isotropic scaling of harmonic and bi-harmonic terms when
 C   using an locally isotropic spherical grid with (dlambda) x (dphi*cos(phi))
@@ -113,22 +115,23 @@ C   The definition of the flag is commented to avoid interference with
 C   such other header files.
 C#define COSINEMETH_III
 
+C o Use "OLD" UV discretisation near boundaries (*not* recommended)
+C   Note - only works with pkg/mom_fluxform and "no_slip_sides=.FALSE."
+C          because the old code did not have no-slip BCs
+#undef OLD_ADV_BCS
+
 C o Use LONG.bin, LATG.bin, etc., initialization for ini_curviliear_grid.F
 C   Default is to use "new" grid files (OLD_GRID_IO undef) but OLD_GRID_IO
 C   is still useful with, e.g., single-domain curvilinear configurations.
 #undef OLD_GRID_IO
 
+C o Use old EXTERNAL_FORCING_U,V,T,S subroutines (for backward compatibility)
+#undef USE_OLD_EXTERNAL_FORCING
+
+#define EXCLUDE_PCELL_MIX_CODE
+
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
 
-C o Include/exclude single header file containing multiple packages options
-C   (AUTODIFF, COST, CTRL, ECCO, EXF ...) instead of the standard way where
-C   each of the above pkg get its own options from its specific option file.
-C   Although this method, inherited from ECCO setup, has been traditionally
-C   used for all adjoint built, work is in progress to allow to use the
-C   standard method also for adjoint built.
-c#ifdef PACKAGES_CONFIG_H
-c# include "ECCO_CPPOPTIONS.h"
-c#endif
-
 #endif /* CPP_OPTIONS_H */
+
