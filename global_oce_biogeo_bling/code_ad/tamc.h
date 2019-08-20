@@ -61,9 +61,9 @@ C
       integer    nchklev_1
       parameter( nchklev_1      =   1 )
       integer    nchklev_2
-      parameter( nchklev_2      =   3 )
+      parameter( nchklev_2      =   2 )
       integer    nchklev_3
-      parameter( nchklev_3      =   3 )
+      parameter( nchklev_3      =   2 )
       integer    nchklev_4
       parameter( nchklev_4      =   1 )
 
