@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/gael/verification/global_oce_llc90/code/tamc.h_itXX,v 1.2 2014/07/01 18:31:54 gforget Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 
 c     ================================================================
@@ -17,11 +14,9 @@ c                common blocks in the undef ALLOW_TAMC_CHECKPOINTING case
 c              - nhreads_chkpt was declared at the wrong place
 c              - new keys, separate for different packages
 
-
 c     ================================================================
 c     HEADER TAMC
 c     ================================================================
-
 
 c     TAMC checkpointing parameters:
 c     ==============================
@@ -32,13 +27,13 @@ c     run.
 c
 c     nyears_chkpt   - Number of calendar years affected by the assimilation
 c                      experiment; nyears_chkpt has to be at least equal to
-c                      the result of cal_IntYears(mythid).
+c                      the result of cal_IntYears(myThid).
 c     nmonths_chkpt  - Number of months per year; nmonth_chkpt has to be at
 c                      least equal to nmonthyear.
 c     ndays_chkpt    - Number of days per month; nday_chkpt has to be at least
 c                      equal to nmaxdaymonth.
 c     nsteps_chkpt   - Number of steps per day; nsteps_chkpt has to be at
-c                      least equal to cal_nStepDay(mythid)
+c                      least equal to cal_nStepDay(myThid)
 c     ncheck_chkpt   - Number of innermost checkpoints.
 c
 c     ngeom_chkpt    - Geometry factor.
@@ -54,15 +49,15 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
       parameter (nyears_chkpt   =          1 )
       parameter (nmonths_chkpt  =         12 )
       parameter (ndays_chkpt    =         31 )
-      parameter (ngeom_chkpt    = nr*nsx*nsy )
+      parameter (ngeom_chkpt    = Nr*nSx*nSy )
       parameter (ncheck_chkpt   =          6 )
       parameter ( nthreads_chkpt = 1 )
 
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
-C run  87630 time steps 
+C run  87630 time steps
 C 16 usually runs OK
-C 
+C
       integer    nchklev_1
       parameter( nchklev_1      =   1 )
       integer    nchklev_2
@@ -119,11 +114,10 @@ c     and writing data.
 
       INTEGER act0, act1, act2, act3, act4
       INTEGER max0, max1, max2, max3
-      INTEGER iikey, kkey, passkey, igadkey, 
+      INTEGER iikey, kkey, passkey, igadkey,
      &        itdkey, idynkey, igmkey, iptrkey
 
 c     ================================================================
 c     END OF HEADER TAMC
 c     ================================================================
-
 

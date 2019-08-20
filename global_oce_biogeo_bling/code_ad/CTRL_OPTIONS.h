@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/gael/verification/global_oce_llc90/code/CTRL_OPTIONS.h,v 1.1 2014/10/20 03:29:00 gforget Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: CTRL_OPTIONS.h
 C !INTERFACE:
@@ -52,7 +49,7 @@ C    This CPP option just sets the default for ctrlSmoothCorrel2D to .TRUE.
 C  o impose bounds on controls
 CMM#define ALLOW_ADCTRLBOUND
 
-C   o rotate u/v vector control to zonal/meridional 
+C   o rotate u/v vector control to zonal/meridional
 C   components
 CMM#define ALLOW_ROTATE_UV_CONTROLS
 
