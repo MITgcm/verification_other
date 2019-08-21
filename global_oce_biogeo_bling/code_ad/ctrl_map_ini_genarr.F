@@ -191,33 +191,29 @@ CMM)
 CMM(
 #ifdef ALLOW_PTRACERS
 
+CADJ STORE pTracer=comlev1,key=ikey_dynamics,kind=isbyte
+
       if (igen_ptr1.GT.0) then
-CADJ STORE pTracer(:,:,:,:,:,1)=comlev1,key=ikey_dynamics,kind=isbyte
         call ctrl_map_genarr3d(pTracer(1-OLx,1-OLy,1,1,1,1),
      &                          igen_ptr1,myThid)
       endif
       if (igen_ptr2.GT.0) then
-CADJ STORE pTracer(:,:,:,:,:,2)=comlev1,key=ikey_dynamics,kind=isbyte
         call ctrl_map_genarr3d(pTracer(1-OLx,1-OLy,1,1,1,2),
      &                          igen_ptr2,myThid)
       endif
       if (igen_ptr3.GT.0) then
-CADJ STORE pTracer(:,:,:,:,:,3)=comlev1,key=ikey_dynamics,kind=isbyte
         call ctrl_map_genarr3d(pTracer(1-OLx,1-OLy,1,1,1,3),
      &                          igen_ptr3,myThid)
       endif
       if (igen_ptr4.GT.0) then
-CADJ STORE pTracer(:,:,:,:,:,4)=comlev1,key=ikey_dynamics,kind=isbyte
         call ctrl_map_genarr3d(pTracer(1-OLx,1-OLy,1,1,1,4),
      &                          igen_ptr4,myThid)
       endif
       if (igen_ptr5.GT.0) then
-CADJ STORE pTracer(:,:,:,:,:,5)=comlev1,key=ikey_dynamics,kind=isbyte
         call ctrl_map_genarr3d(pTracer(1-OLx,1-OLy,1,1,1,5),
      &                          igen_ptr5,myThid)
       endif
       if (igen_ptr6.GT.0) then
-CADJ STORE pTracer(:,:,:,:,:,6)=comlev1,key=ikey_dynamics,kind=isbyte
         call ctrl_map_genarr3d(pTracer(1-OLx,1-OLy,1,1,1,6),
      &                          igen_ptr6,myThid)
       endif
