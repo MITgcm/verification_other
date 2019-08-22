@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.15 2015/08/19 13:04:24 jmc Exp $
+C $Name:  $
+
 #include "PROFILES_OPTIONS.h"
 #ifdef ALLOW_ECCO
 # include "ECCO_OPTIONS.h"
@@ -104,6 +107,8 @@ CMM(
                tab_coeffs1(q)=pH(i_cur(q),j_cur(q),k,bi,bj)
         elseif (var_cur.EQ.'CHL') then
                tab_coeffs1(q)=CHL(i_cur(q),j_cur(q),k,bi,bj)
+        elseif (var_cur.EQ.'POC') then
+               tab_coeffs1(q)=POC(i_cur(q),j_cur(q),k,bi,bj)
 #endif
 CMM)
 
