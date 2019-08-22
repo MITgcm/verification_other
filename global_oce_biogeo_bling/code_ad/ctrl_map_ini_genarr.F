@@ -62,10 +62,10 @@ C     == local variables ==
 #ifdef ALLOW_GENARR2D_CONTROL
       integer igen_etan,igen_bdrag,igen_geoth
 CMM(
-      integer igen_Pc, igen_alpha_photo
-      integer igen_k_Fe, igen_gamma_POM
-      integer igen_wsink0, igen_phi_sm
-      integer igen_phi_lg, igen_phi_DOM
+cmm      integer igen_Pc, igen_alpha_photo
+cmm      integer igen_k_Fe, igen_gamma_POM
+cmm      integer igen_wsink0, igen_phi_sm
+cmm      integer igen_phi_lg, igen_phi_DOM
 CMM)
 #endif /* ALLOW_GENARR2D_CONTROL */
 #ifdef ALLOW_GENARR3D_CONTROL
@@ -166,14 +166,8 @@ CMM)
       endif
       ENDDO
 
-CMM(
-CMM      if (igen_theta0.GT.0)
-CMM     &   call ctrl_map_genarr3d(theta,igen_theta0,myThid)
-      if (igen_theta0.GT.0) then
-CADJ STORE theta=comlev1,key=ikey_dynamics,kind=isbyte
-         call ctrl_map_genarr3d(theta,igen_theta0,myThid)
-      endif
-CMM)
+      if (igen_theta0.GT.0)
+     &   call ctrl_map_genarr3d(theta,igen_theta0,myThid)
       if (igen_salt0.GT.0)
      &   call ctrl_map_genarr3d(salt,igen_salt0,myThid)
 #ifdef ALLOW_KAPGM_CONTROL
@@ -188,11 +182,10 @@ CMM)
       if (igen_diffkr.GT.0)
      &   call ctrl_map_genarr3d(diffkr,igen_diffkr,myThid)
 #endif
+
 CMM(
 #ifdef ALLOW_PTRACERS
-
 CADJ STORE pTracer=comlev1,key=ikey_dynamics,kind=isbyte
-
       if (igen_ptr1.GT.0) then
         call ctrl_map_genarr3d(pTracer(1-OLx,1-OLy,1,1,1,1),
      &                          igen_ptr1,myThid)
@@ -217,43 +210,7 @@ CADJ STORE pTracer=comlev1,key=ikey_dynamics,kind=isbyte
         call ctrl_map_genarr3d(pTracer(1-OLx,1-OLy,1,1,1,6),
      &                          igen_ptr6,myThid)
       endif
-
-CMM UNFORTUNATELY WE NEED THIS
-CMM     Apply mask
-      DO iTracer = 1, PTRACERS_numInUse
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO k=1,Nr
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            IF (maskC(i,j,k,bi,bj).NE.0.)  THEN
-              IF (pTracer(i,j,k,bi,bj,iTracer).LT.1. _d -11)
-     &           pTracer(i,j,k,bi,bj,iTracer)=1. _d -11
-            ENDIF
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-
 #endif
-CMM AND THIS TOO
-      DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO k=1,Nr
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            IF (maskC(i,j,k,bi,bj).NE.0.)  THEN
-              IF (theta(i,j,k,bi,bj).LT.-1.97  _d 0)
-     &            theta(i,j,k,bi,bj)=-1.97  _d 0
-            ENDIF
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-
 CMM)
 
 #if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
