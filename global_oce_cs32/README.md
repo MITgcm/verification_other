@@ -6,7 +6,6 @@ cd MITgcm/
 git clone https://github.com/MITgcm/verification_other
 
 cd verification_other/global_oce_cs32
-ln -s code code_ad
 wget ftp://mit.ecco-group.org/ecco_for_las/version_4/checkpoints/core2_cnyf.tar
 tar xf core2_cnyf.tar
 \rm -f core2_cnyf.tar
