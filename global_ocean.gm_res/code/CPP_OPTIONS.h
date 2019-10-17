@@ -98,7 +98,7 @@ C o Include/exclude nonHydrostatic code
 #undef ALLOW_NONHYDROSTATIC
 
 C o Include/exclude GM-like eddy stress in momentum code
-#undef ALLOW_EDDYPSI
+#define ALLOW_EDDYPSI
 
 C-- Algorithm options:
 
