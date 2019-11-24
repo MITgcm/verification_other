@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.22 2015/08/16 14:48:34 gforget Exp $
-C $Name:  $
-
 #include "PROFILES_OPTIONS.h"
 
       subroutine profiles_readparms( myThid )
@@ -51,9 +48,17 @@ c--   Read the namelist input.
      &                   profilesDir,
      &                   profilesfiles,
      &                   mult_profiles,
+     &                   mult_profiles_mean,
+#ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+C number of independent samples
+     &                   profiles_mean_indsamples,
+#endif
      &                   prof_facmod,
      &                   prof_names,
      &                   prof_namesmod,
+#ifdef ALLOW_PROFILES_CLIMMASK
+     &                   prof_namesclim,
+#endif
      &                   prof_itracer,
      &                   profilesDoNcOutput,
      &                   profilesDoGenGrid
@@ -84,7 +89,16 @@ c--     Set default values.
         prof_names(num_file,num_var)='empty'
         prof_itracer(num_file,num_var)=1
         prof_namesmod(num_file,num_var)='empty'
+#ifdef ALLOW_PROFILES_CLIMMASK
+        prof_namesclim(num_file,num_var)='empty'
+#endif
        enddo
+      enddo
+      do num_var=1,NVARMAX
+         mult_profiles_mean(num_var) = 1. _d 0
+#ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+         profiles_mean_indsamples(num_var) = 1
+#endif
       enddo
 
       profilesDoNcOutput=.false.
@@ -112,7 +126,11 @@ c--     Next, read the cost data file.
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                  SQUEEZE_RIGHT , 1)
 
-        CLOSE( iUnit )
+#ifdef SINGLE_DISK_IO
+        CLOSE(iUnit)
+#else
+        CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
         do num_file=1,NFILESPROFMAX
 
@@ -123,60 +141,63 @@ c--     Next, read the cost data file.
           enddo
 
           if (.NOT.specifiedNames) then
-c            prof_names(num_file,1)='prof_T'
-c            prof_names(num_file,2)='prof_S'
-c            prof_namesmod(num_file,1)='theta'
-c            prof_namesmod(num_file,2)='salt'
-CMM(
-       prof_names(num_file,1)='prof_T'
-       prof_names(num_file,2)='prof_S'
-       prof_names(num_file,3)='prof_U'
-       prof_names(num_file,4)='prof_V'
-       prof_names(num_file,5)='prof_ptr'
-       prof_names(num_file,6)='prof_ssh'
-       prof_names(num_file,7)='prof_DIC'
-       prof_names(num_file,8)='prof_ALK'
-       prof_names(num_file,9)='prof_O2'
-       prof_names(num_file,10)='prof_NO3'
-       prof_names(num_file,11)='prof_PO4'
-       prof_names(num_file,12)='prof_FE'
-       prof_names(num_file,13)='prof_PCO'
-       prof_names(num_file,14)='prof_PH'
-       prof_names(num_file,15)='prof_CHL'
-       prof_names(num_file,16)='prof_POC'
-       prof_itracer(num_file,1)=1
-       prof_itracer(num_file,2)=1
-       prof_itracer(num_file,3)=1
-       prof_itracer(num_file,4)=1
-       prof_itracer(num_file,5)=1
-       prof_itracer(num_file,6)=1
-       prof_itracer(num_file,7)=1
-       prof_itracer(num_file,8)=2
-       prof_itracer(num_file,9)=3
-       prof_itracer(num_file,10)=4
-       prof_itracer(num_file,11)=5
-       prof_itracer(num_file,12)=6
-       prof_itracer(num_file,13)=1
-       prof_itracer(num_file,14)=1
-       prof_itracer(num_file,15)=1
-       prof_itracer(num_file,16)=1
-       prof_namesmod(num_file,1)='theta'
-       prof_namesmod(num_file,2)='salt'
-       prof_namesmod(num_file,3)='uVel'
-       prof_namesmod(num_file,4)='vVel'
-       prof_namesmod(num_file,5)='pTracer'
-       prof_namesmod(num_file,6)='etaN'
-       prof_namesmod(num_file,7)='pTracer'
-       prof_namesmod(num_file,8)='pTracer'
-       prof_namesmod(num_file,9)='pTracer'
-       prof_namesmod(num_file,10)='pTracer'
-       prof_namesmod(num_file,11)='pTracer'
-       prof_namesmod(num_file,12)='pTracer'
-       prof_namesmod(num_file,13)='PCO'
-       prof_namesmod(num_file,14)='PH'
-       prof_namesmod(num_file,15)='CHL'
-       prof_namesmod(num_file,16)='POC'
-CMM)
+            prof_names(num_file,1)='prof_T'
+            prof_names(num_file,2)='prof_S'
+C----- local version addition: start
+            prof_names(num_file,3)='prof_U'
+            prof_names(num_file,4)='prof_V'
+            prof_names(num_file,5)='prof_ptr'
+            prof_names(num_file,6)='prof_ssh'
+            prof_names(num_file,7)='prof_DIC'
+            prof_names(num_file,8)='prof_ALK'
+            prof_names(num_file,9)='prof_O2'
+            prof_names(num_file,10)='prof_NO3'
+            prof_names(num_file,11)='prof_PO4'
+            prof_names(num_file,12)='prof_FE'
+            prof_names(num_file,13)='prof_PCO'
+            prof_names(num_file,14)='prof_PH'
+            prof_names(num_file,15)='prof_CHL'
+            prof_names(num_file,16)='prof_POC'
+
+            prof_itracer(num_file,1)=1
+            prof_itracer(num_file,2)=1
+            prof_itracer(num_file,3)=1
+            prof_itracer(num_file,4)=1
+            prof_itracer(num_file,5)=1
+            prof_itracer(num_file,6)=1
+            prof_itracer(num_file,7)=1
+            prof_itracer(num_file,8)=2
+            prof_itracer(num_file,9)=3
+            prof_itracer(num_file,10)=4
+            prof_itracer(num_file,11)=5
+            prof_itracer(num_file,12)=6
+            prof_itracer(num_file,13)=1
+            prof_itracer(num_file,14)=1
+            prof_itracer(num_file,15)=1
+            prof_itracer(num_file,16)=1
+C----- local version addition: end
+            prof_namesmod(num_file,1)='theta'
+            prof_namesmod(num_file,2)='salt'
+C----- local version addition: start
+            prof_namesmod(num_file,3)='uVel'
+            prof_namesmod(num_file,4)='vVel'
+            prof_namesmod(num_file,5)='pTracer'
+            prof_namesmod(num_file,6)='etaN'
+            prof_namesmod(num_file,7)='pTracer'
+            prof_namesmod(num_file,8)='pTracer'
+            prof_namesmod(num_file,9)='pTracer'
+            prof_namesmod(num_file,10)='pTracer'
+            prof_namesmod(num_file,11)='pTracer'
+            prof_namesmod(num_file,12)='pTracer'
+            prof_namesmod(num_file,13)='PCO'
+            prof_namesmod(num_file,14)='PH'
+            prof_namesmod(num_file,15)='CHL'
+            prof_namesmod(num_file,16)='POC'
+C----- local version addition: end
+#ifdef ALLOW_PROFILES_CLIMMASK
+            prof_namesclim(num_file,1)='prof_Tclim'
+            prof_namesclim(num_file,2)='prof_Sclim'
+#endif
           endif
 
           do num_var=1,NVARMAX
@@ -189,6 +210,7 @@ CMM)
              WRITE(errorMessageUnit,'(2A)')
      &         'ERROR in PROFILES_READPARMS: inconsistent ',
      &         'prof_names and prof_namesmod'
+             CALL ALL_PROC_DIE( myThid )
              STOP 'ABNORMAL END: S/R PROFILES_READPARMS'
             endif
           enddo
@@ -199,6 +221,10 @@ CMM)
      &        prof_names(num_file,num_var)(1:IL),'mask'
             WRITE(prof_namesweight(num_file,num_var),'(2A)')
      &        prof_names(num_file,num_var)(1:IL),'weight'
+#ifdef ALLOW_PROFILES_CLIMMASK
+            WRITE(prof_namesclim(num_file,num_var),'(2A)')
+     &        prof_names(num_file,num_var)(1:IL),'clim'
+#endif
           enddo
 
           if ( profilesfiles(num_file) .NE. ' ' ) then
