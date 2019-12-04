@@ -1,23 +1,22 @@
+#include "PACKAGES_CONFIG.h"
 
-c     ==================================================================
+c     ================================================================
 c     HEADER TAMC
-c     ==================================================================
+c     ================================================================
 c
 c     o Header for the use of the Tangent Linear and Adjoint Model
 c       Compiler (TAMC).
 c
 c     started: Christian Eckert eckert@mit.edu  04-Feb-1999
-c
 c     changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
 c              - New parameter nlevchk_0 for dimensionalising
 c                common blocks in the undef ALLOW_TAMC_CHECKPOINTING case
 c              - nhreads_chkpt was declared at the wrong place
-c
-c
-c     ==================================================================
-c     HEADER TAMC
-c     ==================================================================
+c              - new keys, separate for different packages
 
+c     ================================================================
+c     HEADER TAMC
+c     ================================================================
 
 c     TAMC checkpointing parameters:
 c     ==============================
@@ -28,13 +27,13 @@ c     run.
 c
 c     nyears_chkpt   - Number of calendar years affected by the assimilation
 c                      experiment; nyears_chkpt has to be at least equal to
-c                      the result of cal_IntYears(mythid).
+c                      the result of cal_IntYears(myThid).
 c     nmonths_chkpt  - Number of months per year; nmonth_chkpt has to be at
 c                      least equal to nmonthyear.
 c     ndays_chkpt    - Number of days per month; nday_chkpt has to be at least
 c                      equal to nmaxdaymonth.
 c     nsteps_chkpt   - Number of steps per day; nsteps_chkpt has to be at
-c                      least equal to cal_nStepDay(mythid)
+c                      least equal to cal_nStepDay(myThid)
 c     ncheck_chkpt   - Number of innermost checkpoints.
 c
 c     ngeom_chkpt    - Geometry factor.
@@ -50,28 +49,30 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
       parameter (nyears_chkpt   =          1 )
       parameter (nmonths_chkpt  =         12 )
       parameter (ndays_chkpt    =         31 )
-      parameter (ngeom_chkpt    = nr*nsx*nsy )
+      parameter (ngeom_chkpt    = Nr*nSx*nSy )
       parameter (ncheck_chkpt   =          6 )
       parameter ( nthreads_chkpt = 1 )
 
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
+C run  87630 time steps
+C 16 usually runs OK
+C
       integer    nchklev_1
+      parameter( nchklev_1      =   1 )
       integer    nchklev_2
+      parameter( nchklev_2      =   2 )
       integer    nchklev_3
+      parameter( nchklev_3      =   2 )
       integer    nchklev_4
-
-      parameter( nchklev_1      =    1 )
-      parameter( nchklev_2      =    3 )
-      parameter( nchklev_3      =    3 )
-      parameter( nchklev_4      =    1 )
+      parameter( nchklev_4      =   1 )
 
 c--   Note always check for the correct sizes of the common blocks!
 
 #else /* ALLOW_TAMC_CHECKPOINTING undefined */
 
       integer    nchklev_0
-      parameter( nchklev_0      =  105200 )
+      parameter( nchklev_0      =  64800 )
 
 #endif /* ALLOW_TAMC_CHECKPOINTING */
 
@@ -101,27 +102,22 @@ c     and writing data.
       integer iloop_daily
 
       INTEGER    isbyte
-      PARAMETER( isbyte      = 4 )
+      PARAMETER( isbyte      = 8 )
       INTEGER    maximpl
       PARAMETER( maximpl     = 6 )
-#ifdef ALLOW_PTRACERS 
-cmm      INTEGER    maxpass
-cmm      ALLOW_PASSIVE_TRACER
-cmm      PARAMETER( maxpass     = 3 )
-#else
+#ifndef ALLOW_PTRACERS
       INTEGER    maxpass
-      PARAMETER( maxpass     = 2 )
+      PARAMETER( maxpass     = 3 )
 #endif
       INTEGER    maxcube
-      PARAMETER( maxcube     = 1 )
+      PARAMETER( maxcube     = 3 )
 
       INTEGER act0, act1, act2, act3, act4
       INTEGER max0, max1, max2, max3
       INTEGER iikey, kkey, passkey, igadkey,
-     &        itdkey, idynkey, igmkey
-CMM     &        itdkey, idynkey, igmkey, ikppkey
+     &        itdkey, idynkey, igmkey, iptrkey
 
-c     ==================================================================
+c     ================================================================
 c     END OF HEADER TAMC
-c     ==================================================================
+c     ================================================================
 

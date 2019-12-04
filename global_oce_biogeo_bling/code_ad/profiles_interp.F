@@ -46,11 +46,9 @@ C ==================== Global Variables ===========================
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_FIELDS.h"
 #endif
-CMM(
 #ifdef ALLOW_BLING
 #include "BLING_VARS.h"
 #endif
-CMM)
 C ==================== Routine Variables ==========================
       _RL  mytime
       integer mythid
@@ -95,8 +93,6 @@ c horizontal interpolation:
 #else
                tab_coeffs1(q)=0. _d 0
 #endif
-
-CMM(
 #ifdef ALLOW_BLING
         elseif (var_cur.EQ.'PCO') then
                tab_coeffs1(q)=pCO2(i_cur(q),j_cur(q),bi,bj)
@@ -104,17 +100,17 @@ CMM(
                tab_coeffs1(q)=pH(i_cur(q),j_cur(q),k,bi,bj)
         elseif (var_cur.EQ.'CHL') then
                tab_coeffs1(q)=CHL(i_cur(q),j_cur(q),k,bi,bj)
+        elseif (var_cur.EQ.'POC') then
+               tab_coeffs1(q)=POC(i_cur(q),j_cur(q),k,bi,bj)
 #endif
-CMM)
-
 #ifdef ALLOW_ECCO
         elseif (var_cur.EQ.'eta') then
                tab_coeffs1(q)=m_eta(i_cur(q),j_cur(q),bi,bj)
+#endif
         elseif (var_cur.EQ.'UE') then
                tab_coeffs1(q)=m_UE(i_cur(q),j_cur(q),k,bi,bj)
         elseif (var_cur.EQ.'VN') then
                tab_coeffs1(q)=m_VN(i_cur(q),j_cur(q),k,bi,bj)
-#endif
         else
                tab_coeffs1(q)=0. _d 0
         endif
@@ -165,8 +161,9 @@ c case 3: between two grid centers
           enddo
           if (kcur.EQ.0) then
             WRITE(errorMessageUnit,'(A)')
-     & 'ERROR in PROFILES_INTERP: unexpected case 1'
-             STOP 'ABNORMAL END: S/R PROFILES_INTERP'
+     &        'ERROR in PROFILES_INTERP: unexpected case 1'
+            CALL ALL_PROC_DIE( myThid )
+            STOP 'ABNORMAL END: S/R PROFILES_INTERP'
           endif
           if (mask_cur(kcur+1).EQ.1.) then
 c  subcase 1: 2 wet points=>linear interpolation
@@ -177,8 +174,9 @@ c  subcase 1: 2 wet points=>linear interpolation
             prof_mask1D_cur(kk,bi,bj)=1
             if (mask_cur(kcur).EQ.0.) then
             WRITE(errorMessageUnit,'(A)')
-     & 'ERROR in PROFILES_INTERP: unexpected case 2'
-             STOP 'ABNORMAL END: S/R PROFILES_INTERP'
+     &        'ERROR in PROFILES_INTERP: unexpected case 2'
+            CALL ALL_PROC_DIE( myThid )
+            STOP 'ABNORMAL END: S/R PROFILES_INTERP'
             endif
           elseif (prof_depth(file_cur,kk,bi,bj).LT.-rF(kcur+1)) then
 c  subcase 2: only 1 wet point just above=>upper cell value

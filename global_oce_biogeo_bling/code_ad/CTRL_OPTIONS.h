@@ -35,8 +35,8 @@ CMM(
 CMM)
 
 C o sets of controls
-#undef ALLOW_GENTIM2D_CONTROL
-#undef ALLOW_GENARR2D_CONTROL
+#define ALLOW_GENTIM2D_CONTROL
+#define ALLOW_GENARR2D_CONTROL
 #define ALLOW_GENARR3D_CONTROL
 
 C  o use pkg/smooth correlation operator (incl. smoother) for 3D controls (Weaver, Courtier 01)
@@ -49,7 +49,7 @@ C    This CPP option just sets the default for ctrlSmoothCorrel2D to .TRUE.
 C  o impose bounds on controls
 CMM#define ALLOW_ADCTRLBOUND
 
-C   o rotate u/v vector control to zonal/meridional 
+C   o rotate u/v vector control to zonal/meridional
 C   components
 CMM#define ALLOW_ROTATE_UV_CONTROLS
 

@@ -9,8 +9,6 @@ cd verification_other/global_oce_llc90
 
 ###[begin; stuff below should also be rellocated]
 
-ln -s code code_ad
-
 cvs co -P -d input_fields MITgcm_contrib/gael/verification/ECCO_v4_r2/input_fields
 
 cd input_fields
