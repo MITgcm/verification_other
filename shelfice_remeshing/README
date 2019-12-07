@@ -1,0 +1,39 @@
+Coupled StreamIce + ShelfIce + Ocean experiment that tests Wetting & Drying
+ under ice-shelf (involving "remeshing" of ocean grid-cells.
+===============================================================================
+
+Description:
+
+Reference:
+
+ D.N. Goldberg, K. Snow, P. Holland, J.R. Jordan, J.-M. Campin, P. Heimbach,
+ R. Arthern and A. Jenkins,
+ "Representing grounding line migration in synchronous coupling between
+  a marine ice sheet model and a z-coordinate ocean model",
+ Ocean Modelling, 125} 45-60, 2018.
+ doi: 10.1016/j.ocemod.2018.03.005
+
+ James R. Jordan, Paul R. Holland, Dan Goldberg, Kate Snow, Robert Arthern,
+ Jean-Michel Campin, Patrick Heimbach, and Adrian Jenkins,
+ "Ocean-Forced Ice-Shelf Thinning in a Synchronously Coupled Ice-Ocean Model",
+ J. of Geophysical Research, 123, No 2, 2017.
+ doi:10.1002/2017JC013251
+
+--------------------------------------
+
+Additional (simpler) set-up which only involves "vertical remeshing" without
+ grounding line displacement (--> fixed ocean horizontal domain) in:
+  code_vrm
+  input_vrm
+  results/output_vrm.txt
+
+To run simpler set-up:
+ > cd build
+ > ../../../tools/genmake2 -mods ../code_vrm -of [My_Optfile] [-devel]
+ > make depend ; make ; cd ..
+ > cd run
+ > ln -s ../input_vrm/* .
+ > ./input_vrm/prepare_run
+ > ln -s ../build/mitgcmuv
+ > ./mitgcmuv  >& output_vrm.txt
+
