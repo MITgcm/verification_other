@@ -273,7 +273,7 @@ C-    end bi,bj loops.
 C--   Addtional closing of Western and Southern grid-cell edges: for example,
 C     a) might add some "thin walls" in specific location
 C--   b) close non-periodic N & S boundaries of lat-lon grid at the N/S poles.
-      CALL ADD_WALLS2MASKS( myThid )
+c     CALL ADD_WALLS2MASKS( myThid )
 
 C--   Calculate surface k index for interface W & S (U & V points)
       DO bj=myByLo(myThid), myByHi(myThid)
