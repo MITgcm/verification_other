@@ -69,7 +69,7 @@ C-----------------------------------------------------------------------
         DO j = 1-OLy, sNy+OLy
          DO i = 1-OLx, sNx+OLx
           IF ( kSurfC(i,j,bi,bj).LE.Nr .AND.
-     &         R_shelfIce(i,j,bi,bj).LT.zeroRS ) THEN
+     &         Ro_surf(i,j,bi,bj).LT.rF(1) ) THEN
             kTopC(i,j,bi,bj) = kSurfC(i,j,bi,bj)
           ELSE
             kTopC(i,j,bi,bj) = 0
@@ -99,7 +99,7 @@ C     like ctrl_get_gen and ctrl_set_unpack_xy require 3D masks.
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           IF ( R_shelfIce(i,j,bi,bj).LT.zeroRS
+           IF ( Ro_surf(i,j,bi,bj).LT.rF(1)
      &          .AND. hFacC(i,j,k,bi,bj).NE.zeroRS ) THEN
             maskSHI(i,j,k,bi,bj) = 1. _d 0
             maskSHI(i,j,1,bi,bj) = 1. _d 0
@@ -210,18 +210,20 @@ c     ENDIF
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-       diagName  = 'SHIUDrag'
-       diagTitle = 'U momentum tendency from ice shelf drag'
-       diagUnits = 'm/s^2           '
-       diagCode  = 'UU      MR      '
+       diagName  = 'SHI_TauX'
+       diagTitle =
+     &     'Ice shelf bottom stress, zonal  comp., >0 increases uVel'
+       diagUnits = 'N/m^2           '
+       diagCode  = 'UU      L1      '
        diagMate  = diagNum + 2
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-       diagName  = 'SHIVDrag'
-       diagTitle = 'V momentum tendency from ice shelf drag'
-       diagUnits = 'm/s^2           '
-       diagCode  = 'VV      MR      '
+       diagName  = 'SHI_TauY'
+       diagTitle =
+     &     'Ice shelf bottom stress, merid. comp., >0 increases vVel'
+       diagUnits = 'N/m^2           '
+       diagCode  = 'VV      L1      '
        diagMate  = diagNum
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
@@ -268,19 +270,23 @@ c     ENDIF
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+#ifdef ALLOW_SHELFICE_REMESHING
        diagName  = 'SHIRshel'
        diagTitle = 'depth of shelfice'
-       diagUnits = 'm          '
+       diagUnits = 'm               '
        diagCode  = 'SM      L1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
+#endif
+#ifdef ALLOW_SHELFICE_GROUNDED_ICE
        diagName  = 'SHI_MEff'
        diagTitle = 'dynamic ice shelf mass for surface load anomaly'
        diagUnits = 'kg/m^2          '
        diagCode  = 'SM      L1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
+
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /* ALLOW_SHELFICE */
