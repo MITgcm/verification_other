@@ -27,29 +27,22 @@ CEOP
       INTEGER shelfice_etarestore_spongewidth
 
       COMMON /SHELFICE_LOCAL_RL/
-     &     EFFMASS,
      &     shelficeEtaRelax
-      _RL EFFMASS        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SeaLevelRestore(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeEtaRelax
 c     _RL SHELFICEGroundW, SHELFICEGroundC
-
-      COMMON /SHELFICE_LOCAL_RS/
-     &     R_MWCT
-      _RS R_MWCT         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON /SHELFICE_LOCAL_L/
      &     SHELFICErealFWflux,
 c    &     SHELFICEthickBoundaryLayer,
      &     SHELFICEEtaSponge,
      &     SHELFICE_dig_ice,
-     &     SHELFICE_massmin_truedens,
+     &     SHELFICE_massmin_trueDens,
      &     conserve_ssh
       LOGICAL SHELFICErealFWflux
 c     LOGICAL SHELFICEthickBoundaryLayer
       LOGICAL SHELFICEEtaSponge
       LOGICAL SHELFICE_dig_ice
-      LOGICAL SHELFICE_massmin_truedens
+      LOGICAL SHELFICE_massmin_trueDens
 C   KS16 put var here
       LOGICAL conserve_ssh
 
@@ -58,5 +51,13 @@ c    &     SHELFICEGroundTopoFile,
 c    &     SHELFICEGroundInitFile
 c     CHARACTER*(MAX_LEN_FNAM) SHELFICEGroundTopoFile
 c     CHARACTER*(MAX_LEN_FNAM) SHELFICEGroundInitFile
+
+#ifdef ALLOW_SHELFICE_GROUNDED_ICE
+      COMMON /SHELFICE_LOCAL_FLD/
+     &     EFFMASS, R_MWCT
+      _RL EFFMASS        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL R_MWCT         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+c     _RL SeaLevelRestore(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #endif /* ALLOW_SHELFICE */

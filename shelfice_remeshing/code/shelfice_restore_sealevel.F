@@ -1,5 +1,7 @@
 #include "SHELFICE_OPTIONS.h"
-#include "OBCS_OPTIONS.h"
+#ifdef ALLOW_OBCS
+# include "OBCS_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -20,16 +22,17 @@ C     !USES:
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-#include "DYNVARS.h"
-#include "SURFACE.h"
-#include "FFIELDS.h"
-#include "SHELFICE.h"
-#include "OBCS_PARAMS.h"
-#include "OBCS_GRID.h"
-#include "OBCS_FIELDS.h"
-
+#ifdef UNFINISHED_LOCAL_CODE
+# include "PARAMS.h"
+# include "GRID.h"
+# include "DYNVARS.h"
+# include "SURFACE.h"
+# include "FFIELDS.h"
+# include "SHELFICE.h"
+# include "OBCS_PARAMS.h"
+# include "OBCS_GRID.h"
+# include "OBCS_FIELDS.h"
+#endif /* UNFINISHED_LOCAL_CODE */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -45,8 +48,7 @@ C     myThid    :: Thread Id number
       INTEGER myIter
       INTEGER myThid
 
-#ifdef ALLOW_SHELFICE
-#ifndef ALLOW_SHELFICE
+#ifdef UNFINISHED_LOCAL_CODE
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j   :: Loop counters
@@ -58,7 +60,6 @@ c     DO bj=myByLo(myThid),myByHi(myThid)
 c      DO bi=myBxLo(myThid),myBxHi(myThid)
 
 C--   Zero out surface forcing terms below ice-shelf
-     
 
        IF (shelfice_etarestore_spongewidth.eq.0) then
         shelfice_etarestore_spongewidth = spongeThickness
@@ -67,7 +68,6 @@ C--   Zero out surface forcing terms below ice-shelf
        IF (shelficeetarelax.eq.0.0) then
         shelficeetaRelax = Vrelaxobcsbound
        ENDIF
-
 
 #ifdef ALLOW_OBCS_NORTH
        IF ( OBCSsponge_N .AND. shelficeEtaSponge ) THEN
@@ -101,17 +101,11 @@ C--   Zero out surface forcing terms below ice-shelf
          ENDIF
         ENDDO
        ENDIF
-#endif 
-
-
-
-
-
+#endif
 
 c      ENDDO
 c     ENDDO
 
-#endif
-#endif /* ALLOW_SHELFICE */
+#endif /* UNFINISHED_LOCAL_CODE */
       RETURN
       END
