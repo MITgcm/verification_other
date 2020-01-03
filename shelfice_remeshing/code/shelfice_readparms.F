@@ -44,35 +44,37 @@ CEOP
      &     SHELFICEMassStepping,
      &     rhoShelfice, SHELFICEkappa,
      &     SHELFICElatentHeat, SHELFICEHeatCapacity_Cp,
-     &     SHELFICEDragLinear, SHELFICEDragQuadratic,
+     &     no_slip_shelfice, SHELFICEDragLinear,
+     &     SHELFICEDragQuadratic, SHELFICEselectDragQuadr,
      &     SHELFICEthetaSurface,
-     &     useISOMIPTD, no_slip_shelfice,
+     &     useISOMIPTD,
      &     SHELFICEconserve, SHELFICEboundaryLayer,
-     &     SHELFICErealFWflux,
+     &     SHI_withBL_realFWflux, SHI_withBL_uStarTopDz,
      &     SHELFICEwriteState,
      &     SHELFICE_dumpFreq,
      &     SHELFICE_taveFreq,
      &     SHELFICE_tave_mnc,
      &     SHELFICE_dump_mnc,
      &     SHELFICEtopoFile,
-     &     SHELFICEmassFile, SHELFICEloadAnomalyFile, 
-     &     SHELFICEMassDynTendFile, 
+     &     SHELFICEmassFile, SHELFICEloadAnomalyFile,
+     &     SHELFICEMassDynTendFile, SHELFICETransCoeffTFile,
      &     SHELFICEDynMassOnly,
      &     SHELFICEadvDiffHeatFlux,
-     &     SHELFICEuseGammaFrict,
-     &     SHELFICERemeshFrequency,
-     &     SHELFICESplitThreshold,
-     &     SHELFICEMergeThreshold,
+     &     SHELFICEuseGammaFrict, SHELFICE_oldCalcUStar,
      &     shiCdrag, shiZetaN, shiRc,
      &     shiPrandtl, shiSchmidt, shiKinVisc,
+#ifdef ALLOW_COST
+     &     mult_shelfice,
+     &     mult_shifwflx, wshifwflx0, shifwflx_errfile,
+#endif
+C-- local version addition:
      &     shelficeEtaSponge, ShelficeEtaRelax,
      &     shelfice_etarestore_spongewidth,
      &     SHELFICE_dig_ice, SHELFICE_massmin_trueDens,
-     &     conserve_ssh
-#ifdef ALLOW_COST
-     &     , mult_shelfice
-     &     , mult_shifwflx, wshifwflx0, shifwflx_errfile
-#endif
+     &     conserve_ssh,
+C-- end local addition.
+     &     SHELFICEremeshFrequency,
+     &     SHELFICEsplitThreshold, SHELFICEmergeThreshold
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -97,7 +99,8 @@ C Set defaults values for parameters in SHELFICE.h
       useISOMIPTD              = .FALSE.
       SHELFICEconserve         = .FALSE.
       SHELFICEboundaryLayer    = .FALSE.
-      SHELFICErealFWflux       = .FALSE.
+      SHI_withBL_realFWflux    = .FALSE.
+      SHI_withBL_uStarTopDz    = .FALSE.
       SHELFICEMassStepping     = .FALSE.
       SHELFICEDynMassOnly      = .FALSE.
       SHELFICEtopoFile         = ' '
@@ -121,16 +124,23 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICE_taveFreq        = taveFreq
       SHELFICEadvDiffHeatFlux  = .FALSE.
       SHELFICEuseGammaFrict    = .FALSE.
-      SHELFICERemeshFrequency  = 2592000.
-      SHELFICESplitThreshold   = 5
-      SHELFICEMergeThreshold   = -8
+      SHELFICE_oldCalcUStar    = .FALSE.
+C-- local version addition:
+#ifdef UNFINISHED_LOCAL_CODE
       shelficeEtaRelax         = 0.
       shelfice_etarestore_spongewidth = 0
-      shelficeEtaSponge        = .false.
-      SHELFICE_dig_ice         = .false.
-      SHELFICE_massmin_trueDens = .false. 
+      shelficeEtaSponge        = .FALSE.
+#endif
+#ifdef ALLOW_SHELFICE_GROUNDED_ICE
+      SHELFICE_dig_ice         = .FALSE.
+      SHELFICE_massmin_trueDens= .FALSE.
+#endif
 C    KS16 initiliase conserve_ssh
-      conserve_ssh             = .false.
+      conserve_ssh             = .FALSE.
+C-- end local addition.
+      SHELFICEremeshFrequency  = 0.
+      SHELFICEsplitThreshold   = hFacMin*1.1 _d 0 + 1. _d 0
+      SHELFICEmergeThreshold   = hFacMin*0.9 _d 0
 C these params. are default of Holland and Jenkins (1999)
       shiCdrag                 = 0.0015 _d 0
       shiZetaN                 = 0.052 _d 0
@@ -167,12 +177,28 @@ C Open and read the data.shelfice file
      &                   SQUEEZE_RIGHT, myThid )
 
 C Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 C Now set-up any remaining parameters that result from the input parameters
       IF ( SHELFICEsaltTransCoeff .EQ. UNSET_RL )
      &     SHELFICEsaltTransCoeff =
      &     5.05 _d -3 *SHELFICEheatTransCoeff
+
+C New calcUstar expression not available with SHELFICEboundaryLayer:
+      IF ( SHELFICEboundaryLayer ) SHELFICE_oldCalcUStar = .TRUE.
+C  specific options within SHELFICEboundaryLayer:
+      SHI_withBL_realFWflux = SHI_withBL_realFWflux .AND.
+     &    SHELFICEboundaryLayer .AND. useRealFreshWaterFlux
+      SHI_withBL_uStarTopDz = SHI_withBL_uStarTopDz .AND.
+     &    SHELFICEboundaryLayer .AND. SHELFICEuseGammaFrict
+
+C-- local version addition:
+      SHELFICErealFWflux = SHI_withBL_realFWflux
+C-- end local addition.
 
 C Set quadratic bottom drag depending on choices:
       IF ( SHELFICEDragQuadratic .EQ. UNSET_RL) THEN
