@@ -29,8 +29,12 @@ C     SHELFICEDynMassOnly      :: step ice mass ONLY with Shelficemassdyntendenc
 C                                 (not melting/freezing) def: F
 C     SHELFICEboundaryLayer    :: turn on vertical merging of cells to for a
 C                                 boundary layer of drF thickness, def: F
-C     SHELFICErealFWflux       :: ensure vert advective flux at bdry uses top cell
-C                                 value rather than "boundary layer" value   F
+C     SHI_withBL_realFWflux    :: with above BL, allow to use real-FW flux (and
+C                                 adjust advective flux at boundary accordingly)
+C                                 def: F
+C     SHI_withBL_uStarTopDz    :: with SHELFICEboundaryLayer, compute uStar from
+C                                 uVel,vVel avergaged over top Dz thickness;
+C                                 def: F
 C     SHELFICEadvDiffHeatFlux  :: use advective-diffusive heat flux into the
 C                                 ice shelf instead of default diffusive heat
 C                                 flux, see Holland and Jenkins (1999),
@@ -54,10 +58,12 @@ C     shiPrandtl, shiSchmidt   :: constant Prandtl (13.8) and Schmidt (2432.0)
 C                                 numbers used to compute gammaTurb
 C     shiKinVisc               :: constant kinetic viscosity used to compute
 C                                 gammaTurb (def: 1.95e-5)
-C     SHELFICERemeshFrequency  :: Frequency that size of etaN is checked to
-C                                 trigger remesh
-C     SHELFICESplitThreshold   :: Max size of etaN allowed before a remesh
-C     SHELFICEMergeThreshold   :: Min size of etaN allowed before a remesh
+C     SHELFICEremeshFrequency  :: Frequency (in seconds) of call to
+C                                 SHELFICE_REMESHING (def: 0. --> no remeshing)
+C     SHELFICEsplitThreshold   :: Thickness fraction remeshing threshold above
+C                                  which top-cell splits (no unit)
+C     SHELFICEmergeThreshold   :: Thickness fraction remeshing threshold below
+C                                  which top-cell merges with below (no unit)
 C     -----------------------------------------------------------------------
 C     SHELFICEDragLinear       :: linear drag at bottom shelfice (1/s)
 C     SHELFICEDragQuadratic    :: quadratic drag at bottom shelfice (default
@@ -77,7 +83,7 @@ C     SHELFICE_dumpFreq        :: analoguous to dumpFreq (= default)
 C     SHELFICE_taveFreq        :: analoguous to taveFreq (= default)
 C
 C--   Fields
-C     ktopC                  :: index of the top "wet cell" (2D)
+C     kTopC                  :: index of the top "wet cell" (2D)
 C     R_shelfIce             :: shelfice topography [m]
 C     shelficeMassInit       :: ice-shelf mass (per unit area) (kg/m^2)
 C     shelficeMass           :: ice-shelf mass (per unit area) (kg/m^2)
@@ -91,18 +97,20 @@ C     shelficeForcingT       :: analogue of surfaceForcingT
 C                               units are  r_unit.Kelvin/s (=Kelvin.m/s if r=z)
 C     shelficeForcingS       :: analogue of surfaceForcingS
 C                               units are  r_unit.psu/s (=psu.m/s if r=z)
-C     conserve_ssh           :: KS16. Use the obcs to conserve net open
-C                               ocean eta to 0m
+#ifdef ALLOW_DIAGNOSTICS
+C     shelficeDragU          :: Ice-Shelf stress (for diagnostics), Zonal comp.
+C                               Units are N/m^2 ;   > 0 increase top uVel
+C     shelficeDragV          :: Ice-Shelf stress (for diagnostics), Merid. comp.
+C                               Units are N/m^2 ;   > 0 increase top vVel
+#endif /* ALLOW_DIAGNOSTICS */
 C-----------------------------------------------------------------------
 C \ev
 CEOP
 
       COMMON /SHELFICE_PARMS_I/  kTopC,
-     &     SHELFICEselectDragQuadr,
-     &     shelfice_etarestore_spongewidth
+     &     SHELFICEselectDragQuadr
       INTEGER kTopC (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER SHELFICEselectDragQuadr
-      INTEGER shelfice_etarestore_spongewidth
 
       COMMON /SHELFICE_PARMS_R/
      &     SHELFICE_dumpFreq, SHELFICE_taveFreq,
@@ -114,10 +122,9 @@ CEOP
      &     SHELFICEDragLinear, SHELFICEDragQuadratic,
      &     shiCdrag, shiZetaN, shiRc,
      &     shiPrandtl, shiSchmidt, shiKinVisc,
-     &     SHELFICERemeshFrequency,
-     &     SHELFICESplitThreshold,
-     &     SHELFICEMergeThreshold,
-     &     shelficeEtaRelax
+     &     SHELFICEremeshFrequency,
+     &     SHELFICEsplitThreshold, SHELFICEmergeThreshold
+
       _RL SHELFICE_dumpFreq, SHELFICE_taveFreq
       _RL SHELFICEheatTransCoeff
       _RL SHELFICEsaltTransCoeff
@@ -127,17 +134,18 @@ CEOP
       _RL SHELFICEkappa
       _RL SHELFICEDragLinear
       _RL SHELFICEDragQuadratic
-      _RL SHELFICEMergeThreshold
-      _RL SHELFICEthetaSurface, SHELFICESplitThreshold
+      _RL SHELFICEthetaSurface
       _RL shiCdrag, shiZetaN, shiRc
-      _RL SHELFICERemeshFrequency
       _RL shiPrandtl, shiSchmidt, shiKinVisc
-      _RL SHELFICEGroundW, SHELFICEGroundC, shelficeEtaRelax
+      _RL SHELFICEremeshFrequency
+      _RL SHELFICEsplitThreshold
+      _RL SHELFICEmergeThreshold
+
       COMMON /SHELFICE_FIELDS_RL/
      &     shelficeMass, shelficeMassInit,
      &     shelficeLoadAnomaly,
      &     shelficeForcingT, shelficeForcingS,
-     &     shiTransCoeffT, shiTransCoeffS, EFFMASS
+     &     shiTransCoeffT, shiTransCoeffS
       _RL shelficeMass          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeMassInit      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeLoadAnomaly   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -145,16 +153,13 @@ CEOP
       _RL shelficeForcingS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shiTransCoeffT        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shiTransCoeffS        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL EFFMASS               (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SeaLevelRestore       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON /SHELFICE_FIELDS_RS/
-     &     R_shelfIce, R_MWCT,
+     &     R_shelfIce,
      &     shelficeHeatFlux,
      &     shelfIceFreshWaterFlux,
      &     shelfIceMassDynTendency
       _RS R_shelfIce            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS R_MWCT                (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeHeatFlux      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeFreshWaterFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS
@@ -165,12 +170,18 @@ CEOP
       _RS maskSHI  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* ALLOW_SHIFWFLX_CONTROL */
 
+#ifdef ALLOW_DIAGNOSTICS
+      COMMON /SHELFICE_DIAG_DRAG/ shelficeDragU, shelficeDragV
+      _RS shelficeDragU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS shelficeDragV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* ALLOW_DIAGNOSTICS */
+
       LOGICAL SHELFICEisOn
       LOGICAL useISOMIPTD
       LOGICAL SHELFICEconserve
       LOGICAL SHELFICEboundaryLayer
-      LOGICAL SHELFICEthickBoundaryLayer
-      LOGICAL SHELFICErealFWflux
+      LOGICAL SHI_withBL_realFWflux
+      LOGICAL SHI_withBL_uStarTopDz
       LOGICAL no_slip_shelfice
       LOGICAL SHELFICEwriteState
       LOGICAL SHELFICE_dump_mdsio
@@ -182,18 +193,13 @@ CEOP
       LOGICAL SHELFICE_oldCalcUStar
       LOGICAL SHELFICEMassStepping
       LOGICAL SHELFICEDynMassOnly
-      LOGICAL SHELFICEEtaSponge
-      LOGICAL SHELFICE_dig_ice
-      LOGICAL SHELFICE_massmin_truedens
-C   KS16 put var here
-      LOGICAL conserve_ssh
       COMMON /SHELFICE_PARMS_L/
      &     SHELFICEisOn,
      &     useISOMIPTD,
      &     SHELFICEconserve,
-     &     SHELFICErealFWflux,
      &     SHELFICEboundaryLayer,
-     &     SHELFICEthickBoundaryLayer,
+     &     SHI_withBL_realFWflux,
+     &     SHI_withBL_uStarTopDz,
      &     no_slip_shelfice,
      &     SHELFICEwriteState,
      &     SHELFICE_dump_mdsio,
@@ -204,28 +210,21 @@ C   KS16 put var here
      &     SHELFICEuseGammaFrict,
      &     SHELFICE_oldCalcUStar,
      &     SHELFICEMassStepping,
-     &     SHELFICEDynMassOnly,
-     &     SHELFICEEtaSponge,
-     &     SHELFICE_dig_ice,
-     &     SHELFICE_massmin_truedens,
-C  KS16 and here;
-     &     conserve_ssh
+     &     SHELFICEDynMassOnly
 
       CHARACTER*(MAX_LEN_FNAM) SHELFICEloadAnomalyFile
       CHARACTER*(MAX_LEN_FNAM) SHELFICEmassFile
-      CHARACTER*(MAX_LEN_FNAM) SHELFICEGroundTopoFile
       CHARACTER*(MAX_LEN_FNAM) SHELFICEtopoFile
       CHARACTER*(MAX_LEN_FNAM) SHELFICEMassDynTendFile
-      CHARACTER*(MAX_LEN_FNAM) SHELFICEGroundInitFile
       CHARACTER*(MAX_LEN_FNAM) SHELFICETransCoeffTFile
-
       COMMON /SHELFICE_PARM_C/
      &     SHELFICEloadAnomalyFile,
      &     SHELFICEmassFile,
      &     SHELFICEtopoFile,
-     &     SHELFICEGroundTopoFile,
      &     SHELFICEMassDynTendFile,
-     &     SHELFICEGroundInitFile,
      &     SHELFICETransCoeffTFile
+
+C--   Customized parameters and fields for this set-up
+#include "SHELFICE_LOCAL.h"
 
 #endif /* ALLOW_SHELFICE */

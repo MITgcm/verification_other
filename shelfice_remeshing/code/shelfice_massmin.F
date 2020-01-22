@@ -17,28 +17,22 @@ C     === Global variables ===
 #include "GRID.h"
 #include "SHELFICE.h"
 #include "DYNVARS.h"
-#ifdef ALLOW_COST
-# include "SHELFICE_COST.h"
-#endif /* ALLOW_COST */
 
 C     === Routine arguments ===
-C     myThid -  Number of this instance 
-C     
+C     myThid -  Number of this instance
+C
 C     This subroutine calculates the minimum mass to allow MWCT space
 C     under the grounded ice.
 
       _RL massMin(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL R_min(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      INTEGER bi
-      INTEGER bj
       INTEGER myThid
 
-CEndOfInterface
-
-#ifdef ALLOW_SHELFICE
+#ifdef ALLOW_SHELFICE_GROUNDED_ICE
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
       INTEGER i, j, k, k2
+      INTEGER bi, bj
       _RL drho (Nr)
       _RL phiHydF(Nr+1)
       _RL phiHydC(Nr)
@@ -99,7 +93,7 @@ C based on R_MCWT
      &           (phiHydF(k+1)-phiHydF(k)))*rhoConst
      &           + gravity*rhoConst*(drLoc*drF(k))
 
-             massMin(i,j,bi,bj) = pLoad_min*recip_gravity - 
+             massMin(i,j,bi,bj) = pLoad_min*recip_gravity -
      &             rF(k)*rhoConst
             ENDIF
            ENDDO
@@ -108,8 +102,6 @@ C based on R_MCWT
         ENDDO
        ENDDO
 
-
-#endif /* ALLOW_SHELFICE */
-
+#endif /* ALLOW_SHELFICE_GROUNDED_ICE */
       RETURN
       END
