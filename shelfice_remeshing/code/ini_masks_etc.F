@@ -443,7 +443,7 @@ C--   Additional closing of Western and Southern grid-cell edges: for example,
 C     a) might add some "thin walls" in specific location
 C     b) close non-periodic N & S boundaries of lat-lon grid at the N/S poles.
 C     new: location now reccorded as kSurfW/S = Nr+2
-      CALL ADD_WALLS2MASKS( rEmpty, myThid )
+c     CALL ADD_WALLS2MASKS( rEmpty, myThid )
 
       ELSE
 #ifndef DISABLE_SIGMA_CODE
