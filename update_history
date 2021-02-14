@@ -1,6 +1,27 @@
     Update history and content of "MITgcm/verification_other"
     =================================================================
 
+checkpoint67v (2021/02/03) synchronised with main MITgcm code.
+  - global_oce_llc90 experiment:
+   1) clean/simplify parameter files location:
+    * move un-used (in any FWD or AD exp) param files from input/ into
+      input/unused/
+    * param files which are not used in any FWD exp (but only used in some AD
+      exp): move them from input/ to input_ad/
+    * simplify "prepare_run" from 4 FWD input dir by removing it's own dir.
+    * Ajoint input dir: since local "prepare_run" is no longer linking all files
+      from corresponding FWD input dir, make a copy of few needed files.
+   2) Bring back the use of viscFacInAd:
+      before PR #384, the effect of viscFacAdj, was ignored. Bring it back by
+      defining the (new) corresponding CPP option: AUTODIFF_ALLOW_VISCFACADJ
+      (in AUTODIFF_OPTIONS.h), uncomment viscFacInAd setting in data.autodiff
+      and update all 4 AD reference outputs (since viscFacInAd=2 is now active).
+  - global_oce_llc90 Adjoint experiment: comment out "viscFacInAd=2." in
+    data.autodiff since it was previously inactive until PR #384 code fix
+    but would now require to define AUTODIFF_ALLOW_VISCFACADJ to be used.
+  - update output of experiment "shelfice_remeshing" following changes in
+    solve_pentadiagonal.F (-> affects results @ machine trunc. level), PR #410.
+
 checkpoint67u (2020/12/30) synchronised with main MITgcm code.
   - update FWD output of experiment "global_oce_llc90" following changes in
     seaice_lsr.F (-> affects results @ machine trunc. level), PR #369.

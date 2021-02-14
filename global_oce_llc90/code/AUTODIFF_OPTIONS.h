@@ -31,26 +31,37 @@ C   differentiate the MITgcmUV by using the Tangent Linear and
 C   Adjoint Model Compiler (TAMC).
 #define ALLOW_AUTODIFF_TAMC
 
-C o Checkpointing as handled by TAMC
+C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
-# undef AUTODIFF_2_LEVEL_CHECKPOINT
 
-C o Extract adjoint state
+C       >>> Extract adjoint state
 #define ALLOW_AUTODIFF_MONITOR
+
+C       >>> DO 2-level checkpointing instead of 3-level
+c#undef AUTODIFF_2_LEVEL_CHECKPOINT
+
+C extend to 4-level checkpointing
+c#undef AUTODIFF_4_LEVEL_CHECKPOINT
 
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
-#undef ALLOW_DIVIDED_ADJOINT_MPI
 
 C o tape settings
 #define ALLOW_AUTODIFF_WHTAPEIO
-#define AUTODIFF_USE_OLDSTORE_2D
+#undef AUTODIFF_USE_MDSFINDUNITS
+#undef ALLOW_PACKUNPACK_METHOD2
 #define AUTODIFF_USE_OLDSTORE_3D
+#define AUTODIFF_USE_OLDSTORE_2D
 #define EXCLUDE_WHIO_GLOBUFF_2D
 #define ALLOW_INIT_WHTAPEIO
+
+C o write separate tape files for each ptracer
+#undef AUTODIFF_PTRACERS_SPLIT_FILES
+
+C o allow using viscFacInAd to recompute viscosities in AD
+#define AUTODIFF_ALLOW_VISCFACADJ
 
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */
 #endif /* ALLOW_AUTODIFF */
 #endif /* AUTODIFF_OPTIONS_H */
-
