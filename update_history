@@ -1,13 +1,50 @@
-    Update history and content of "MITgcm_contrib/verification_other"
+    Update history and content of "MITgcm/verification_other"
     =================================================================
 
+  - post PR #438: update 2 ADM output from exp.: global_oce_llc90.
+    Fixing missing re-initialisation of recip_hFac change gradient-check of
+    ecco_v4 & ecmwf AD tests. Update reference output (from engaging, gfortran).
+  - post PR #433: update FWD output of exp.: global_ocean.gm_k3d & .gm_res since
+    both use quasiHydrostatic=T (-> affects results @ machine trunc. level).
+
+checkpoint67w (2021/03/06) synchronised with main MITgcm code.
+  - add MOC sensitivity cost in experiment global_oce_cs32/input_ad.sens/ and
+    generate new ADM output, now from villon.mit.edu (previously from engaging)
+
+checkpoint67v (2021/02/03) synchronised with main MITgcm code.
+  - global_oce_llc90 experiment:
+   1) clean/simplify parameter files location:
+    * move un-used (in any FWD or AD exp) param files from input/ into
+      input/unused/
+    * param files which are not used in any FWD exp (but only used in some AD
+      exp): move them from input/ to input_ad/
+    * simplify "prepare_run" from 4 FWD input dir by removing it's own dir.
+    * Ajoint input dir: since local "prepare_run" is no longer linking all files
+      from corresponding FWD input dir, make a copy of few needed files.
+   2) Bring back the use of viscFacInAd:
+      before PR #384, the effect of viscFacAdj, was ignored. Bring it back by
+      defining the (new) corresponding CPP option: AUTODIFF_ALLOW_VISCFACADJ
+      (in AUTODIFF_OPTIONS.h), uncomment viscFacInAd setting in data.autodiff
+      and update all 4 AD reference outputs (since viscFacInAd=2 is now active).
+  - global_oce_llc90 Adjoint experiment: comment out "viscFacInAd=2." in
+    data.autodiff since it was previously inactive until PR #384 code fix
+    but would now require to define AUTODIFF_ALLOW_VISCFACADJ to be used.
+  - update output of experiment "shelfice_remeshing" following changes in
+    solve_pentadiagonal.F (-> affects results @ machine trunc. level), PR #410.
+
+checkpoint67u (2020/12/30) synchronised with main MITgcm code.
+  - update FWD output of experiment "global_oce_llc90" following changes in
+    seaice_lsr.F (-> affects results @ machine trunc. level), PR #369.
+  - update some AD output of experiments "global_oce_cs32" & "global_oce_llc90"
+    following fix for self-adjoint cg2d with nonlinFreeSurf > 1 (PR #392).
+
+checkpoint67t (2020/11/30) synchronised with main MITgcm code.
 checkpoint67s (2020/07/31) synchronised with main MITgcm code.
   - cleaning experiment "packages.conf":
     1) add a 1 line description at the top ;
     2) use similar ordering of pkgs in packages.conf, same as for main
       MITgcm/verification (see doc/tag-index) ;
     3) remove few unused pkgs (timeave, mnc).
-
 
 checkpoint67r (2020/06/04) synchronised with main MITgcm code.
 checkpoint67q (2020/03/19) synchronised with main MITgcm code.
