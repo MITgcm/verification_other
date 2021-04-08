@@ -25,12 +25,13 @@ make
 
 ```
 
-The final `make` command will build `mitgcmuv` for forward integrations. 
+The final `make` command will build `mitgcmuv` for forward integrations.
 
 ### AD-compilation
-[Note that building the AD-executable requires access to [TAF](http://www.fastopt.de).]
+[Note that building the AD-executable requires access to [TAF](http://www.fastopt.de) licensed sofware.]
 
-The same Makefile can be used to generate the AD-executable:
+The same Makefile can be used to generate the AD-executable so that, either after `make depend` step above,
+or after `make`:
 
 ```
 cd build
@@ -38,7 +39,7 @@ make adall
 
 ```
 
-The `make adall` command will build `mitgcmuv_ad` for forward integrations. For this to work you will need to buy a license for [TAF](http://www.fastopt.de).
+The `make adall` command will build `mitgcmuv_ad` for adjoint integrations.
 
 # run the experiments
 
@@ -47,7 +48,7 @@ The `make adall` command will build `mitgcmuv_ad` for forward integrations. For 
 The following lines exempify the general instruction found in the [online-manual](https://mitgcm.readthedocs.io/en/latest/examples/examples.html#mitgcm-tutorial-example-experiments). Here we assume that `mitgcmuv` has been built and resides in `build`:
 
 ```
-cd run
+cd run ; rm -f *
 ln -s ../build/mitgcmuv
 ln -s ../input/* .
 ../input/prepare_run
@@ -64,15 +65,15 @@ Run the model with:
 This verification experiment also contains a test of the [generic integral function](https://mitgcm.readthedocs.io/en/latest/ocean_state_est/ocean_state_est.html#generic-integral-function). To set up and run the generic integral function test, after following the steps above and after [compiling the MITgcm executable](https://mitgcm.readthedocs.io/en/latest/getting_started/getting_started.html#building-the-model) (presumably located at `build/mitgcmuv_ad`), carry out the following steps:
 
 ```
-cd run/
+cd run ; rm -f *
 ln -s ../build/mitgcmuv_ad
 ln -s ../input_ad/* .
 ../input_ad/prepare_run
 ```
-and similarly for the second AD experiment (directory `run` is assumed to be empty again):
+or similarly for the second AD experiment:
 
 ```
-cd run/
+cd run ; rm -f *
 ln -s ../build/mitgcmuv_ad
 ln -s ../input_ad.sens/* .
 ../input_ad.sens/prepare_run
@@ -80,8 +81,13 @@ ln -s ../input_ad/* .
 ../input_ad/prepare_run
 ```
 
-Now one should be able to [run the experiment](https://mitgcm.readthedocs.io/en/latest/getting_started/getting_started.html#running-the-model). Note that the `ln` command as executed above does not overwrite old links, so it will produce some errors related to not being able to overwrite old files. These errors can be ignored.
+Note that the `ln` command as executed above does not overwrite old links, so it will produce some errors related to not being able to overwrite old files. These errors can be ignored.
 
+Now one should be able to [run the AD experiment](https://mitgcm.readthedocs.io/en/latest/getting_started/getting_started.html#running-the-model).
+
+```
+./mitgcmuv_ad > output_adm.txt
+```
 
 # README file history:
 
