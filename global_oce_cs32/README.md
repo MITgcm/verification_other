@@ -18,7 +18,7 @@ The following steps are basically what `../verification/testreport -t global_oce
 
 ```
 cd build
- ../../../tools/genmake2 -mods ../code ${-of your_build_options_file} ${other options, e.g. -nocat4ad}
+ ../../../tools/genmake2 -mods ../code -of your_build_options_file [other options, e.g. -nocat4ad]
 make CLEAN
 make depend
 make
