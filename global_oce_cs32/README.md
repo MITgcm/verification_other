@@ -12,41 +12,74 @@ tar xf core2_cnyf.tar
 ```
 
 # compile the code
+### compiling for forward simuations
 
-[Note that building the AD-executable requires access to [TAF](http://www.fastopt.de).]
-
-The following steps are basically what `../verification/testreport -t global_oce_cs32 -adm` does if executed in directory `verification_other`.
+The following steps are basically what `../verification/testreport -t global_oce_cs32` does if executed in directory `verification_other`.
 
 ```
 cd build
- ../../../tools/genmake2 -mods ../code_ad ${-of your_build_options_file} ${other options, e.g. -nocat4ad}
+ ../../../tools/genmake2 -mods ../code ${-of your_build_options_file} ${other options, e.g. -nocat4ad}
 make CLEAN
 make depend
 make
 
 ```
 
-The final `make` command will build `mitgcmuv` for forward integrations. For the AD-executable `mitgcmuv_ad`, you have to do
+The final `make` command will build `mitgcmuv` for forward integrations. 
+
+### AD-compilation
+[Note that building the AD-executable requires access to [TAF](http://www.fastopt.de).]
+
+The same Makefile can be used to generate the AD-executable:
 
 ```
+cd build
 make adall
+
 ```
 
-which will call `taf` (after you have paid for it) to generate the AD-code and then compile.
+The `make adall` command will build `mitgcmuv_ad` for forward integrations. For this to work you will need to buy a license for [TAF](http://www.fastopt.de).
 
-# run the generic integral function test case
+# run the experiments
+
+### forward experiment
+
+The following lines exempify the general instruction found in the [online-manual](https://mitgcm.readthedocs.io/en/latest/examples/examples.html#mitgcm-tutorial-example-experiments). Here we assume that `mitgcmuv` has been built and resides in `build`:
+
+```
+cd run
+ln -s ../build/mitgcmuv
+ln -s ../input/* .
+../input/prepare_run
+```
+Run the model with:
+
+```
+./mitgcmuv > output.txt
+```
+
+
+### AD experiments: the generic integral function test case
 
 This verification experiment also contains a test of the [generic integral function](https://mitgcm.readthedocs.io/en/latest/ocean_state_est/ocean_state_est.html#generic-integral-function). To set up and run the generic integral function test, after following the steps above and after [compiling the MITgcm executable](https://mitgcm.readthedocs.io/en/latest/getting_started/getting_started.html#building-the-model) (presumably located at `build/mitgcmuv_ad`), carry out the following steps:
 
 ```
 cd run/
 ln -s ../build/mitgcmuv_ad
-ln -s ../input_ad.sens/* .
 ln -s ../input_ad/* .
-ln -s ../input/* .
-ln -s ../core2_cnyf/* .
-ln -s ../input_fields/* .
+../input_ad/prepare_run
 ```
+and similarly for the second AD experiment (directory `run` is assumed to be empty again):
+
+```
+cd run/
+ln -s ../build/mitgcmuv_ad
+ln -s ../input_ad.sens/* .
+../input_ad.sens/prepare_run
+ln -s ../input_ad/* .
+../input_ad/prepare_run
+```
+
 Now one should be able to [run the experiment](https://mitgcm.readthedocs.io/en/latest/getting_started/getting_started.html#running-the-model). Note that the `ln` command as executed above does not overwrite old links, so it will produce some errors related to not being able to overwrite old files. These errors can be ignored.
 
 
