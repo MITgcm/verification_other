@@ -14,7 +14,7 @@ tar xf core2_cnyf.tar
 # compile the code
 ### compiling for forward simuations
 
-The following steps are basically what `../verification/testreport -t global_oce_cs32` does if executed in directory `verification_other`.
+Use the following steps to compile the code:
 
 ```
 cd build
