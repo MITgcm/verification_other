@@ -11,6 +11,11 @@ tar xf core2_cnyf.tar
 #rm core2_cnyf.tar
 ```
 
+This installation stage is an extra step that is specific to this experiment.
+At this point, one can use `testreport` to compile, run and compare results with reference output,
+either for forward simulation or adjoint simulations (both adjoint set-up from `input_ad` and `input_ad.sens`).
+Alternatively, step by step instructions on how to compile and run without using testreport are provided below.
+
 # compile the code
 ### compiling for forward simuations
 
