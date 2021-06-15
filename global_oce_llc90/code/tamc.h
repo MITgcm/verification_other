@@ -1,45 +1,42 @@
-#include "PACKAGES_CONFIG.h"
+C     ================================================================
+C     HEADER TAMC
+C     ================================================================
+C
+C     o Header for the use of the Tangent Linear and Adjoint Model
+C       Compiler (TAMC).
+C
+C     started: Christian Eckert eckert@mit.edu  04-Feb-1999
+C     changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
+C              - New parameter nlevchk_0 for dimensionalising
+C                common blocks in the undef ALLOW_TAMC_CHECKPOINTING case
+C              - nhreads_chkpt was declared at the wrong place
+C              - new keys, separate for different packages
+C
+C     ================================================================
+C     HEADER TAMC
+C     ================================================================
+#ifdef ALLOW_AUTODIFF_TAMC
 
-c     ================================================================
-c     HEADER TAMC
-c     ================================================================
-c
-c     o Header for the use of the Tangent Linear and Adjoint Model
-c       Compiler (TAMC).
-c
-c     started: Christian Eckert eckert@mit.edu  04-Feb-1999
-c     changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
-c              - New parameter nlevchk_0 for dimensionalising
-c                common blocks in the undef ALLOW_TAMC_CHECKPOINTING case
-c              - nhreads_chkpt was declared at the wrong place
-c              - new keys, separate for different packages
-
-
-c     ================================================================
-c     HEADER TAMC
-c     ================================================================
-
-
-c     TAMC checkpointing parameters:
-c     ==============================
-c
-c     The checkpointing parameters have to be consistent with other model
-c     parameters and variables. This has to be checked before the model is
-c     run.
-c
-c     nyears_chkpt   - Number of calendar years affected by the assimilation
-c                      experiment; nyears_chkpt has to be at least equal to
-c                      the result of cal_IntYears(mythid).
-c     nmonths_chkpt  - Number of months per year; nmonth_chkpt has to be at
-c                      least equal to nmonthyear.
-c     ndays_chkpt    - Number of days per month; nday_chkpt has to be at least
-c                      equal to nmaxdaymonth.
-c     nsteps_chkpt   - Number of steps per day; nsteps_chkpt has to be at
-c                      least equal to cal_nStepDay(mythid)
-c     ncheck_chkpt   - Number of innermost checkpoints.
-c
-c     ngeom_chkpt    - Geometry factor.
-c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
+C     TAMC checkpointing parameters:
+C     ==============================
+C
+C     The checkpointing parameters have to be consistent with other model
+C     parameters and variables. This has to be checked before the model is
+C     run.
+C
+C     nyears_chkpt   :: Number of calendar years affected by the assimilation
+C                       experiment; nyears_chkpt has to be at least equal to
+C                       the result of cal_IntYears(myThid).
+C     nmonths_chkpt  :: Number of months per year; nmonth_chkpt has to be at
+C                       least equal to nmonthyear.
+C     ndays_chkpt    :: Number of days per month; nday_chkpt has to be at least
+C                       equal to nmaxdaymonth.
+C     nsteps_chkpt   :: Number of steps per day; nsteps_chkpt has to be at
+C                       least equal to cal_nStepDay(myThid)
+C     ncheck_chkpt   :: Number of innermost checkpoints.
+C
+C     ngeom_chkpt    :: Geometry factor.
+C     nthreads_chkpt :: Number of threads to be used; nth_chkpt .eq. nTx*nTy
 
       integer nyears_chkpt
       integer nmonths_chkpt
@@ -51,7 +48,7 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
       parameter (nyears_chkpt   =          1 )
       parameter (nmonths_chkpt  =         12 )
       parameter (ndays_chkpt    =         31 )
-      parameter (ngeom_chkpt    = nr*nsx*nsy )
+      parameter (ngeom_chkpt    = Nr*nSx*nSy )
       parameter (ncheck_chkpt   =          6 )
       parameter ( nthreads_chkpt = 1 )
 
@@ -64,7 +61,7 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
       integer    nchklev_3
       parameter( nchklev_3      =    8 )
 
-c--   Note always check for the correct sizes of the common blocks!
+C--   Note always check for the correct sizes of the common blocks!
 
 #else /* ALLOW_TAMC_CHECKPOINTING undefined */
 
@@ -73,17 +70,17 @@ c--   Note always check for the correct sizes of the common blocks!
 
 #endif /* ALLOW_TAMC_CHECKPOINTING */
 
-c     TAMC keys:
-c     ==========
-c
-c     The keys are used for storing and reading data of the reference
-c     trajectory.
-c
-c     The convention used here is:
-c                                    ikey_<name>
-c
-c     which means that this key is used in routine <name> for reading
-c     and writing data.
+C     TAMC keys:
+C     ==========
+C
+C     The keys are used for storing and reading data of the reference
+C     trajectory.
+C
+C     The convention used here is:
+C                                    ikey_<name>
+C
+C     which means that this key is used in routine <name> for reading
+C     and writing data.
 
       common /tamc_keys_i/
      &                     ikey_dynamics,
@@ -109,13 +106,7 @@ c     and writing data.
       INTEGER    maxcube
       PARAMETER( maxcube     = 3 )
 
-      INTEGER act0, act1, act2, act3, act4
-      INTEGER max0, max1, max2, max3
-      INTEGER iikey, kkey, passkey, igadkey, 
-     &        itdkey, idynkey, igmkey
-
-c     ================================================================
-c     END OF HEADER TAMC
-c     ================================================================
-
-
+#endif /* ALLOW_AUTODIFF_TAMC */
+C     ================================================================
+C     END OF HEADER TAMC
+C     ================================================================
