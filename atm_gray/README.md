@@ -1,14 +1,14 @@
 # `verification_other/atm_gray/`
 
 Provide source code and input files for 3 simple sep-up,
- using gray atmospheric physics [O'Gorman and Schneider, JCl, 2008]()
+ using gray atmospheric physics [O'Gorman and Schneider, JCl, 2008](http://doi.org/10.1175/2007JCLI2065.1)
 ported to `MITgcm` dynamical core (see package `atm_phys`).
 
 _Note: Initially (before addition of `pkg/atm_phys` on `2013/05/08`) this was using
  modified (and original) `mypackage` source code and atmospheric gray physics
  code in `atm_gray/code_gray/`._
 
-###1) standard cubed-sphere set-up 
+### 1) standard cubed-sphere set-up 
 
 Uses 6 faces 32x32, 26 levels, non uniform deltaP.
 
@@ -25,7 +25,7 @@ Secondary set-up (using same executable) uses fixed SST (APE) and improved radia
 - `atm_gray/inputu.ape/`  : specific input files (remaining files from dir input)
 - `atm_gray/results/output.ape.txt` : secondary output of a short reference run
 
-## 2) simplified cubed-sphere set-up
+### 2) simplified cubed-sphere set-up
 
 Uses 6 faces 32x32, 25 levels, deltaP = 40.mb with fixed (prescribed) SST.
 
@@ -33,7 +33,7 @@ Uses 6 faces 32x32, 25 levels, deltaP = 40.mb with fixed (prescribed) SST.
 - `atm_gray/inp_cs/`  : input files (+ uses script "prepare_run" in inp_cs)
 - `atm_gray/results/output.cs.txt` : standard output of a short reference run
 
-## 3) lat-lon grid set-up
+### 3) lat-lon grid set-up
 
 Uses 128x64 horizontal grid, 25 levels, 2.8 x 2.8 degree, deltaP = 40.mb
 
@@ -43,25 +43,15 @@ Uses 128x64 horizontal grid, 25 levels, 2.8 x 2.8 degree, deltaP = 40.mb
 
 ## Instructions
 
-Download MITgcm (including verification experiments) from MITgcm repository (`cvs co -P -d MITgcm_current MITgcm`) and download `atm_gray` set-up from `MITgcm_contrib` repository,
-
-### a) either directly in `verification/`
-     
-```
-cd MITgcm_current/verification`
-cvs co -P -d atm_gray MITgcm_contrib/verification_other/atm_gray
-```
-
-### b) or in a similar level in the directory tree, e.g., in `verification_other/`
+Download `MITgcm` itself and then the `atm_gray` set-up in `verification_other/`.
 
 ```
-cd MITgcm_current
-mkdir verification_other
-cd verification_other
-cvs co -P -d atm_gray MITgcm_contrib/verification_other/atm_gray
+git clone https://github.com/MITgcm/MITgcm
+git clone https://github.com/MITgcm/verification_other
+mv verification_other MITgcm
 ```
 
-### To built and run the 1rst (standard) `cs32` set-up:
+### To build and run the 1rst (standard) `cs32` set-up:
 
 ```
 cd atm_gray/build
@@ -81,7 +71,7 @@ mitgcmuv > output.txt
 
 The `output.txt` file, once completed, can be compared with `atm_gray/results/output.txt`
 
-### To built and run the 2nd (simplified) `cs32` set-up:
+### To build and run the 2nd (simplified) `cs32` set-up:
 
 ```
 cd atm_gray/build
@@ -101,7 +91,7 @@ mitgcmuv > output.txt
 
 The `output.txt` file, once completed, can be compared with `atm_gray/results/output.cs.txt`
 
-### To built and run the 3rd, `Lat-Lon` set-up:
+### To build and run the 3rd, `Lat-Lon` set-up:
 
 ```
 cd atm_gray/build
