@@ -55,7 +55,7 @@ C    This CPP option just sets the default for ctrlSmoothCorrel2D to .TRUE.
 C  o impose bounds on controls
 #define ALLOW_ADCTRLBOUND
 
-C   o rotate u/v vector control to zonal/meridional 
+C   o rotate u/v vector control to zonal/meridional
 C   components
 #define ALLOW_ROTATE_UV_CONTROLS
 
