@@ -37,6 +37,9 @@ C This allows for GMREDI controls
 #define ALLOW_KAPREDI_CONTROL
 # undef ALLOW_KAPREDI_CONTROL_OLD
 
+C This allows for DIFFKR controls
+#define ALLOW_DIFFKR_CONTROL
+
 C o sets of controls
 #define ALLOW_GENTIM2D_CONTROL
 #define ALLOW_GENARR2D_CONTROL
@@ -52,7 +55,7 @@ C    This CPP option just sets the default for ctrlSmoothCorrel2D to .TRUE.
 C  o impose bounds on controls
 #define ALLOW_ADCTRLBOUND
 
-C   o rotate u/v vector control to zonal/meridional 
+C   o rotate u/v vector control to zonal/meridional
 C   components
 #define ALLOW_ROTATE_UV_CONTROLS
 
