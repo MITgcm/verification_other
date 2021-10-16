@@ -1,0 +1,99 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=16.5, 14.0, 13.5, 13.0, 12.0,
+      10.0,  6.7,  4.0,  2.2,  1.0,
+       0.2, -0.3, -0.7, -1.1, -1.4,
+ sRef=15*35.,
+ viscAh =3.E5,
+ viscAr =1.E-3,
+ bottomDragLinear=1.E-3,
+ diffKhT=0.,
+ diffK4T=0.,
+ diffKrT=3.E-5,
+ diffKhS=0.,
+ diffK4S=0.,
+ diffKrS=3.E-5,
+ gravity=9.81,
+ rhonil=1030.,
+ rhoConstFresh=1000.,
+ eosType='JMD95Z',
+#allowFreezing=.TRUE.,
+ ivdc_kappa=10.,
+ implicitDiffusion=.TRUE.,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+ select_rStar=2,
+ nonlinFreeSurf=4,
+ hFacInf=0.2,
+ hFacSup=2.0,
+ useRealFreshWaterFlux=.TRUE.,
+ convertFW2Salt=34.,
+ temp_EvPrRn=0.,
+ hFacMin=.1,
+ hFacMinDr=20.,
+ vectorInvariantMomentum=.TRUE.,
+ staggerTimeStep=.TRUE.,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ useSingleCpuIO=.TRUE.,
+ debugLevel=2,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=200,
+ cg2dTargetResidual=1.E-9,
+#cg2dTargetResWunit=1.E-14,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=185414400,
+#nTimeSteps=720,
+ pChkptFreq=2592000.,
+ taveFreq=0,
+ dumpFreq=0,
+ monitorFreq=259200.,
+ deltaTmom=3600.,
+ deltaTtracer=3600.,
+ deltaTClock =3600.,
+#abEps=0.12,
+#alph_AB=0.62,
+#beta_AB=0.,
+ alph_AB=0.5,
+ beta_AB=0.281105,
+ doAB_onGtGs=.FALSE.,
+ forcing_In_AB=.FALSE.,
+ momDissip_In_AB=.FALSE.,
+ periodicExternalForcing=.TRUE.,
+ externForcingPeriod=2592000.,
+ externForcingCycle=31104000.,
+ pickupStrictlyMatch=.TRUE.,
+ nTimeSteps=10,
+ monitorFreq=3600.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCurvilinearGrid=.TRUE.,
+ horizGridFile='grid_cs24',
+ radius_fromHorizGrid=6370.E3,
+ rSphere=6370.E3,
+#delR= 50., 70., 100., 140., 190.,
+#      240., 290., 340., 390., 440.,
+#      490., 540., 590., 640., 690.,
+ delR= 30.,  40.,  60.,  80., 110.,
+      140., 160., 200., 220., 260.,
+      280., 310., 340., 370., 400.,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile      ='DDrake.c24.Bathy.3p0km.bin',
+ hydrogThetaFile='DDr3p0_Cpl277T_C24_z15.bin',
+ hydrogSaltFile ='DDr3p0_Cpl277S_C24_z15.bin',
+ &
