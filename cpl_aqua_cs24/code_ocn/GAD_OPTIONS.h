@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD_OPTIONS.h,v 1.16 2013/03/04 18:20:46 jmc Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: GAD_OPTIONS.h
 
@@ -73,7 +70,7 @@ C
 C This hack applies to all tracers except temperature and salinity!
 C Do not use with Adams-Bashforth (for ptracers)!
 C Do not use with OBCS!
-#define  GAD_SMOLARKIEWICZ_HACK
+#define GAD_SMOLARKIEWICZ_HACK
 
 #else
 

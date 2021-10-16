@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_OPTIONS.h,v 1.13 2015/01/11 21:16:04 jmc Exp $
-C $Name:  $
-
 #ifndef DIC_OPTIONS_H
 #define DIC_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
@@ -9,6 +6,19 @@ C $Name:  $
 #ifdef ALLOW_DIC
 C     Package-specific Options & Macros go here
 
+C ABIOTIC OPTIONS
+C Compile Munhoven (2013) "Solvesaphe" package for pH/pCO2
+C  can still select Follows et al (2006) solver in data.dic,
+C  but will use solvesaphe dissociation coefficient options.
+#undef CARBONCHEM_SOLVESAPHE
+
+C In S/R CARBON_CHEM convert ak1 and ak2 to the total pH scale
+C  consistent with other coefficients (currently on the seawater scale).
+C NOTE: Has NO effect when CARBONCHEM_SOLVESAPHE is defined (different
+C  coeffs are used).
+#undef CARBONCHEM_TOTALPHSCALE
+
+C BIOTIC OPTIONS
 #define DIC_BIOTIC
 #define ALLOW_O2
 #undef ALLOW_FE
@@ -32,6 +42,7 @@ C dissolution only below saturation horizon following method by Karsten Friis
 
 C Include self-shading effect by phytoplankton
 #undef LIGHT_CHL
+
 C Include iron sediment source using DOP flux
 #undef SEDFE
 
