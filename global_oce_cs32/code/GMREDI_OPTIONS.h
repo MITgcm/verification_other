@@ -26,8 +26,8 @@ C (which depends on tapering scheme)
 
 C This allows the Bates et al formulation to calculate the
 C bolus transport and K for Redi
-#undef GM_K3D
-#undef GM_K3D_PASSIVE
+#undef GM_BATES_K3D
+#undef GM_BATES_PASSIVE
 
 C This allows the leading diagonal (top two rows) to be non-unity
 C (a feature required when tapering adiabatically).
