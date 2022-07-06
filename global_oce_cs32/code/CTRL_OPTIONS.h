@@ -33,9 +33,7 @@ C o I/O and pack settings
 
 C This allows for GMREDI controls
 #define ALLOW_KAPGM_CONTROL
-# undef ALLOW_KAPGM_CONTROL_OLD
 #define ALLOW_KAPREDI_CONTROL
-# undef ALLOW_KAPREDI_CONTROL_OLD
 
 C This allows for DIFFKR controls
 #define ALLOW_DIFFKR_CONTROL
