@@ -1,6 +1,43 @@
     Update history and content of "MITgcm/verification_other"
     =================================================================
 
+checkpoint68k (2022/08/17) synchronised with main MITgcm code.
+  - remove both parameters "useSmoothCorrel2D/3D" from data.ctrl and options
+    ALLOW_SMOOTH_CORREL2D/3D from CTRL_OPTIONS.h in experiments: glogal_oce_cs32
+    and global_oce_llc90 (not doing anything outside ECCO_CTRL_DEPRECATED code).
+  - post PR #637: define new CPP options GM_INPUT_K3D_GM & GM_INPUT_K3D_REDI
+    (in GMREDI_OPTIONS.h) to use ALLOW_KAPGM_CONTROL & ALLOW_KAPREDI_CONTROL
+
+checkpoint68j (2022/06/28) synchronised with main MITgcm code.
+  - post PR #611: due to single prec tapes (isbyte=4), switching to local tapes
+    in gad_advection.F affects AD-grad of ecco_v4 exp. (6 matching digits left)
+    and AD monitor (in all 4 llc90 + 2 cs32 exp); update all 4 llc90 output_adm
+    reference output.
+
+checkpoint68i (2022/04/27) synchronised with main MITgcm code.
+  - post PR #587 & #609: cleaning/updating some parameter files
+
+checkpoint68h (2022/03/22) synchronised with main MITgcm code.
+  - post PR #560 (extra_diags): update cs32 (primary) output_adm.txt
+
+checkpoint68g (2022/02/19) synchronised with main MITgcm code.
+  - following main code PR #576, rename GM_K3D to GM_BATES(_K3D).
+
+checkpoint68f (2022/01/14) synchronised with main MITgcm code.
+checkpoint68e (2021/12/10) synchronised with main MITgcm code.
+checkpoint68d (2021/11/05) synchronised with main MITgcm code.
+checkpoint68c (2021/10/02) synchronised with main MITgcm code.
+checkpoint68b (2021/08/24) synchronised with main MITgcm code.
+  - post PR #507: Turn on "sterGloH" output in global_oce_cs32 "data.ecco".
+  - post PR #502 (improve_remove_mean): update 3 llc90 output_adm (all except
+    ecco_v4) since FWD results & FWD Grad change at machine truncation level.
+
+checkpoint68a (2021/07/16) synchronised with main MITgcm code.
+  - define ALLOW_DIFFKR_CONTROL in experiment global_oce_cs32 & llc90:
+    with generic-control and ALLOW_3D_DIFFKR, diffKr was available as a control
+    without ALLOW_DIFFKR_CONTROL defined (not well documented); this was dropped
+    in https://github.com/MITgcm/MITgcm/pull/447 (ctrl_map_ini_genarr.F) and is
+    put back here ; results unchanged (ctrl "xx_diffkr" only set in FWD tests).
   - post PR #471 (pkg/ctrl cleanup): update few local source code, mainly for
     experiment global_oce_cs32 & llc90.
 
