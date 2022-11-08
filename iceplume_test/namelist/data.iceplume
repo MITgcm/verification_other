@@ -1,0 +1,51 @@
+# ***************
+# ICEPLUME
+# ***************
+
+# For plume:
+ &ICEPLUME_PARM01
+# runoffVelfile = 'runoffVel_tiny_1mps.bin'
+# runoffRadfile = 'runoffRad_tiny_8m3ps.bin'
+# runoffQsgfile = 'runoffQsg_tiny_8m3ps.bin'
+##the file below has 8 through all time, for checking with exf
+ runoffQsgfile = 'runoffQsg_tiny_8m3ps_9rec_constant.bin'
+ plumeMaskFile = 'plumeMask_tiny.bin'
+# plumeMaskFile = 'zeros_tiny_real8.bin'
+ usePlumeDiagnostics=.TRUE.,
+####
+#conserveMass: when .false. we do NOT scaled Qsg+plumemelt, so the entire volume of FW, converted to mass 
+#and added into addMass is the full amount.  This is what we desire actually, especially for the case with
+#nlfs+rfwf where the ocean dz is allowed to change.  In general this flag convention of true/false is very 
+#deceiving, in that when .true. we actually do NOT conserve mass but rather remove mass artificially.
+#Should consider reversing the meaning..
+ conserveMass = .FALSE.,
+ T_sg_0 = 0.001,
+ S_sg_0 = 0.001,
+## w_sg = 1.0,
+ wVel_sg_0 = 1.0,
+ iceTemp=-10.,
+ backgroundVel=0.017,
+# rhoShelfice = 917.,
+ &
+
+ &ICEPLUME_PARM02
+ &
+
+ &ICEPLUME_PARM03
+ &
+
+ &ICEPLUME_EXF_PARM04
+ runoffQsgstartdate1   = 20020101,
+ runoffQsgstartdate2   = 000000,
+ runoffQsgRepCycle     = 225.0,
+ runoffQsgperiod       = 25.0,
+ runoffQsg_inscal      = 1.0,
+# runoffQsgRepCycle     = 31622400.0,
+# runoffQsg_interpMethod = 0,
+### runoffQsg_lon0       = 0.50D0,
+### runoffQsg_lon_inc    = 1.0D0,
+### runoffQsg_lat0       = -89.5D0,
+### runoffQsg_lat_inc    = 179*1.,
+### runoffQsg_nlon       = 360,
+### runoffQsg_nlat       = 180,
+ &
