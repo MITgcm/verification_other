@@ -21,5 +21,14 @@ C     Use horizontal averaging for viscosity and diffusivity as
 C     originally implemented in OPA.
 #define ALLOW_GGL90_SMOOTH
 
+C     allow IDEMIX model
+#undef ALLOW_GGL90_IDEMIX
+
+C     include Langmuir circulation parameterization
+#undef ALLOW_GGL90_LANGMUIR
+
+C     recover old bug prior to Jun 2023
+#undef GGL90_MISSING_HFAC_BUG
+
 #endif /* ALLOW_GGL90 */
 #endif /* GGL90_OPTIONS_H */
