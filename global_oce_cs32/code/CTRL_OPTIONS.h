@@ -33,9 +33,7 @@ C o I/O and pack settings
 
 C This allows for GMREDI controls
 #define ALLOW_KAPGM_CONTROL
-# undef ALLOW_KAPGM_CONTROL_OLD
 #define ALLOW_KAPREDI_CONTROL
-# undef ALLOW_KAPREDI_CONTROL_OLD
 
 C This allows for DIFFKR controls
 #define ALLOW_DIFFKR_CONTROL
@@ -44,13 +42,6 @@ C o sets of controls
 #define ALLOW_GENTIM2D_CONTROL
 #define ALLOW_GENARR2D_CONTROL
 #define ALLOW_GENARR3D_CONTROL
-
-C  o use pkg/smooth correlation operator (incl. smoother) for 3D controls (Weaver, Courtier 01)
-C    This CPP option just sets the default for ctrlSmoothCorrel23 to .TRUE.
-#define ALLOW_SMOOTH_CORREL3D
-C  o use pkg/smooth correlation operator (incl. smoother) for 2D controls (Weaver, Courtier 01)
-C    This CPP option just sets the default for ctrlSmoothCorrel2D to .TRUE.
-#define ALLOW_SMOOTH_CORREL2D
 
 C  o impose bounds on controls
 #define ALLOW_ADCTRLBOUND
@@ -63,4 +54,3 @@ C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */
 #endif /* ALLOW_CTRL */
 #endif /* CTRL_OPTIONS_H */
-
