@@ -6,7 +6,7 @@ with interactive CO2 feedback.
 ## Description:
 
 Low resolution (cs24) "Double Drake" configuration similar to
-Ferreira etal, J. Climate, [2012](doi: https://doi.org/10.1175/2009JCLI3197.1)
+Ferreira etal, J. Climate, [2012](https://doi.org/10.1175/2009JCLI3197.1)
 with ocean biochemistry (pkg/dic) and coupled atmospheric pCO2 concentration
 (assuming well mixed atmosphere) including CO2 radiation effect
 (calibration of CO2-ALBCO2 relationship from Alexandre Pohl).
@@ -52,5 +52,5 @@ For primary set-up:
   ../../tools/run_cpl_test 4
 ```
 but this requires, in your path, a simple comparison script "comp_res"
-(which is not provided here but could be found in:
- http://wwwcvs.mitgcm.org/viewvc/MITgcm/MITgcm_contrib/jmc_script/ ), along with some other files found in this archive.
+which is not provided here but could be found
+[here](http://wwwcvs.mitgcm.org/viewvc/MITgcm/MITgcm_contrib/jmc_script/), along with some other files found in this archive.
