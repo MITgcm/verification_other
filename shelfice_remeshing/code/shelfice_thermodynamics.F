@@ -37,7 +37,7 @@ C     === Global variables ===
 #include "SHELFICE_COST.h"
 #ifdef ALLOW_AUTODIFF
 # include "CTRL_SIZE.h"
-# include "ctrl.h"
+# include "CTRL.h"
 # include "ctrl_dummy.h"
 #endif /* ALLOW_AUTODIFF */
 #ifdef ALLOW_AUTODIFF_TAMC

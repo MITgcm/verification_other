@@ -121,7 +121,7 @@ c They provide the fields to be stored.
 # endif
 
 # include "tamc.h"
-# include "ctrl.h"
+# include "CTRL.h"
 # include "ctrl_dummy.h"
 # include "cost.h"
 # include "ecco_cost.h"

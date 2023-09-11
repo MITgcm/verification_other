@@ -30,7 +30,7 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "cal.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #include "ctrl_dummy.h"
 #include "ecco_cost.h"
 
