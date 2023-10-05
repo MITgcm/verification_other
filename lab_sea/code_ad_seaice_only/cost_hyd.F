@@ -30,7 +30,7 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "cal.h"
-#include "CTRL.h"
+#include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "ecco_cost.h"
 
@@ -53,7 +53,7 @@ c     == local variables ==
 c     == end of interface ==
 
 
-#ifdef ALLOW_SST_COST_CONTRIBUTION 
+#ifdef ALLOW_SST_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_sst'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
@@ -69,7 +69,7 @@ cph)
      &     nnzbar, tbarfile, tbar, xx_tbar_mean_dummy,
      &     nnzobs, sstdatfile, sstdat, mult_sst,
      &     nmonsrec, modelstartdate, localperiod,
-     &     maskC, wsst, 
+     &     maskC, wsst,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_sst, num_sst,
      &     myiter, mytime, mythid )
@@ -95,9 +95,9 @@ cph      call cost_sst   ( myiter, mytime, mythid )
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
       call cost_xbt   ( myiter, mytime, mythid )
-#endif 
+#endif
 
-#ifdef ALLOW_TMI_SST_COST_CONTRIBUTION 
+#ifdef ALLOW_TMI_SST_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_tmi'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
@@ -111,7 +111,7 @@ cph      call cost_sst   ( myiter, mytime, mythid )
      &     nnzbar, tbarfile, tbar, xx_tbar_mean_dummy,
      &     nnzobs, tmidatfile, tmidat, mult_tmi,
      &     nmonsrec, tmistartdate, localperiod,
-     &     maskC, wsst, 
+     &     maskC, wsst,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_tmi, num_tmi,
      &     myiter, mytime, mythid )
@@ -132,7 +132,7 @@ cph      call cost_tmi( myiter, mytime, mythid )
      &     nnzbar, sbarfile, sbar, xx_sbar_mean_dummy,
      &     nnzobs, sssdatfile, sssdat,  mult_sss,
      &     nmonsrec, modelstartdate, localperiod,
-     &     maskC, wsss, 
+     &     maskC, wsss,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_sss, num_sss,
      &     myiter, mytime, mythid )

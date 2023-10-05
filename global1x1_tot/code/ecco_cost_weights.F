@@ -34,7 +34,7 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#include "CTRL.h"
+#include "ctrl.h"
 #include "ecco_cost.h"
 
 c     == routine arguments ==
