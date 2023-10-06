@@ -38,7 +38,7 @@ c
 c     changed: Christian Eckert eckert@mit.edu 14-Jul-1999
 c
 c              - The call to mapping was moved to initialise_varia,
-c                since this routine has to be called before
+c                since this routine has to be called before 
 c                ini_predictor.
 c
 c              Christian Eckert eckert@mit.edu 11-Feb-2000
@@ -72,8 +72,8 @@ c     == global variables ==
 c**************************************
 #ifdef ALLOW_AUTODIFF_TAMC
 
-c These includes are needed for
-c AD-checkpointing.
+c These includes are needed for 
+c AD-checkpointing. 
 c They provide the fields to be stored.
 
 # include "GRID.h"
@@ -130,17 +130,17 @@ c They provide the fields to be stored.
 c**************************************
 
 c     == routine arguments ==
-c     note: under the multi-threaded model myiter and
-c           mytime are local variables passed around as routine
-c           arguments. Although this is fiddly it saves the need to
-c           impose additional synchronisation points when they are
+c     note: under the multi-threaded model myiter and 
+c           mytime are local variables passed around as routine 
+c           arguments. Although this is fiddly it saves the need to 
+c           impose additional synchronisation points when they are 
 c           updated.
 c     myiter - iteration counter for this thread
 c     mytime - time counter for this thread
 c     mythid - thread number for this instance of the routine.
-      integer mythid
+      integer mythid 
       integer myiter
-      _RL     mytime
+      _RL     mytime 
 
 c     == local variables ==
 
@@ -162,7 +162,7 @@ c     == local variables ==
 c--   == end of interface ==
 
 #ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_ENTER('THE_MAIN_LOOP',myThid)
 #endif
 
@@ -196,7 +196,7 @@ c--   Get the current date.
 
 C--   Set initial conditions (variable arrays)
 #ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('INITIALISE_VARIA',myThid)
 #endif
       CALL TIMER_START('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
@@ -286,7 +286,7 @@ c--
 CADJ INIT comlev1_lsr = COMMON,nchklev_1*2
 #  endif
 #  ifdef SEAICE_MULTILEVEL
-CADJ INIT comlev1_multdim
+CADJ INIT comlev1_multdim 
 CADJ &    = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt*multdim
 #  endif
 # endif /* ALLOW_SEAICE */
@@ -321,9 +321,9 @@ c--   to nTimeSteps: (nchklev_0 .ge. nTimeSteps)
       if (nchklev_0 .lt. nTimeSteps) then
         print*
         print*, ' the_main_loop: ',
-     &       'TAMC checkpointing parameter nchklev_0 = ',
+     &       'TAMC checkpointing parameter nchklev_0 = ', 
      &       nchklev_0
-        print*, '            is not consistent with nTimeSteps = ',
+        print*, '            is not consistent with nTimeSteps = ', 
      &       nTimeSteps
         stop    ' ... stopped in the_main_loop.'
       endif
@@ -358,7 +358,7 @@ c--     Accumulate time averages of temperature, salinity, and SSH.
         call cost_averagesFields( mytime, mythid )
         call timer_stop ('COST_AVERAGESFIELDS   [ECCO MAIN]', mythid)
 #ifdef ALLOW_COST_ATLANTIC
-c--     Compute meridional heat transport
+c--     Compute meridional heat transport 
         call timer_start('cost_atlantic         [ECCO MAIN]', mythid)
         call cost_atlantic(  mytime, myiter,mythid )
         call timer_stop ('cost_atlantic         [ECCO MAIN]', mythid)
@@ -372,7 +372,7 @@ c**************************************
 #endif
 
 #ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('EXF_GETFORCING',myThid)
 #endif
       CALL TIMER_START('EXF_GETFORCING     [FORWARD_STEP]',mythid)
@@ -389,7 +389,7 @@ c**************************************
 cph this simple runtime flag causes a lot of recomp.
       IF ( useSEAICE ) THEN
 #ifndef DISABLE_DEBUGMODE
-         IF ( debugLevel .GE. debLevB )
+         IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('SEAICE_MODEL',myThid)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -421,7 +421,7 @@ CADJ STORE ptracer  = comlev1, key = ikey_dynamics
 
 #ifndef ALLOW_OFFLINE
 #ifdef ALLOW_DEBUG
-       IF ( debugLevel .GE. debLevB )
+       IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('DO_OCEANIC_PHYS',myThid)
 #endif
        CALL TIMER_START('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
@@ -493,7 +493,7 @@ CADJ STORE mytime = onetape
 #endif
 c--   Accumulate time averages of temperature, salinity, and SSH.
 #ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('cost_averagesfields',myThid)
 #endif
       call timer_start('cost_averagesfields [ECCO SPIN-DOWN]', mythid)
@@ -506,9 +506,9 @@ c**************************************
 #endif
 
 #ifdef ALLOW_COST_ATLANTIC
-c--   Compute meridional heat transport
+c--   Compute meridional heat transport 
 #ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('cost_atlantic',myThid)
 #endif
       call timer_start('cost_atlantic      [ECCO SPIN-DOWN]', mythid)
@@ -519,7 +519,7 @@ c--   Compute meridional heat transport
 c--   Compute the cost function contribution of the boundary forcing,
 c--   i.e. heat flux, salt flux, zonal and meridional wind stress.
 #ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('cost_forcing',myThid)
 #endif
       call timer_start('cost_forcing       [ECCO SPIN-DOWN]', mythid)
@@ -528,7 +528,7 @@ c--   i.e. heat flux, salt flux, zonal and meridional wind stress.
 
 c--   Compute cost function contribution of Temperature and Salinity.
 #ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('cost_hyd',myThid)
 #endif
       call timer_start('cost_hyd           [ECCO SPIN-DOWN]', mythid)
@@ -537,7 +537,7 @@ c--   Compute cost function contribution of Temperature and Salinity.
 
 #ifdef ALLOW_SEAICE
 #ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('seaice_cost_driver',myThid)
 #endif
       call timer_start('seaice_cost_driver [ECCO SPIN-DOWN]', mythid)
@@ -547,7 +547,7 @@ c--   Compute cost function contribution of Temperature and Salinity.
 
 #ifdef ALLOW_OBCS_COST_CONTRIBUTION
 #ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('cost_obcs',myThid)
 #endif
       call timer_start('cost_obcs          [ECCO SPIN-DOWN]', mythid)
@@ -557,7 +557,7 @@ c--   Compute cost function contribution of Temperature and Salinity.
 
 #ifdef ALLOW_CURMTR_COST_CONTRIBUTION
 #ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('cost_curmtr',myThid)
 #endif
       call timer_start('cost_curmtr        [ECCO SPIN-DOWN]', mythid)
@@ -568,7 +568,7 @@ c--   Compute cost function contribution of Temperature and Salinity.
 c--   Compute cost function contribution of SSH.
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
 #ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('cost_ssh',myThid)
 #endif
       call timer_start('cost_ssh           [ECCO SPIN-DOWN]', mythid)
@@ -579,7 +579,7 @@ c--   Compute cost function contribution of SSH.
 c--   Compute cost function contribution of drifter's velocities.
 #ifdef ALLOW_DRIFTER_COST_CONTRIBUTION
 #ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('cost_drifter',myThid)
 #endif
       call timer_start('cost_drifter         [ECCO SPIN-DOWN]', mythid)
@@ -590,15 +590,15 @@ c--   Compute cost function contribution of drifter's velocities.
 c--   Compute cost function contribution of wind stress observations.
 #ifdef ALLOW_SCAT_COST_CONTRIBUTION
 #ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('cost_scat',myThid)
 #endif
-      call timer_start('cost_scat            [ECCO SPIN-DOWN]', mythid)
+      call timer_start('cost_scat            [ECCO SPIN-DOWN]', mythid) 
       call cost_scat( myiter, mytime, mythid )
       call timer_stop ('cost_scat            [ECCO SPIN-DOWN]', mythid)
 #endif
 
-c--   Compute cost function contribution of wind stress observations.
+c--   Compute cost function contribution of wind stress observations.  
 #ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
       call timer_start('cost_mean_heatflux   [ECCO SPIN-DOWN]', mythid)
       call cost_mean_heatflux( myiter, mytime, mythid )
@@ -612,11 +612,11 @@ c--   Compute cost function contribution of wind stress observations.
       call timer_stop ('cost_mean_saltflux   [ECCO SPIN-DOWN]', mythid)        
 #endif
 
-c--   Compute cost function contribution of drift between the first
+c--   Compute cost function contribution of drift between the first 
 c     and the last year.
 #ifdef ALLOW_DRIFT_COST_CONTRIBUTION
 #ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('cost_drift',myThid)
 #endif
       call timer_start('cost_drift         [ECCO SPIN-DOWN]', mythid)
@@ -625,7 +625,7 @@ c     and the last year.
 #endif
 #ifdef ALLOW_DRIFTW_COST_CONTRIBUTION
 #ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('cost_driftw',myThid)
 #endif
       call timer_start('cost_driftw        [ECCO SPIN-DOWN]', mythid)
@@ -652,7 +652,7 @@ c--   Eddy stress penalty term
 
 c--   Sum all cost function contributions.
 #ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('cost_final',myThid)
 #endif
       call timer_start('COST_FINAL         [ECCO SPIN-DOWN]', mythid)
@@ -664,9 +664,10 @@ c--   Sum all cost function contributions.
       call timer_stop ('ECCO SPIN-DOWN', mythid)
 
 #ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB )
+      IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_LEAVE('THE_MAIN_LOOP',myThid)
 #endif
 
       return
       end
+
