@@ -38,12 +38,11 @@ C     === Global variables ===
 #ifdef ALLOW_AUTODIFF
 # include "CTRL_SIZE.h"
 # include "CTRL.h"
-# include "ctrl_dummy.h"
+# include "CTRL_DUMMY.h"
 #endif /* ALLOW_AUTODIFF */
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef SHI_ALLOW_GAMMAFRICT
 #  include "tamc.h"
-#  include "tamc_keys.h"
 # endif /* SHI_ALLOW_GAMMAFRICT */
 #endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef ALLOW_STREAMICE
