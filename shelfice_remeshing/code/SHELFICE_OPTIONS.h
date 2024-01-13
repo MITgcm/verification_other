@@ -22,10 +22,15 @@ C     following Holland and Jenkins, JPO, 1999
 #define SHI_ALLOW_GAMMAFRICT
 C     in uStar expression, use wet-point method to average velocity
 C     at grid-cell center
-!#define SHI_USTAR_WETPOINT
+c#define SHI_USTAR_WETPOINT
 
+C     allow (vertical) remeshing whenever ocean top thickness factor
+C     exceeds thresholds
 #define ALLOW_SHELFICE_REMESHING
 #define SHI_USTAR_TOPDR
+C     and allow to print message to STDOUT when this happens
+c#define SHELFICE_REMESH_PRINT
+
 #undef ALLOW_SHELFICE_GROUNDED_ICE
 
 #endif /* ALLOW_SHELFICE */
