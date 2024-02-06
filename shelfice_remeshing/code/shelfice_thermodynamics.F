@@ -37,13 +37,12 @@ C     === Global variables ===
 #include "SHELFICE_COST.h"
 #ifdef ALLOW_AUTODIFF
 # include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
+# include "CTRL.h"
+# include "CTRL_DUMMY.h"
 #endif /* ALLOW_AUTODIFF */
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef SHI_ALLOW_GAMMAFRICT
 #  include "tamc.h"
-#  include "tamc_keys.h"
 # endif /* SHI_ALLOW_GAMMAFRICT */
 #endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef ALLOW_STREAMICE
@@ -130,11 +129,11 @@ C KS_dens, add massMin and EFFR, R_min, and remove above
 #endif
 
 #ifdef ALLOW_SHIFWFLX_CONTROL
-      _RL xx_shifwflx_loc(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_shifwflx_loc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 #ifdef ALLOW_SHELFICE_REMESHING
-      _RL GrdFactor(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL GrdFactor(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -199,7 +198,7 @@ C     (Holland and Jenkins, 1999, eq.21)
       dFac = 0. _d 0
       IF ( SHELFICEadvDiffHeatFlux ) dFac = 1. _d 0
       fwflxFac = 0. _d 0
-C     if shelficeboundarylayer is used with real freshwater flux, 
+C     if shelficeboundarylayer is used with real freshwater flux,
 c     the T/S used for surface fluxes must be the cell T/S
       realFWfac = 0. _d 0
       IF ( SHELFICErealFWflux ) realFWfac = 1. _d 0
@@ -271,7 +270,7 @@ C     where this value is part of the protocol
         ELSE
              oce_density = streamice_density_ocean_avg
         ENDIF
-#endif 
+#endif
 
 #ifdef ALLOW_SHELFICE_GROUNDED_ICE
 
@@ -286,15 +285,13 @@ C KS_dens
          ELSE
            DO j = 1-OLy, sNy+OLy
             DO i = 1-OLx, sNx+OLx
-        
-             massMin(i,j,bi,bj) = oce_density * 
-     &        (SEALEVEL-(R_low(i,j,bi,bj)+R_MWCT(i,j,bi,bj))) 
 
- 
+             massMin(i,j,bi,bj) = oce_density *
+     &        (SEALEVEL-(R_low(i,j,bi,bj)+R_MWCT(i,j,bi,bj)))
+
             ENDDO
            ENDDO
          ENDIF
-
 
          DO j = 1-OLy, sNy+OLy
           DO i = 1-OLx, sNx+OLx
@@ -315,7 +312,6 @@ C KS_dens
           ENDDO
          ENDDO
 C KS_dens -----------------------------------------------
-
 
 #endif
 ! allow shelfice_grounded_ice
@@ -385,17 +381,17 @@ c         pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*1. _d -4
         IF ( SHELFICEBoundaryLayer ) THEN
          DO J = 1, sNy+1
           DO I = 1, sNx+1
-           K = ksurfW(I,J,bi,bj)
+           K = kSurfW(I,J,bi,bj)
            Kp1 = K+1
            IF (K.lt.Nr) then
             drKp1 = drF(K)*(1. _d 0-_hFacW(I,J,K,bi,bj))
             drKp1 = MIN( drKp1, drF(Kp1)*_hFacW(I,J,Kp1,bi,bj))
             drKp1 = max (drKp1, 0. _d 0)
-            recip_drLoc = 1.0 / 
+            recip_drLoc = 1.0 /
      &       (drF(K)*_hFacW(I,J,K,bi,bj)+drKp1)
-            u_topdr(I,J,bi,bj) = 
-     &       (drF(K)*_hFacW(I,J,K,bi,bj)*uVel(I,J,K,bi,bj) + 
-     &        drKp1*uVel(I,J,Kp1,bi,bj)) 
+            u_topdr(I,J,bi,bj) =
+     &       (drF(K)*_hFacW(I,J,K,bi,bj)*uVel(I,J,K,bi,bj) +
+     &        drKp1*uVel(I,J,Kp1,bi,bj))
      &      * recip_drLoc
 C zero out u_topdr under grounded ice as uLoc is average of u_topdr
 C in adjacent cells.
@@ -406,18 +402,18 @@ C in adjacent cells.
            ELSE
             u_topdr(I,J,bi,bj) = 0. _d 0
            ENDIF
-           
-           K = ksurfS(I,J,bi,bj)
+
+           K = kSurfS(I,J,bi,bj)
            Kp1 = K+1
            IF (K.lt.Nr) then
             drKp1 = drF(K)*(1. _d 0-_hFacS(I,J,K,bi,bj))
             drKp1 = MIN( drKp1, drF(Kp1)*_hFacS(I,J,Kp1,bi,bj))
             drKp1 = max (drKp1, 0. _d 0)
-            recip_drLoc = 1.0 / 
+            recip_drLoc = 1.0 /
      &       (drF(K)*_hFacS(I,J,K,bi,bj)+drKp1)
-            v_topdr(I,J,bi,bj) = 
-     &       (drF(K)*_hFacS(I,J,K,bi,bj)*vVel(I,J,K,bi,bj) + 
-     &        drKp1*vVel(I,J,Kp1,bi,bj)) 
+            v_topdr(I,J,bi,bj) =
+     &       (drF(K)*_hFacS(I,J,K,bi,bj)*vVel(I,J,K,bi,bj) +
+     &        drKp1*vVel(I,J,Kp1,bi,bj))
      &      * recip_drLoc
 C zero out v_topdr under grounded ice as uLoc is average of v_topdr
 C in adjacent cells.
@@ -476,10 +472,10 @@ C--   lower cell may not be as thick as required
         IF ( SHELFICEBoundaryLayer ) THEN
          DO J = 1, sNy
           DO I = 1, sNx
-           uLoc(I,J) = 
+           uLoc(I,J) =
 C halfRL*
      &      (u_topdr(I,J,bi,bj) + u_topdr(I+1,J,bi,bj))
-           vLoc(I,J) = 
+           vLoc(I,J) =
 C halfRL*
      &      (v_topdr(I,J,bi,bj) + v_topdr(I,J+1,bi,bj))
            velSq(I,J) = uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)
@@ -487,8 +483,6 @@ C halfRL*
          ENDDO
         ENDIF
 #endif
-
-
 
 C--   turn potential temperature into in-situ temperature relative
 C--   to the surface
@@ -690,9 +684,8 @@ cph     &           * ( saltFreeze - sLoc(I,J) ) / saltFreeze
      &           + xx_shifwflx_loc(I,J,bi,bj)
 #endif /*  ALLOW_SHIFWFLX_CONTROL */
 
-
 #ifdef ALLOW_SHELFICE_GROUNDED_ICE
-           freshWaterFlux = 
+           freshWaterFlux =
      &       freshWaterFlux*(GrdFactor(i,j,bi,bj)*0.5+0.5)
 #endif
 
@@ -770,8 +763,6 @@ c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
        ENDDO
 c     ENDIF
 #endif /* ndef ALLOW_AUTODIFF */
-
-
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
