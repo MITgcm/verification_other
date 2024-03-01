@@ -1,66 +1,42 @@
 # SEAICE parameters
  &SEAICE_PARM01
-#here I take the fields from pickup.seaice.previous.data that 
+#here I take the fields from pickup.seaice.previous.data that
 #came out of experiment 2 ("relax") part 4 to initialize part 5
-      AreaFile='siAREA.ini',
-      HeffFile='siHEFF.ini',
-      HsnowFile='siHSNOW.ini',
-      uIceFile='siUICE.ini',
-      vIceFile='siVICE.ini',
-#the following is needed to recover old default values
-#since PR116 (https://github.com/MITgcm/MITgcm/pull/116)
-      SEAICE_drag=0.002,
-      SEAICE_waterDrag=0.005344995140913508357982664,
-      SEAICEetaZmethod=0,
-      SEAICEscaleSurfStress=.FALSE.,
-      SEAICEaddSnowMass=.FALSE.,
-      SEAICE_OLx=0,
-      SEAICE_OLy=0,
+ AreaFile='siAREA.ini',
+ HeffFile='siHEFF.ini',
+ HsnowFile='siHSNOW.ini',
+ uIceFile='siUICE.ini',
+ vIceFile='siVICE.ini',
 #
-      SEAICEuseTILT=.FALSE.,
-      SEAICEpresH0=2.,
-      SEAICEpresPow0=1,
-      SEAICEpresPow1=1,
-      SEAICE_strength = 2.25e4,
-      SEAICE_multDim=1,
-      SEAICErestoreUnderIce=.TRUE.,
-      SEAICE_area_max=0.97,      
-      SEAICE_salt0=4.,
-      LSR_ERROR          = 2.e-4,
-      SEAICEuseDYNAMICS  = .TRUE.,
-      MIN_ATEMP          = -40.,
-      MIN_TICE           = -40.,
-      SEAICEadvScheme    = 33,
-      SEAICEuseFluxForm = .TRUE.,
-      SEAICEadvSnow      = .TRUE.,
-#      SEAICEadvSalt      = .TRUE.,
-      SEAICEdiffKhHeff   = 400.,
-      SEAICEdiffKhArea   = 400.,
-      SEAICEdiffKhSnow   = 400.,
-#      SEAICEdiffKhSalt   = 400.,
-      SEAICEuseFlooding  = .TRUE.,
-      SEAICE_mcPheePiston= 3.858024691358025E-05,
-      SEAICE_frazilFrac  = 1.,
-      SEAICE_mcPheeTaper = 0.,
-      SEAICE_areaLossFormula=2,
-      SEAICEheatConsFix  = .TRUE.,
-      SEAICE_tempFrz0    = -1.96,
-      SEAICE_dTempFrz_dS = 0.,
-      SEAICEuseMetricTerms = .TRUE.,
-      SEAICE_no_slip     = .TRUE.,
-      SEAICE_clipVelocities = .TRUE.,
-#take 33% out of (1-albedo)
-      SEAICE_dryIceAlb   = 0.84,
-      SEAICE_wetIceAlb   = 0.78,
-      SEAICE_drySnowAlb  = 0.90,
-      SEAICE_wetSnowAlb  = 0.8 ,
-#default albedos
-      SEAICE_dryIceAlb_south   = 0.75
-      SEAICE_wetIceAlb_south   = 0.66
-      SEAICE_drySnowAlb_south  = 0.84
-      SEAICE_wetSnowAlb_south  = 0.7
+ SEAICE_no_slip     = .TRUE.,
+ SEAICEadvScheme    = 77,
+ SEAICE_drag        = 0.001,
+ SEAICE_drag_south  = 0.002,
+ SEAICE_wetAlbTemp  = 0.0,
+ SEAICE_salt0       = 4.0,
+ LSR_ERROR = 1.e-5,
+# just too expensive to have 10 iterations
+ SEAICEnonLinIterMax = 2,
+# this value should be default for the McPhee parameterization
+ SEAICE_mcPheeTaper=0.92,
+ SEAICE_mcPheePiston= 7.291666666666666E-05,
+ SEAICE_frazilFrac  = 0.,
+ SEAICE_saltFrac    = 0.30,
+ SEAICE_area_reg    = 0.15,
+ SEAICE_hice_reg    = 0.10,
+ IMAX_TICE = 6,
+# Depending on vertical resolution this angle should have a value
+# > 0 (e.g., 25deg for drF(1)=10m,)
+ SEAICE_waterTurnAngle = 25.0,
+ HO        = 0.5,
+ SEAICE_multDim = 7,
+ SEAICE_useMultDimSnow = .TRUE.,
+ SEAICEpressReplFac = 0.,
+ SEAICE_cStar    = 15.,
  &
-#
+
  &SEAICE_PARM02
  &
 
+ &SEAICE_PARM03
+ &
