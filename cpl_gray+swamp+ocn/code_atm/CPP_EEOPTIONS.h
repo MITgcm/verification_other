@@ -1,5 +1,5 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/cpl_gray+ocn/code_atm/CPP_EEOPTIONS.h,v 1.2 2014/02/03 22:57:30 jmc Exp $
-C $Name:  $
+#ifndef _CPP_EEOPTIONS_H_
+#define _CPP_EEOPTIONS_H_
 
 CBOP
 C     !ROUTINE: CPP_EEOPTIONS.h
@@ -30,9 +30,6 @@ C     |       identified, rebuild the code with the appropriate  |
 C     |       options set at compile time.                       |
 C     *==========================================================*
 CEOP
-
-#ifndef _CPP_EEOPTIONS_H_
-#define _CPP_EEOPTIONS_H_
 
 C     In general the following convention applies:
 C     ALLOW  - indicates an feature will be included but it may
@@ -83,8 +80,16 @@ C--   Alternative formulation of BYTESWAP, faster than
 C     compiler flag -byteswapio on the Altix.
 #undef FAST_BYTESWAP
 
-C--   Flag defined for eeset_parms.F and open_copy_data_file.F
-C     to write scratch files from process 0 only
+C--   Flag to turn on old default of opening scratch files with the
+C     STATUS='SCRATCH' option. This method, while perfectly FORTRAN-standard,
+C     caused filename conflicts on some multi-node/multi-processor platforms
+C     in the past and has been replace by something (hopefully) more robust.
+#undef USE_FORTRAN_SCRATCH_FILES
+
+C--   Flag defined for eeboot_minimal.F, eeset_parms.F and open_copy_data_file.F
+C     to write STDOUT, STDERR and scratch files from process 0 only.
+C WARNING: to use only when absolutely confident that the setup is working
+C     since any message (error/warning/print) from any proc <> 0 will be lost.
 #undef SINGLE_DISK_IO
 
 C=== MPI, EXCH and GLOBAL_SUM related options ===
@@ -92,9 +97,14 @@ C--   Flag turns off MPI_SEND ready_to_receive polling in the
 C     gather_* subroutines to speed up integrations.
 #undef DISABLE_MPI_READY_TO_RECEIVE
 
+C--   Control MPI based parallel processing
+CXXX We no longer select the use of MPI via this file (CPP_EEOPTIONS.h)
+CXXX To use MPI, use an appropriate genmake2 options file or use
+CXXX genmake2 -mpi .
+CXXX #undef  ALLOW_USE_MPI
+
 C--   Control use of communication that might overlap computation.
 C     Under MPI selects/deselects "non-blocking" sends and receives.
-#define ALLOW_ASYNC_COMMUNICATION
 #undef  ALLOW_ASYNC_COMMUNICATION
 #undef  ALWAYS_USE_ASYNC_COMMUNICATION
 C--   Control use of communication that is atomic to computation.
@@ -116,13 +126,16 @@ C--   disconnect tiles (no exchange between tiles, just fill-in edges
 C     assuming locally periodic subdomain)
 #undef DISCONNECTED_TILES
 
+C--   Always cumulate tile local-sum in the same order by applying MPI allreduce
+C     to array of tiles ; can get slower with large number of tiles (big set-up)
+#define GLOBAL_SUM_ORDER_TILES
+
 C--   Alternative way of doing global sum without MPI allreduce call
-C     but instead, explicit MPI send & recv calls.
+C     but instead, explicit MPI send & recv calls. Expected to be slower.
 #undef GLOBAL_SUM_SEND_RECV
 
 C--   Alternative way of doing global sum on a single CPU
-C     to eliminate tiling-dependent roundoff errors.
-C     Note: This is slow.
+C     to eliminate tiling-dependent roundoff errors. Note: This is slow.
 #undef  CG2D_SINGLECPU_SUM
 
 C=== Other options (to add/remove pieces of code) ===
@@ -134,7 +147,10 @@ C--   Control use of communication with other component:
 C     allow to import and export from/to Coupler interface.
 #define COMPONENT_MODULE
 
-#endif /* _CPP_EEOPTIONS_H_ */
+C--   Activate some pieces of code for coupling to GEOS AGCM
+#undef HACK_FOR_GMAO_CPL
 
+C=== And define Macros ===
 #include "CPP_EEMACROS.h"
 
+#endif /* _CPP_EEOPTIONS_H_ */

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/cpl_gray+ocn/code_cpl/OCNSIZE.h,v 1.1 2013/09/25 19:28:28 jmc Exp $
-C $Name:  $
-
 C     /==========================================================\
 C     | OCN_SIZE.h Declare size of underlying computational grid |
 C     |            for ocean component.                          |

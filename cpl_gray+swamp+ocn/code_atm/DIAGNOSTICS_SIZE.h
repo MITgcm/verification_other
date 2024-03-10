@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/cpl_gray+ocn/code_atm/DIAGNOSTICS_SIZE.h,v 1.2 2014/10/07 01:05:22 jmc Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics
@@ -23,7 +19,7 @@ C  and "diagSt_size" (statistics-diags) since values here are deliberately small
       PARAMETER( ndiagMax = 500 )
       PARAMETER( numlists = 10, numperlist = 50, numLevels=2*Nr )
 c     PARAMETER( numDiags = 260*Nr )  ! to use repeatCycle=12 for 3-D dynDiag
-      PARAMETER( numDiags = 1000*Nr )
+      PARAMETER( numDiags = 50*Nr )
       PARAMETER( nRegions = 9 , sizRegMsk = 3 , nStats = 4 )
       PARAMETER( diagSt_size = 40*Nr )
 
