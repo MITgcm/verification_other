@@ -1,0 +1,99 @@
+# Diagnostic Package Choices
+#-----------------
+# for each output-stream:
+#  filename(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#  frequency(n):< 0 : write snap-shot output every |frequency| seconds
+#               > 0 : write time-average output every frequency seconds
+#  timePhase(n)     : write at time = timePhase + multiple of |frequency|
+#  levels(:,n) : list of levels to write to file (Notes: declared as REAL)
+#                 when this entry is missing, select all common levels of this list
+#  fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics" file
+#                 for the list of all available diag. in this particular config)
+#-----------------
+ &diagnostics_list
+
+   frequency(1) = 31104000.,
+   frequency(1) = 1555200000.,
+#   filename(1) = 'DiagOcnEta',
+  fields(1:4,1) = 'ETAN    ','ETANSQ  ','surForcS','oceSflux',
+
+   frequency(2) = 31104000.,
+   frequency(2) = 1555200000.,
+#   filename(2) = 'DiagOcnTave',
+  fields(1:7,2) = 'UVEL    ','VVEL    ','WVEL    ','THETA   ',
+                  'SALT    ','PHIHYD  ','CONVADJ ',
+#                 'UVELSQ  ','VVELSQ  ','UV_VEL_C','THETASQ ',
+#                 'WVELTH  ','WVELSLT ',
+
+   frequency(3) = 31104000.,
+   frequency(3) = 1555200000.,
+#   filename(3) = 'DiagOcnExtra',
+  fields(1:13,3)= 'UVELMASS','VVELMASS','UTHMASS ','VTHMASS ',
+                  'USLTMASS','VSLTMASS','ADVx_SLT','ADVy_SLT',
+                  'ADVx_TH ','ADVy_TH ','DRHODR  ','URHOMASS',
+                  'VRHOMASS',
+
+   frequency(4) = 31104000.,
+   frequency(4) = 1555200000.,
+#   filename(4) = 'DiagOcnGM',
+  fields(1:11,4)= 'GM_Kux  ','GM_Kvy  ','GM_Kwx  ','GM_Kwy  ',
+                  'GM_Kwz  ','GM_PsiX ','GM_PsiY ','DFxE_TH ',
+                  'DFyE_TH ','DFxE_SLT','DFyE_SLT',
+
+   frequency(5) =-31104000.,
+   frequency(5) =-1555200000.,
+   timePhase(5) = 0.,
+#   filename(5) = 'DiagOcnEtai',
+  fields(1:1,5) = 'RSURF   ',
+
+   frequency(6) =-31104000.,
+   frequency(6) =-1555200000.,
+   timePhase(6) = 0.,
+#   filename(6) = 'DiagOcnTHi',
+  fields(1:2,6) = 'THETA   ','SALT    ',
+
+   frequency(7) = 31104000.,
+   frequency(7) = 1555200000.,
+#   filename(7) = 'DiagBioGeo2d',
+  fields(1:5,7) = 'DICPCO2 ','DICCFLX ','DICOFLX ','DICTFLX ',
+                 'DICPHAV ',
+
+   frequency(8) = 31104000.,
+   frequency(8) = 1555200000.,
+#   filename(8) = 'DiagBioGeo3d',
+  fields(1:19,8)= 'TRAC01  ','TRAC02  ','TRAC03  ','TRAC04  ',
+                  'TRAC05  ','DICBIOA ','DICCARB ',
+                  'ADVxTr03','ADVyTr03','DFxETr03','DFyETr03',
+                  'ADVxTr04','ADVyTr04','DFxETr04','DFyETr04',
+                  'UTRAC03 ','VTRAC03 ','UTRAC04 ','VTRAC04 ',
+
+ &
+
+# Parameter for Diagnostics of per level statistics:
+#-----------------
+# for each output-stream:
+#  stat_fname(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#  stat_freq(n):< 0 : write snap-shot output every |stat_freq| seconds
+#               > 0 : write time-average output every stat_freq seconds
+#  stat_phase(n)    : write at time = stat_phase + multiple of |stat_freq|
+#  stat_region(:,n) : list of "regions" (default: 1 region only=global)
+#  stat_fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics.log"
+#                 file for the list of all available diag. in this particular config)
+#-----------------
+ &DIAG_STATIS_PARMS
+  stat_fields(1:2,1) = 'TRAC01  ','DICCFLX ',
+#                      'TRAC02  ','TRAC03  ','TRAC04  ','TRAC05  ',
+# stat_fname(1) = 'BioStDiag',
+   stat_freq(1) = 31104000.,
+# stat_phase(1) = 0.,
+
+  stat_fields(1:10,2)= 'CPL_SLPr','CPL_Qnet','CPL_Qsw ',
+                       'CPL_tauX','CPL_tauY','CPL_sFlx','CPL_iceM',
+                       'CPL_aCO2','CPL_wSpd','CPL_icFr',
+#                      'CPL_iceH','CPL_snwH','CPL_Qic1','CPL_Qic2',
+#                      'CPL_sPlm','CPL_RnOf',
+#                      'SI_Fract','SI_Thick','SI_AdvFr','SI_AdvHi',
+  stat_fName(2) = 'cplStDiag',
+   stat_freq(2) = -3600.,
+  stat_phase(2) = 0.,
+ &
