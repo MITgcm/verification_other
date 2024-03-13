@@ -98,7 +98,7 @@ fi
 if [ $kpr -ge 2 ] ; then
   echo "--> move Oce output to '$exp/tmp_ocn_$sfx'"
 for nRank in {1..3}
-do	
+do
   ( mv rank_$nRank/mnc_test_*/*         ./$exp/mnc_ocn/
     mv rank_$nRank/pickup*.0?????????.* ./$exp/pick_ocn/
     rm -r rank_$nRank/mnc_test_*
@@ -172,8 +172,8 @@ else
 fi
 if test "$num" -lt "$lastSgm"
 then
-  #FastDiagnosticsNumber=`expr $lastSgm - 10` 
-  #if  test "$num" -ge "$FastDiagnosticsNumber" 
+  #FastDiagnosticsNumber=`expr $lastSgm - 10`
+  #if  test "$num" -ge "$FastDiagnosticsNumber"
   #then
   #  cp rank_4/data.diagnosticsFast rank_4/data.diagnostics
   #  cp rank_1/data.diagnosticsFast rank_1/data.diagnostics
