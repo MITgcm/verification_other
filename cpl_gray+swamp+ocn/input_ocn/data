@@ -1,0 +1,110 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=43*20.,
+ sRef=43*35.,
+ viscAh =3.E5,
+ viscAr =1.E-3,
+ bottomDragLinear=1.E-3,
+ diffKhT=0.,
+ diffK4T=0.,
+ diffKrT=3.E-5,
+ diffKhS=0.,
+ diffK4S=0.,
+ diffKrS=3.E-5,
+ gravity=9.81,
+ rhoConst=1030.,
+ rhoConstFresh=1000.,
+ eosType='JMD95Z',
+#allowFreezing=.TRUE.,
+ ivdc_kappa=10.,
+ implicitDiffusion=.TRUE.,
+ implicitViscosity=.TRUE.,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+ select_rStar=2,
+ nonlinFreeSurf=4,
+ hFacInf=0.01,
+ hFacSup=2.0,
+ useRealFreshWaterFlux=.TRUE.,
+ temp_EvPrRn=0.,
+ hFacMin=.015,
+ hFacMinDr=.4,
+ vectorInvariantMomentum=.TRUE.,
+ staggerTimeStep=.TRUE.,
+ tempAdvScheme=77,
+ saltAdvScheme=77,
+ selectImplicitDrag=2,
+# balanceEmPmR=.TRUE.,
+ selectBalanceEmPmR=2,
+ balancePrintMean=.TRUE.,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+#debugLevel=0,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=200,
+ cg2dTargetResidual=1.E-9,
+#cg2dTargetResWunit=1.E-14,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=0,
+# 10.yrs or 8.yrs:
+ nTimeSteps=108000,
+#nTimeSteps= 86400,
+ deltaTmom   =2880.,
+ deltaTtracer=2880.,
+ deltaTClock =2880.,
+ abEps = 0.1,
+ pChkptFreq =311040000.,
+ chkptFreq  = 31104000.,
+#pChkptFreq =248832000.,
+#chkptFreq  = 31104000.,
+ dumpFreq   = 2592000.,
+# dumpFreq = 86400.,
+ monitorFreq= 31104000.,
+ forcing_In_AB=.FALSE.,
+#periodicExternalForcing=.TRUE.,
+#externForcingPeriod=2592000.,
+#externForcingCycle=31104000.,
+# 2 months restoring timescale for temperature
+#tauThetaClimRelax= 5184000.,
+# restoring timescale for salinity: 2yrs, 20 yrs
+#tauSaltClimRelax = 62208000.,
+#tauSaltClimRelax = 622080000.,
+#- short test:
+ nTimeSteps= 5,
+ monitorFreq=1.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCurvilinearGrid=.TRUE.,
+ horizGridFile='dxC1_dXYa',
+ radius_fromHorizGrid=6370.E3,
+ delR=  10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.01,
+        10.03, 10.11, 10.32, 10.8, 11.76, 13.42, 16.04, 19.82, 24.85,
+        31.10, 38.42, 46.50, 55.00, 63.50, 71.58, 78.9, 85.15, 90.18,
+        93.96, 96.58, 98.25, 99.25, 100.01, 101.33, 104.56, 111.33, 122.83,
+        139.09, 158.94, 180.83, 203.55, 226.50, 249.5, 272.5, 295.5,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile      ='Bathymetry.bin',
+ addWwallFile   ='wall_W.bin',
+ addSwallFile   ='wall_S.bin',
+ hydrogThetaFile='tIni_cpl.bin',
+ hydrogSaltFile ='sIni_cpl.bin',
+ checkIniSalt=.FALSE.,
+ wghtBalanceFile='FreshwaterBalanceWeights.bin',
+#thetaClimFile  ='lev_surfT_cs_12m.bin',
+#saltClimFile   ='lev_surfS_cs_12m.bin',
+ &
