@@ -7,8 +7,8 @@ see README there)
 ### Requirements:
 In order to compile and run any experiments here, 
 a current copy (clone) of the main [MITgcm](https://mitgcm.org) code is needed.
-It is recommanded to download a clone of this repository within 
-a main [MITgcm](https://github.com/MITgcm/MITgcm) http://mitgcm.org) clone:
+It is recommanded to download a clone of this current repository inside 
+a main [MITgcm](https://github.com/MITgcm/MITgcm) clone:
 ```
    > git clone git@github.com:MITgcm/MITgcm.git
    > cd MITgcm
