@@ -76,10 +76,6 @@ C     a different file for each tile) and read are thread-safe.
 C--   Flag to turn off the writing of error message to ioUnit zero
 #undef DISABLE_WRITE_TO_UNIT_ZERO
 
-C--   Alternative formulation of BYTESWAP, faster than
-C     compiler flag -byteswapio on the Altix.
-#undef FAST_BYTESWAP
-
 C--   Flag to turn on old default of opening scratch files with the
 C     STATUS='SCRATCH' option. This method, while perfectly FORTRAN-standard,
 C     caused filename conflicts on some multi-node/multi-processor platforms
@@ -96,12 +92,6 @@ C=== MPI, EXCH and GLOBAL_SUM related options ===
 C--   Flag turns off MPI_SEND ready_to_receive polling in the
 C     gather_* subroutines to speed up integrations.
 #undef DISABLE_MPI_READY_TO_RECEIVE
-
-C--   Control MPI based parallel processing
-CXXX We no longer select the use of MPI via this file (CPP_EEOPTIONS.h)
-CXXX To use MPI, use an appropriate genmake2 options file or use
-CXXX genmake2 -mpi .
-CXXX #undef  ALLOW_USE_MPI
 
 C--   Control use of communication that might overlap computation.
 C     Under MPI selects/deselects "non-blocking" sends and receives.
@@ -136,7 +126,7 @@ C     but instead, explicit MPI send & recv calls. Expected to be slower.
 
 C--   Alternative way of doing global sum on a single CPU
 C     to eliminate tiling-dependent roundoff errors. Note: This is slow.
-#undef  CG2D_SINGLECPU_SUM
+#undef CG2D_SINGLECPU_SUM
 
 C=== Other options (to add/remove pieces of code) ===
 C--   Flag to turn on checking for errors from all threads and procs
