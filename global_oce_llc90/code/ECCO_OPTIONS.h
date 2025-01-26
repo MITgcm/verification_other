@@ -61,18 +61,19 @@ C o Set ALLOW_OBCS_COST_CONTRIBUTION (Do not edit/modify):
 # define ALLOW_OBCS_COST_CONTRIBUTION
 #endif
 
+C o Use total time-varying volume to weight contributions, if defined
+#undef ECCO_VARIABLE_AREAVOLGLOB
+
 C o Include global mean steric sea level correction
 #define ALLOW_PSBAR_STERIC
 #ifdef ATMOSPHERIC_LOADING
 C   Apply inverse barometer correction (coded within ATMOSPHERIC_LOADING)
 # undef ALLOW_IB_CORR
 #endif
+
 C o Allow for near-shore and high-latitude altimetry
 #define ALLOW_SHALLOW_ALTIMETRY
 #define ALLOW_HIGHLAT_ALTIMETRY
-
-C o Allow for In-Situ Profiles cost function contribution
-#define ALLOW_PROFILES_CONTRIBUTION
 
 C o Cost function output format
 #define ALLOW_ECCO_OLD_FC_PRINT
