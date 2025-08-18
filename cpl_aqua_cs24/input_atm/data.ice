@@ -32,7 +32,6 @@
  ocean_deltaT=3600.,
 #tauRelax_MxL=5184000.,
  stressReduction=0.,
-#thSIce_taveFreq=2592000.,
  thSIce_diagFreq=259200.,
 #thSIce_monFreq=864000.,
 # thSIceFract_InitFile='Drake.c32.I.IceFrc.ini.bin' ,
