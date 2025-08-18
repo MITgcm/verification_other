@@ -63,9 +63,4 @@ they do in `verification`, allowing to use, e.g., `testreport`:
      (`pkg/shelfice`, `SHELFICEremeshFrequency > 0`)
 
 ### Unsupported old set-up
-  - **global1x1_tot** : old ECCO (version 1 or 2 ?) set-up (no Bulk-Formulae)
-  - **global2x2_tot** : coarser version of old ECCO set-up
-  - **lab_sea** :  old Adjoint set-up derived from verification exp. lab_sea
-  - **natl_box_adjoint** : old Adjoint set-up derived from verification exp. nalt_box
-                       (lab_sea/input.natl_box)
-
+    got removed in August 2025
