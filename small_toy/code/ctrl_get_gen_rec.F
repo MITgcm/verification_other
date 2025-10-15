@@ -65,12 +65,9 @@ C     == local variables ==
       integer fldstartdate(4)
       _RL     fldperiod
 
-c     integer startrec
-
       integer year0
       integer year1
 
-      logical lArgErr
 #else
 C     Declarations for code, adapted from external_fields_load,
 C     for simplied default model calendar without exf/cal
@@ -78,12 +75,13 @@ C     for simplied default model calendar without exf/cal
       INTEGER countP
 #endif
 
+      INTEGER shiftRec
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C     == end of interface ==
 
+      shiftRec = 0
 #ifdef ALLOW_CAL
-      lArgErr = .true.
       fldperiod = 0.
 
 C     Map the field parameters.
@@ -94,14 +92,6 @@ C     Map the field parameters.
      I     myThid
      &     )
       fldperiod = xx_genperiod
-      lArgErr = .false.
-
-C--   Check the field argument.
-      if ( lArgErr ) then
-         print*,' The subroutine *ctrl_get_gen_rec* has been called'
-         print*,' with an illegal field specification.'
-         stop   ' ... stopped in ctrl_get_gen_rec.'
-      endif
 
       if ( xx_genperiod .eq. -12. _d 0 ) then
 C     record numbers are assumed 1 to 12 corresponding to
@@ -126,12 +116,14 @@ C--   Determine the current date.
        call cal_GetDate( myIter, myTime, mydate, myThid )
 
 C     Determine first record:
-c      call cal_TimePassed( fldstartdate, modelstartdate,
-c    &                      difftime, myThid )
-c      call cal_ToSeconds ( difftime, fldsecs, myThid )
-c      startrec = int((modelstart - fldsecs)/fldperiod) + 1
+       call cal_TimePassed( fldstartdate, modelStartDate,
+     &                      difftime, myThid )
+       call cal_ToSeconds ( difftime, fldsecs, myThid )
+C     set record-number shift between full ctrl time-serie and
+C     "effective" sub-set (i.e., that covers this simulation)
+       shiftRec = int( fldsecs/fldperiod )
 
-C     Determine the flux record just before mycurrentdate.
+C     Determine the ctrl record just before mycurrentdate.
        call cal_TimePassed( fldstartdate, mydate, difftime,
      &                      myThid )
        call cal_ToSeconds( difftime, fldsecs, myThid )
@@ -139,7 +131,7 @@ C     Determine the flux record just before mycurrentdate.
        fldcount = int((fldsecs+0.5)/fldperiod) + 1
 
 C     Set switches for reading new records.
-       first = ((myTime - modelstart) .lt. 0.5*modelstep)
+       first = ((myTime - startTime) .LT. 0.5*deltaTClock)
 
        if ( first) then
         changed = .false.
@@ -160,8 +152,8 @@ C     Set switches for reading new records.
         endif
        endif
 
-       count0 = fldcount
-       count1 = fldcount + 1
+       count0 = fldcount - shiftRec
+       count1 = count0 + 1
 
        call cal_TimeInterval( fldsecs, 'secs', difftime, myThid )
        call cal_AddTime( fldstartdate, difftime, flddate, myThid )
@@ -216,14 +208,14 @@ C     Do some printing for the protocol.
      &    ' myIter, myTime =', myIter, ', ', myTime
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(A,2L3,2X,1PE17.10)')
-     &    '                      first, changed, fac:',
-     &                           first, changed, fac
+        WRITE(msgBuf,'(A,2L3,2X,1PE17.10,I4)')
+     &    '          first, changed, fac, shiftRec:',
+     &               first, changed, fac, shiftRec
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(A,I4,I4)')
-     &    '                           count0, count1:',
-     &                                count0, count1
+        WRITE(msgBuf,'(A,2I4,A,2I4)')
+     &    ' in xx_*.effective, count0,1 =', count0, count1,
+     &    ' ;  in xx_*, rec.# ',  count0+shiftRec, count1+shiftRec
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(A)') ' '
