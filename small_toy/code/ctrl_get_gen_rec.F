@@ -163,7 +163,7 @@ C     Set switches for reading new records.
 C     Weight belonging to irec for linear interpolation purposes.
 C     Note: The weight as chosen here is 1. - fac of the "old"
 C           MITgcm estimation program.
-       fac = 1. - fldsecs/fldperiod
+       fac = 1. _d 0 - fldsecs/fldperiod
 
 C     fldperiod .ne. 0.
       endif
@@ -204,18 +204,18 @@ C--   Now calculate whether it is time to update the forcing arrays
       IF ( debugLevel.GE.debLevC ) THEN
 C     Do some printing for the protocol.
       _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(2A,I10,A,1PE21.14)') 'S/R CTRL_GET_GEN_REC:',
+        WRITE(msgBuf,'(2A,I10,A,1PE21.14)') 'CTRL_GET_GEN_REC:',
      &    ' myIter, myTime =', myIter, ', ', myTime
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(A,2L3,2X,1PE17.10,I4)')
-     &    '          first, changed, fac, shiftRec:',
-     &               first, changed, fac, shiftRec
+        WRITE(msgBuf,'(A,2L3,F21.17,I5)')
+     &    '     first, changed, fac, shiftRec:',
+     &          first, changed, fac, shiftRec
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(A,2I4,A,2I4)')
-     &    ' in xx_*.effective, count0,1 =', count0, count1,
-     &    ' ;  in xx_*, rec.# ',  count0+shiftRec, count1+shiftRec
+        WRITE(msgBuf,'(A,2I5,A,2I5)')
+     &    '  in xx_*.effective, count0,1=', count0, count1,
+     &    ' ;  in xx_*, rec.#',  count0+shiftRec, count1+shiftRec
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(A)') ' '
