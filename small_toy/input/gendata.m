@@ -16,7 +16,7 @@ if kwr > 0,
  fid=fopen(fNam,'w',typ); fwrite(fid,var,prec); fclose(fid);
  fprintf(' done\n');
 
- fNam='ones_64b.bin'; var=-1.;
+ fNam='ones_64b.bin'; var=1.;
  fprintf(' - writing file "%s" ...',fNam);
  fid=fopen(fNam,'w',typ); fwrite(fid,var,prec); fclose(fid);
  fprintf(' done\n');
