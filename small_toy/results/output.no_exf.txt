@@ -108,14 +108,20 @@
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Time stepping parameters
 (PID.TID 0000.0001) > &PARM03
-(PID.TID 0000.0001) >#- time origin = 1.yr = 360.days:
-(PID.TID 0000.0001) > baseTime= 31104000.,
+(PID.TID 0000.0001) >#- to start with forcing at t= 300.days, set baseTime to 390.days (=300 + ext.Forc.Period/2)
+(PID.TID 0000.0001) > baseTime= 33696000.,
 (PID.TID 0000.0001) > nIter0 = 0,
 (PID.TID 0000.0001) > nTimeSteps=37,
 (PID.TID 0000.0001) > deltaT=864000.,
 (PID.TID 0000.0001) > forcing_In_AB=.FALSE.,
+(PID.TID 0000.0001) >#- to use time-dependent forcing:
+(PID.TID 0000.0001) > periodicExternalForcing=.TRUE.,
+(PID.TID 0000.0001) >#- set repeat-cycle to 45.yrs (< length of time-serie but long enough for few decade run):
+(PID.TID 0000.0001) > externForcingCycle=1399680000.,
+(PID.TID 0000.0001) >#- set time-interval between 2 records to 6 month:
+(PID.TID 0000.0001) > externForcingPeriod= 15552000.,
 (PID.TID 0000.0001) >#- 100.d relaxation time-scale:
-(PID.TID 0000.0001) ># tauThetaClimRelax= 8640000.,
+(PID.TID 0000.0001) > tauThetaClimRelax= 8640000.,
 (PID.TID 0000.0001) > pChkptFreq=0.,
 (PID.TID 0000.0001) > chkptFreq= 0.,
 (PID.TID 0000.0001) >#dumpFreq = 2592000.,
@@ -134,7 +140,7 @@
 (PID.TID 0000.0001) ># Input datasets
 (PID.TID 0000.0001) > &PARM05
 (PID.TID 0000.0001) > bathyFile='bathy_1km.bin',
-(PID.TID 0000.0001) ># thetaClimFile='target_SST.100.bin',
+(PID.TID 0000.0001) > thetaClimFile='target_SST.100.bin',
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  INI_PARMS ; starts to read PARM01
@@ -157,8 +163,8 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) ># Packages
 (PID.TID 0000.0001) > &PACKAGES
-(PID.TID 0000.0001) >  useEXF    = .TRUE.,
-(PID.TID 0000.0001) >  useCAL    = .TRUE.,
+(PID.TID 0000.0001) ># useEXF    = .TRUE.,
+(PID.TID 0000.0001) ># useCAL    = .TRUE.,
 (PID.TID 0000.0001) ># useCTRL   = .TRUE.,
 (PID.TID 0000.0001) >  useDiagnostics = .TRUE.,
 (PID.TID 0000.0001) > /
@@ -166,8 +172,8 @@
 (PID.TID 0000.0001)  PACKAGES_BOOT: finished reading data.pkg
 (PID.TID 0000.0001)  PACKAGES_BOOT: On/Off package Summary
  --------  pkgs with a standard "usePKG" On/Off switch in "data.pkg":  --------
- pkg/cal                  compiled   and   used ( useCAL                   = T )
- pkg/exf                  compiled   and   used ( useEXF                   = T )
+ pkg/cal                  compiled but not used ( useCAL                   = F )
+ pkg/exf                  compiled but not used ( useEXF                   = F )
  pkg/ctrl                 compiled but not used ( useCTRL                  = F )
  pkg/diagnostics          compiled   and   used ( useDiagnostics           = T )
  -------- pkgs without standard "usePKG" On/Off switch in "data.pkg":  --------
@@ -178,72 +184,6 @@
  pkg/mdsio                compiled   and   used
 (PID.TID 0000.0001)  PACKAGES_BOOT: End of package Summary
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) CAL_READPARMS: opening data.cal
-(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.cal
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Parameter file "data.cal"
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) ># *******************
-(PID.TID 0000.0001) ># Calendar Parameters
-(PID.TID 0000.0001) ># *******************
-(PID.TID 0000.0001) > &CAL_NML
-(PID.TID 0000.0001) > TheCalendar='model',
-(PID.TID 0000.0001) >#- with baseTime = 1.yr:
-(PID.TID 0000.0001) > startDate_1= 20000101,
-(PID.TID 0000.0001) >#- with baseTime = 0.:
-(PID.TID 0000.0001) >#startDate_1= 20010101,
-(PID.TID 0000.0001) > startDate_2=   000000,
-(PID.TID 0000.0001) > /
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) CAL_READPARMS: finished reading data.cal
-(PID.TID 0000.0001) EXF_READPARMS: opening data.exf
-(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.exf
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Parameter file "data.exf"
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) >#
-(PID.TID 0000.0001) ># *********************
-(PID.TID 0000.0001) ># External Forcing Data
-(PID.TID 0000.0001) ># *********************
-(PID.TID 0000.0001) > &EXF_NML_01
-(PID.TID 0000.0001) >#useExfCheckRange  = .TRUE.,
-(PID.TID 0000.0001) >#repeatPeriod      = 31622400.0,
-(PID.TID 0000.0001) > climTempFreeze    = -10.,
-(PID.TID 0000.0001) > exf_iprec         = 64,
-(PID.TID 0000.0001) > exf_debugLev = 4,
-(PID.TID 0000.0001) > /
-(PID.TID 0000.0001) >
-(PID.TID 0000.0001) ># *********************
-(PID.TID 0000.0001) > &EXF_NML_02
-(PID.TID 0000.0001) >
-(PID.TID 0000.0001) > hfluxstartdate1   = 19781216,
-(PID.TID 0000.0001) > hfluxstartdate2   = 180000,
-(PID.TID 0000.0001) > hfluxperiod       = 2635200.0,
-(PID.TID 0000.0001) >
-(PID.TID 0000.0001) >#- 100.d relaxation time-scale:
-(PID.TID 0000.0001) > climsstTauRelax   = 8640000.,
-(PID.TID 0000.0001) > climsststartdate1 = 20000301,
-(PID.TID 0000.0001) > climsststartdate2 = 000000,
-(PID.TID 0000.0001) >#climsstStartTime  = 5184000.,
-(PID.TID 0000.0001) ># minimalist seasonal cycle (2 rec/yr): period = 6*30 days ; starts at t=60.d
-(PID.TID 0000.0001) > climsstperiod     = 15552000.,
-(PID.TID 0000.0001) > climsstfile       = 'target_SST.100.bin',
-(PID.TID 0000.0001) >#climsstfile       = 'saison_SST.100.bin',
-(PID.TID 0000.0001) >
-(PID.TID 0000.0001) > /
-(PID.TID 0000.0001) >
-(PID.TID 0000.0001) ># *********************
-(PID.TID 0000.0001) > &EXF_NML_03
-(PID.TID 0000.0001) > /
-(PID.TID 0000.0001) >
-(PID.TID 0000.0001) ># *********************
-(PID.TID 0000.0001) > &EXF_NML_04
-(PID.TID 0000.0001) > /
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_01
-(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_02
-(PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_03
-(PID.TID 0000.0001) EXF_READPARMS: finished reading data.exf
 (PID.TID 0000.0001)  DIAGNOSTICS_READPARMS: opening data.diagnostics
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.diagnostics
 (PID.TID 0000.0001) // =======================================================
@@ -420,67 +360,6 @@
 (PID.TID 0000.0001) %MON AngleSN_mean                 =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON AngleSN_sd                   =   0.0000000000000E+00
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: bathy_1km.bin
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Calendar configuration >>> START <<<
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) modelstart = /* Start time of the model integration [s] */
-(PID.TID 0000.0001)                 3.110400000000000E+07
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) modelend  = /* End time of the model integration [s] */
-(PID.TID 0000.0001)                 6.307200000000000E+07
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) modelStep = /* Time interval for a model forward step [s] */
-(PID.TID 0000.0001)                 8.640000000000000E+05
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) usingGregorianCalendar= /* Calendar Type: Gregorian Calendar */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) usingJulianCalendar = /* Calendar Type: Julian Calendar */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) usingNoLeapYearCal  = /* Calendar Type: without Leap Year */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) usingModelCalendar  = /* Calendar Type: Model Calendar */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) modelStartDate YYYYMMDD = /* Model start date YYYY-MM-DD */
-(PID.TID 0000.0001)                20010101
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)   modelStartDate HHMMSS = /* Model start date HH-MM-SS  */
-(PID.TID 0000.0001)                       0
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) modelEndDate   YYYYMMDD = /* Model end date YYYY-MM-DD */
-(PID.TID 0000.0001)                20020111
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)   modelEndDate   HHMMSS = /* Model end date HH-MM-SS  */
-(PID.TID 0000.0001)                       0
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) intyears = /* Number of calendar years affected by the integration */
-(PID.TID 0000.0001)                       2
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) intmonths= /* Number of calendar months affected by the integration */
-(PID.TID 0000.0001)                      13
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) intdays = /* Number of calendar days affected by the integration */
-(PID.TID 0000.0001)                     370
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) modelIter0 = /* Base timestep number  */
-(PID.TID 0000.0001)                       0
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) modelIterEnd = /* Final timestep number  */
-(PID.TID 0000.0001)                      37
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) modelIntSteps= /* Number of model timesteps  */
-(PID.TID 0000.0001)                      37
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Calendar configuration  >>> END <<<
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
 (PID.TID 0000.0001) GAD_INIT_FIXED: GAD_OlMinSize=  0  0  1
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // ===================================
@@ -523,213 +402,9 @@
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) // ===================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // External forcing (EXF) configuration >>> START <<<
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001)  EXF general parameters:
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) exf_iprec = /* exf file precision */
-(PID.TID 0000.0001)                      64
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useExfYearlyFields = /* add extension _YEAR to input file names */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) twoDigitYear = /* use 2-digit year extension */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useExfCheckRange = /* check for fields range */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) diags_opOceWeighted = /* weight flux diags by open-ocean fraction */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) exf_debugLev = /* select EXF-debug printing level */
-(PID.TID 0000.0001)                       4
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) exf_monFreq  = /* EXF monitor frequency [ s ] */
-(PID.TID 0000.0001)                 1.555200000000000E+07
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) exf_adjMonSelect = /* select group of exf AD-variables to monitor */
-(PID.TID 0000.0001)                       1
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) repeatPeriod = /* period for cycling forcing dataset [ s ] */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) climTempFreeze= /* Minimum climatological temperature [deg.C] */
-(PID.TID 0000.0001)                -1.000000000000000E+01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) windStressMax = /* Maximum absolute windstress [ Pa ] */
-(PID.TID 0000.0001)                 2.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) stressIsOnCgrid = /* set u,v_stress on Arakawa C-grid */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) rotateStressOnAgrid = /* rotate u,v_stress on Arakawa A-grid */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) cen2kel = /* conversion of deg. Centigrade to Kelvin [K] */
-(PID.TID 0000.0001)                 2.731500000000000E+02
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) gravity_mks= /* gravitational acceleration [m/s^2] */
-(PID.TID 0000.0001)                 9.810000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) atmrho =  /* mean atmospheric density [kg/m^3] */
-(PID.TID 0000.0001)                 1.200000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) atmcp =  /* mean atmospheric specific heat [J/kg/K] */
-(PID.TID 0000.0001)                 1.005000000000000E+03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) flamb =  /* latent heat of evaporation [J/kg] */
-(PID.TID 0000.0001)                 2.500000000000000E+06
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) flami =  /* latent heat of pure-ice melting [J/kg] */
-(PID.TID 0000.0001)                 3.340000000000000E+05
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) cvapor_fac = /* const. for Saturation calculation [?] */
-(PID.TID 0000.0001)                 6.403800000000000E+05
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) cvapor_exp = /* const. for Saturation calculation [?] */
-(PID.TID 0000.0001)                 5.107400000000000E+03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) cvapor_fac_ice= /* const. for Saturation calculation [?] */
-(PID.TID 0000.0001)                 1.163780000000000E+07
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) cvapor_exp_ice= /* const. for Saturation calculation [?] */
-(PID.TID 0000.0001)                 5.897800000000000E+03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) humid_fac = /* humidity coef. in virtual temp. [(kg/kg)^-1] */
-(PID.TID 0000.0001)                 6.060000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) gamma_blk = /* adiabatic lapse rate [?] */
-(PID.TID 0000.0001)                 1.000000000000000E-02
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) saltsat = /* reduction of Qsat over salty water [-] */
-(PID.TID 0000.0001)                 9.800000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) noNegativeEvap = /* prevent negative Evaporation */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) sstExtrapol = /* extrapolation coeff from lev. 1 & 2 to surf [-] */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) cDrag_1 = /* coef used in drag calculation [m/s] */
-(PID.TID 0000.0001)                 2.700000000000000E-03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) cDrag_2 = /* coef used in drag calculation [-] */
-(PID.TID 0000.0001)                 1.420000000000000E-04
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) cDrag_3 = /* coef used in drag calculation [s/m] */
-(PID.TID 0000.0001)                 7.640000000000000E-05
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) cDrag_8 = /* coef used in drag calculation [(s/m)^6] */
-(PID.TID 0000.0001)                 1.234567000000000E+05
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) cDragMax = /* maximum drag (Large and Yeager, 2009) [-] */
-(PID.TID 0000.0001)                 1.234567000000000E+05
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) umax = /* at maximum wind (Large and Yeager, 2009) [m/s] */
-(PID.TID 0000.0001)                 1.234567000000000E+05
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) cStanton_1 = /* coef used in Stanton number calculation [-] */
-(PID.TID 0000.0001)                 3.270000000000000E-02
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) cStanton_2 = /* coef used in Stanton number calculation [-] */
-(PID.TID 0000.0001)                 1.800000000000000E-02
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) cDalton = /* Dalton number [-] */
-(PID.TID 0000.0001)                 3.460000000000000E-02
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) exf_scal_BulkCdn= /* Drag coefficient scaling factor [-] */
-(PID.TID 0000.0001)                 1.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) zolmin = /* minimum stability parameter [?] */
-(PID.TID 0000.0001)                -1.000000000000000E+02
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) psim_fac = /* coef used in turbulent fluxes calculation [-] */
-(PID.TID 0000.0001)                 5.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) zref =  /* reference height [ m ] */
-(PID.TID 0000.0001)                 1.000000000000000E+01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) hu =  /* height of mean wind [ m ] */
-(PID.TID 0000.0001)                 1.000000000000000E+01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) ht =  /* height of mean temperature [ m ] */
-(PID.TID 0000.0001)                 2.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) hq =  /* height of mean spec.humidity [ m ] */
-(PID.TID 0000.0001)                 2.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) uMin = /* minimum wind speed [m/s] */
-(PID.TID 0000.0001)                 5.000000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useStabilityFct_overIce= /* transfert Coeffs over sea-ice depend on stability */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) exf_iceCd = /* drag coefficient over sea-ice (fixed) [-] */
-(PID.TID 0000.0001)                 1.630000000000000E-03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) exf_iceCe = /* transfert coeff. over sea-ice, for Evap (fixed) [-] */
-(PID.TID 0000.0001)                 1.630000000000000E-03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) exf_iceCh = /* transfert coeff. over sea-ice, Sens.Heat.(fixed)[-] */
-(PID.TID 0000.0001)                 1.630000000000000E-03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) exf_albedo =  /* Sea-water albedo [-] */
-(PID.TID 0000.0001)                 1.000000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useExfZenAlbedo = /* Sea-water albedo varies with zenith angle */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) select_ZenAlbedo = /* Sea-water albedo computation method */
-(PID.TID 0000.0001)                       0
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useExfZenIncoming = /* compute incoming solar radiation */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) ocean_emissivity = /* longwave ocean-surface emissivity [-] */
-(PID.TID 0000.0001)                 9.700176366843034E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) ice_emissivity = /* longwave seaice emissivity [-] */
-(PID.TID 0000.0001)                 9.500000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) snow_emissivity = /* longwave snow  emissivity [-] */
-(PID.TID 0000.0001)                 9.500000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001)  EXF main CPP flags:
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // USE_EXF_INTERPOLATION:          NOT defined
-(PID.TID 0000.0001) // ALLOW_ATM_TEMP:                 NOT defined
-(PID.TID 0000.0001) // ALLOW_ATM_WIND (useAtmWind):    NOT defined
-(PID.TID 0000.0001) // ALLOW_DOWNWARD_RADIATION:       NOT defined
-(PID.TID 0000.0001) // ALLOW_BULKFORMULAE:             NOT defined
-(PID.TID 0000.0001) // EXF_READ_EVAP:                  NOT defined
-(PID.TID 0000.0001) // ALLOW_RUNOFF:                   NOT defined
-(PID.TID 0000.0001) // ALLOW_SALTFLX:                  NOT defined
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // External forcing (EXF) climatology configuration :
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // ALLOW_CLIMSST_RELAXATION:           defined
-(PID.TID 0000.0001)    Climatological SST starts at                    5184000.
-(PID.TID 0000.0001)    Climatological SST period is                   15552000.
-(PID.TID 0000.0001)    Climatological SST repeat-cycle is                    0.
-(PID.TID 0000.0001)    Climatological SST is read from file:
-(PID.TID 0000.0001)    >> target_SST.100.bin <<
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // ALLOW_CLIMSSS_RELAXATION:       NOT defined
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // External forcing (EXF) configuration  >>> END <<<
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
 (PID.TID 0000.0001) ------------------------------------------------------------
 (PID.TID 0000.0001) DIAGNOSTICS_SET_LEVELS: done
-(PID.TID 0000.0001)  Total Nb of available Diagnostics: ndiagt=   148
+(PID.TID 0000.0001)  Total Nb of available Diagnostics: ndiagt=   124
 (PID.TID 0000.0001)  write list of available Diagnostics to file: available_diagnostics.log
 (PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #    26 THETA
 (PID.TID 0000.0001)   space allocated for all diagnostics:       1 levels
@@ -1220,13 +895,13 @@
 (PID.TID 0000.0001)                      37
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) baseTime =   /* Model base time ( s ) */
-(PID.TID 0000.0001)                 3.110400000000000E+07
+(PID.TID 0000.0001)                 3.369600000000000E+07
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) startTime =  /* Run start time ( s ) */
-(PID.TID 0000.0001)                 3.110400000000000E+07
+(PID.TID 0000.0001)                 3.369600000000000E+07
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) endTime  =   /* Integration ending time ( s ) */
-(PID.TID 0000.0001)                 6.307200000000000E+07
+(PID.TID 0000.0001)                 6.566400000000000E+07
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) pChkPtFreq = /* Permanent restart/pickup file interval ( s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
@@ -1262,10 +937,10 @@
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) externForcingPeriod =   /* forcing period (s) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)                 1.555200000000000E+07
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) externForcingCycle =   /* period of the cyle (s). */
-(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)                 1.399680000000000E+09
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tauThetaClimRelax =   /* relaxation time scale (s) */
 (PID.TID 0000.0001)                 8.640000000000000E+06
@@ -1457,7 +1132,6 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) == Packages configuration : Check & print summary ==
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) EXF_CHECK: #define ALLOW_EXF
 (PID.TID 0000.0001) GAD_CHECK: #define ALLOW_GENERIC_ADVDIFF
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Check Model config. (CONFIG_CHECK):
@@ -1467,9 +1141,10 @@
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: target_SST.100.bin
 (PID.TID 0000.0001) DIAGSTATS_INI_IO: open file: dynStDiag.0000000000.txt , unit=     9
 (PID.TID 0000.0001)  write diagnostics summary to file ioUnit:      6
-Iter.Nb:         0 ; Time(s):  3.1104000000000E+07
+Iter.Nb:         0 ; Time(s):  3.3696000000000E+07
 ------------------------------------------------------------------------
 2D/3D diagnostics: Number of lists:     1
 ------------------------------------------------------------------------
@@ -1494,155 +1169,41 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
+ EXTERNAL_FIELDS_LOAD,         0 : iP,iLd,i0,i1=    2    0    2    3 ; Wght=  0.3333333333  0.6666666667
+ EXTERNAL_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=    2    3 (prev=    2    0 )
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: target_SST.100.bin
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: target_SST.100.bin
+ Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
+ Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
+ EXTERNAL_FIELDS_LOAD,         1 : iP,iLd,i0,i1=    2    3    2    3 ; Wght=  0.2777777778  0.7222222222
+ EXTERNAL_FIELDS_LOAD,         2 : iP,iLd,i0,i1=    2    3    2    3 ; Wght=  0.2222222222  0.7777777778
+ EXTERNAL_FIELDS_LOAD,         3 : iP,iLd,i0,i1=    2    3    2    3 ; Wght=  0.1666666667  0.8333333333
+ Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
+ Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
+ EXTERNAL_FIELDS_LOAD,         4 : iP,iLd,i0,i1=    2    3    2    3 ; Wght=  0.1111111111  0.8888888889
+ EXTERNAL_FIELDS_LOAD,         5 : iP,iLd,i0,i1=    2    3    2    3 ; Wght=  0.0555555556  0.9444444444
+ EXTERNAL_FIELDS_LOAD,         6 : iP,iLd,i0,i1=    2    3    3    4 ; Wght=  1.0000000000  0.0000000000
+ EXTERNAL_FIELDS_LOAD, it=         6 : Reading new data, i0,i1=    3    4 (prev=    2    3 )
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: target_SST.100.bin
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: target_SST.100.bin
+ Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
+ Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
+ EXTERNAL_FIELDS_LOAD,         7 : iP,iLd,i0,i1=    3    4    3    4 ; Wght=  0.9444444444  0.0555555556
+ EXTERNAL_FIELDS_LOAD,         8 : iP,iLd,i0,i1=    3    4    3    4 ; Wght=  0.8888888889  0.1111111111
+ EXTERNAL_FIELDS_LOAD,         9 : iP,iLd,i0,i1=    3    4    3    4 ; Wght=  0.8333333333  0.1666666667
+ Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
+ Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
+ EXTERNAL_FIELDS_LOAD,        10 : iP,iLd,i0,i1=    3    4    3    4 ; Wght=  0.7777777778  0.2222222222
+ EXTERNAL_FIELDS_LOAD,        11 : iP,iLd,i0,i1=    3    4    3    4 ; Wght=  0.7222222222  0.2777777778
+ EXTERNAL_FIELDS_LOAD,        12 : iP,iLd,i0,i1=    3    4    3    4 ; Wght=  0.6666666667  0.3333333333
+ Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
+ Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
+ EXTERNAL_FIELDS_LOAD,        13 : iP,iLd,i0,i1=    3    4    3    4 ; Wght=  0.6111111111  0.3888888889
+ EXTERNAL_FIELDS_LOAD,        14 : iP,iLd,i0,i1=    3    4    3    4 ; Wght=  0.5555555556  0.4444444444
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON time_tsnumber                =                     0
-(PID.TID 0000.0001) %MON time_secondsf                =   3.1104000000000E+07
-(PID.TID 0000.0001) %MON dynstat_eta_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_eta_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_eta_sd               =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_eta_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_uvel_max             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_uvel_min             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_uvel_sd              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_vvel_max             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_vvel_min             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_max             =  -0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+01
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0000000000000E+01
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.0000000000000E+01
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_salt_max             =   3.0000000000000E+01
-(PID.TID 0000.0001) %MON dynstat_salt_min             =   3.0000000000000E+01
-(PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.0000000000000E+01
-(PID.TID 0000.0001) %MON dynstat_salt_sd              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_salt_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON advcfl_vvel_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON advcfl_wvel_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON pe_b_mean                    =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON ke_max                       =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON ke_mean                      =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON ke_vol                       =   1.0000000000000E+03
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR dynamic field statistics
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:         0      2      3
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   T   F    0.33333333333333337
-(PID.TID 0000.0001) EXF_SET_FLD: field "climsst", it=         0, loading rec=     2
-(PID.TID 0000.0001) EXF_SET_FLD:   from file: "target_SST.100.bin"
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD: field "climsst", it=         0, loading rec=     3
-(PID.TID 0000.0001) EXF_SET_FLD:   from file: "target_SST.100.bin"
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: target_SST.100.bin
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Begin MONITOR EXF statistics
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON exf_tsnumber                 =                     0
-(PID.TID 0000.0001) %MON exf_time_sec                 =   3.1104000000000E+07
-(PID.TID 0000.0001) %MON exf_ustress_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_ustress_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_ustress_mean             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_ustress_sd               =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_ustress_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_vstress_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_vstress_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_vstress_mean             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_vstress_sd               =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_vstress_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_climsst_max              =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_climsst_min              =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_climsst_mean             =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_climsst_sd               =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_climsst_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR EXF statistics
-(PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    26 "THETA   " (list#  1) Parms "SMR     MR      ", Count=       1
- Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
- Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:         1      2      3
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.27777777777777779
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:         2      2      3
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.22222222222222221
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:         3      2      3
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.16666666666666663
- Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
- Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:         4      2      3
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.11111111111111116
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:         5      2      3
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.05555555555555558
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:         6      3      4
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   T    1.00000000000000000
-(PID.TID 0000.0001) EXF_SET_FLD: field "climsst", it=         6, loading rec=     4
-(PID.TID 0000.0001) EXF_SET_FLD:   from file: "target_SST.100.bin"
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: target_SST.100.bin
- Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
- Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:         7      3      4
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.94444444444444442
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:         8      3      4
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.88888888888888884
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:         9      3      4
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.83333333333333337
- Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
- Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        10      3      4
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.77777777777777779
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        11      3      4
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.72222222222222221
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        12      3      4
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.66666666666666674
- Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
- Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        13      3      4
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.61111111111111116
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        14      3      4
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.55555555555555558
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        15      3      4
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.50000000000000000
- Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
- Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        16      3      4
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.44444444444444442
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        17      3      4
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.38888888888888884
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON time_tsnumber                =                    18
+(PID.TID 0000.0001) %MON time_tsnumber                =                    15
 (PID.TID 0000.0001) %MON time_secondsf                =   4.6656000000000E+07
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_eta_min              =   0.0000000000000E+00
@@ -1664,9 +1225,9 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9114919320935E+00
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   2.9114919320935E+00
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =   2.9114919320935E+00
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9539593642496E+00
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   2.9539593642496E+00
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   2.9539593642496E+00
 (PID.TID 0000.0001) %MON dynstat_theta_sd             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_del2           =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   3.0000000000000E+01
@@ -1685,102 +1246,43 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        18      3      4
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.33333333333333337
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Begin MONITOR EXF statistics
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON exf_tsnumber                 =                    18
-(PID.TID 0000.0001) %MON exf_time_sec                 =   4.6656000000000E+07
-(PID.TID 0000.0001) %MON exf_ustress_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_ustress_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_ustress_mean             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_ustress_sd               =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_ustress_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_vstress_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_vstress_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_vstress_mean             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_vstress_sd               =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_vstress_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_climsst_max              =   3.3333333333333E+00
-(PID.TID 0000.0001) %MON exf_climsst_min              =   3.3333333333333E+00
-(PID.TID 0000.0001) %MON exf_climsst_mean             =   3.3333333333333E+00
-(PID.TID 0000.0001) %MON exf_climsst_sd               =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_climsst_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR EXF statistics
-(PID.TID 0000.0001) // =======================================================
+ EXTERNAL_FIELDS_LOAD,        15 : iP,iLd,i0,i1=    3    4    3    4 ; Wght=  0.5000000000  0.5000000000
  Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
  Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        19      3      4
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.27777777777777779
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        20      3      4
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.22222222222222221
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        21      3      4
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.16666666666666663
+ EXTERNAL_FIELDS_LOAD,        16 : iP,iLd,i0,i1=    3    4    3    4 ; Wght=  0.4444444444  0.5555555556
+ EXTERNAL_FIELDS_LOAD,        17 : iP,iLd,i0,i1=    3    4    3    4 ; Wght=  0.3888888889  0.6111111111
+ EXTERNAL_FIELDS_LOAD,        18 : iP,iLd,i0,i1=    3    4    3    4 ; Wght=  0.3333333333  0.6666666667
  Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
  Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        22      3      4
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.11111111111111116
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        23      3      4
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.05555555555555558
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        24      4      5
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   T    1.00000000000000000
-(PID.TID 0000.0001) EXF_SET_FLD: field "climsst", it=        24, loading rec=     5
-(PID.TID 0000.0001) EXF_SET_FLD:   from file: "target_SST.100.bin"
+ EXTERNAL_FIELDS_LOAD,        19 : iP,iLd,i0,i1=    3    4    3    4 ; Wght=  0.2777777778  0.7222222222
+ EXTERNAL_FIELDS_LOAD,        20 : iP,iLd,i0,i1=    3    4    3    4 ; Wght=  0.2222222222  0.7777777778
+ EXTERNAL_FIELDS_LOAD,        21 : iP,iLd,i0,i1=    3    4    3    4 ; Wght=  0.1666666667  0.8333333333
+ Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
+ Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
+ EXTERNAL_FIELDS_LOAD,        22 : iP,iLd,i0,i1=    3    4    3    4 ; Wght=  0.1111111111  0.8888888889
+ EXTERNAL_FIELDS_LOAD,        23 : iP,iLd,i0,i1=    3    4    3    4 ; Wght=  0.0555555556  0.9444444444
+ EXTERNAL_FIELDS_LOAD,        24 : iP,iLd,i0,i1=    3    4    4    5 ; Wght=  1.0000000000  0.0000000000
+ EXTERNAL_FIELDS_LOAD, it=        24 : Reading new data, i0,i1=    4    5 (prev=    3    4 )
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: target_SST.100.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: target_SST.100.bin
  Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
  Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        25      4      5
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.94444444444444442
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        26      4      5
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.88888888888888884
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        27      4      5
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.83333333333333337
+ EXTERNAL_FIELDS_LOAD,        25 : iP,iLd,i0,i1=    4    5    4    5 ; Wght=  0.9444444444  0.0555555556
+ EXTERNAL_FIELDS_LOAD,        26 : iP,iLd,i0,i1=    4    5    4    5 ; Wght=  0.8888888889  0.1111111111
+ EXTERNAL_FIELDS_LOAD,        27 : iP,iLd,i0,i1=    4    5    4    5 ; Wght=  0.8333333333  0.1666666667
  Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
  Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        28      4      5
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.77777777777777779
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        29      4      5
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.72222222222222221
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        30      4      5
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.66666666666666674
+ EXTERNAL_FIELDS_LOAD,        28 : iP,iLd,i0,i1=    4    5    4    5 ; Wght=  0.7777777778  0.2222222222
+ EXTERNAL_FIELDS_LOAD,        29 : iP,iLd,i0,i1=    4    5    4    5 ; Wght=  0.7222222222  0.2777777778
+ EXTERNAL_FIELDS_LOAD,        30 : iP,iLd,i0,i1=    4    5    4    5 ; Wght=  0.6666666667  0.3333333333
  Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
  Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        31      4      5
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.61111111111111116
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        32      4      5
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.55555555555555558
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        33      4      5
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.50000000000000000
- Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
- Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        34      4      5
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.44444444444444442
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        35      4      5
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.38888888888888884
+ EXTERNAL_FIELDS_LOAD,        31 : iP,iLd,i0,i1=    4    5    4    5 ; Wght=  0.6111111111  0.3888888889
+ EXTERNAL_FIELDS_LOAD,        32 : iP,iLd,i0,i1=    4    5    4    5 ; Wght=  0.5555555556  0.4444444444
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON time_tsnumber                =                    36
+(PID.TID 0000.0001) %MON time_tsnumber                =                    33
 (PID.TID 0000.0001) %MON time_secondsf                =   6.2208000000000E+07
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_eta_min              =   0.0000000000000E+00
@@ -1802,9 +1304,9 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_theta_max            =   3.7650376935261E+00
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   3.7650376935261E+00
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.7650376935261E+00
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   3.9298642343750E+00
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   3.9298642343750E+00
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.9298642343750E+00
 (PID.TID 0000.0001) %MON dynstat_theta_sd             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_del2           =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   3.0000000000000E+01
@@ -1823,149 +1325,123 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) EXF_SET_FLD: processing field "climsst",  file: target_SST.100.bin
-(PID.TID 0000.0001) EXF_SET_FLD:   myIter, count0, count1:        36      4      5
-(PID.TID 0000.0001) EXF_SET_FLD:   first, changed, fac:   F   F    0.33333333333333337
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Begin MONITOR EXF statistics
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON exf_tsnumber                 =                    36
-(PID.TID 0000.0001) %MON exf_time_sec                 =   6.2208000000000E+07
-(PID.TID 0000.0001) %MON exf_ustress_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_ustress_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_ustress_mean             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_ustress_sd               =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_ustress_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_vstress_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_vstress_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_vstress_mean             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_vstress_sd               =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_vstress_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_climsst_max              =   3.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_climsst_min              =   3.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_climsst_mean             =   3.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_climsst_sd               =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_climsst_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR EXF statistics
-(PID.TID 0000.0001) // =======================================================
+ EXTERNAL_FIELDS_LOAD,        33 : iP,iLd,i0,i1=    4    5    4    5 ; Wght=  0.5000000000  0.5000000000
  Computing Diagnostic #    26 "THETA   " (list#  1) Parms "SMR     MR      ", Count=       1
+ Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
+ Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
+ EXTERNAL_FIELDS_LOAD,        34 : iP,iLd,i0,i1=    4    5    4    5 ; Wght=  0.4444444444  0.5555555556
+ EXTERNAL_FIELDS_LOAD,        35 : iP,iLd,i0,i1=    4    5    4    5 ; Wght=  0.3888888889  0.6111111111
+ EXTERNAL_FIELDS_LOAD,        36 : iP,iLd,i0,i1=    4    5    4    5 ; Wght=  0.3333333333  0.6666666667
  Compute Stats, Diag. #    26 "THETA   " (list#  1) Parms "SMR     MR      ", vol(  0 )= 1.000E+03
  Compute Stats, Diag. #    89 "TRELAX  " (list#  1) Parms "SM      U1      ", vol(  0 )= 1.000E+02
 (PID.TID 0000.0001) DIAGSTATS_CLOSE_IO: close file: dynStDiag.0000000000.txt , unit=     9
 (PID.TID 0000.0001) %CHECKPOINT        37 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   1.5534000820480287E-002
+(PID.TID 0000.0001)           User time:   1.2502999859862030E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.5529155731201172E-002
+(PID.TID 0000.0001)     Wall clock time:   1.2498140335083008E-002
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   6.8759999703615904E-003
+(PID.TID 0000.0001)           User time:   5.5799998808652163E-003
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   6.8759918212890625E-003
+(PID.TID 0000.0001)     Wall clock time:   5.5799484252929688E-003
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   8.6350003257393837E-003
+(PID.TID 0000.0001)           User time:   6.9009996950626373E-003
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   8.6350440979003906E-003
+(PID.TID 0000.0001)     Wall clock time:   6.9010257720947266E-003
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   6.6899973899126053E-004
+(PID.TID 0000.0001)           User time:   4.5499997213482857E-004
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   6.6900253295898438E-004
+(PID.TID 0000.0001)     Wall clock time:   4.5394897460937500E-004
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   7.9529993236064911E-003
+(PID.TID 0000.0001)           User time:   6.4339996315538883E-003
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   7.9519748687744141E-003
+(PID.TID 0000.0001)     Wall clock time:   6.4330101013183594E-003
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN_DO_LOOP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   7.8099993988871574E-003
+(PID.TID 0000.0001)           User time:   6.2930006533861160E-003
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   7.8012943267822266E-003
+(PID.TID 0000.0001)     Wall clock time:   6.2873363494873047E-003
 (PID.TID 0000.0001)          No. starts:          37
 (PID.TID 0000.0001)           No. stops:          37
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [MAIN_DO_LOOP]":
-(PID.TID 0000.0001)           User time:   7.5209941715002060E-003
+(PID.TID 0000.0001)           User time:   6.0030007734894753E-003
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   7.5180530548095703E-003
+(PID.TID 0000.0001)     Wall clock time:   6.0138702392578125E-003
 (PID.TID 0000.0001)          No. starts:          37
 (PID.TID 0000.0001)           No. stops:          37
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   4.3699238449335098E-004
+(PID.TID 0000.0001)           User time:   4.4199964031577110E-004
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   4.4035911560058594E-004
+(PID.TID 0000.0001)     Wall clock time:   4.3392181396484375E-004
 (PID.TID 0000.0001)          No. starts:          74
 (PID.TID 0000.0001)           No. stops:          74
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   2.1640034392476082E-003
+(PID.TID 0000.0001)           User time:   8.1799924373626709E-004
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   2.1560192108154297E-003
-(PID.TID 0000.0001)          No. starts:          37
-(PID.TID 0000.0001)           No. stops:          37
-(PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:   1.5280004590749741E-003
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.5275478363037109E-003
+(PID.TID 0000.0001)     Wall clock time:   8.1539154052734375E-004
 (PID.TID 0000.0001)          No. starts:          37
 (PID.TID 0000.0001)           No. stops:          37
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:   1.5199836343526840E-004
+(PID.TID 0000.0001)           User time:   5.0099939107894897E-004
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.5735626220703125E-004
+(PID.TID 0000.0001)     Wall clock time:   5.0783157348632812E-004
 (PID.TID 0000.0001)          No. starts:          37
 (PID.TID 0000.0001)           No. stops:          37
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   2.0300131291151047E-004
+(PID.TID 0000.0001)           User time:   1.4499947428703308E-004
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.9955635070800781E-004
+(PID.TID 0000.0001)     Wall clock time:   1.4209747314453125E-004
 (PID.TID 0000.0001)          No. starts:          37
 (PID.TID 0000.0001)           No. stops:          37
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   3.3599790185689926E-004
+(PID.TID 0000.0001)           User time:   3.1700078397989273E-004
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   3.3617019653320312E-004
+(PID.TID 0000.0001)     Wall clock time:   3.1399726867675781E-004
 (PID.TID 0000.0001)          No. starts:          37
 (PID.TID 0000.0001)           No. stops:          37
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   3.9199925959110260E-004
+(PID.TID 0000.0001)           User time:   3.8399873301386833E-004
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   3.9768218994140625E-004
+(PID.TID 0000.0001)     Wall clock time:   3.8051605224609375E-004
 (PID.TID 0000.0001)          No. starts:          37
 (PID.TID 0000.0001)           No. stops:          37
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.5199836343526840E-004
+(PID.TID 0000.0001)           User time:   1.5099998563528061E-004
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.5044212341308594E-004
+(PID.TID 0000.0001)     Wall clock time:   1.5115737915039062E-004
 (PID.TID 0000.0001)          No. starts:          37
 (PID.TID 0000.0001)           No. stops:          37
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   3.4999754279851913E-004
+(PID.TID 0000.0001)           User time:   3.6100111901760101E-004
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   3.5166740417480469E-004
+(PID.TID 0000.0001)     Wall clock time:   3.5929679870605469E-004
 (PID.TID 0000.0001)          No. starts:          37
 (PID.TID 0000.0001)           No. stops:          37
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   5.2599702030420303E-004
+(PID.TID 0000.0001)           User time:   5.3500058129429817E-004
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   5.2690505981445312E-004
+(PID.TID 0000.0001)     Wall clock time:   5.4311752319335938E-004
 (PID.TID 0000.0001)          No. starts:          37
 (PID.TID 0000.0001)           No. stops:          37
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   8.3799939602613449E-004
+(PID.TID 0000.0001)           User time:   7.9400138929486275E-004
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   8.3160400390625000E-004
+(PID.TID 0000.0001)     Wall clock time:   7.9536437988281250E-004
 (PID.TID 0000.0001)          No. starts:          37
 (PID.TID 0000.0001)           No. stops:          37
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   3.0499976128339767E-004
+(PID.TID 0000.0001)           User time:   2.9500387609004974E-004
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   3.0684471130371094E-004
+(PID.TID 0000.0001)     Wall clock time:   2.9659271240234375E-004
 (PID.TID 0000.0001)          No. starts:          37
 (PID.TID 0000.0001)           No. stops:          37
 (PID.TID 0000.0001) // ======================================================
@@ -1983,9 +1459,9 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =           1094
+(PID.TID 0000.0001) //            No. barriers =            852
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =           1094
+(PID.TID 0000.0001) //     Total barrier spins =            852
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
 PROGRAM MAIN: Execution ended Normally

@@ -25,14 +25,20 @@
 
 # Time stepping parameters
  &PARM03
-#- time origin = 1.yr = 360.days:
- baseTime= 31104000.,
+#- to start with forcing at t= 300.days, set baseTime to 390.days (=300 + ext.Forc.Period/2)
+ baseTime= 33696000.,
  nIter0 = 0,
  nTimeSteps=37,
  deltaT=864000.,
  forcing_In_AB=.FALSE.,
+#- to use time-dependent forcing:
+ periodicExternalForcing=.TRUE.,
+#- set repeat-cycle to 45.yrs (< length of time-serie but long enough for few decade run):
+ externForcingCycle=1399680000.,
+#- set time-interval between 2 records to 6 month:
+ externForcingPeriod= 15552000.,
 #- 100.d relaxation time-scale:
-# tauThetaClimRelax= 8640000.,
+ tauThetaClimRelax= 8640000.,
  pChkptFreq=0.,
  chkptFreq= 0.,
 #dumpFreq = 2592000.,
@@ -51,5 +57,5 @@
 # Input datasets
  &PARM05
  bathyFile='bathy_1km.bin',
-# thetaClimFile='target_SST.100.bin',
+ thetaClimFile='target_SST.100.bin',
  &
