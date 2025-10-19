@@ -16,9 +16,9 @@ binary input files (all `real*8`) have been generated using matlab script
 The prescribed SST target time-series is the sum of a linear warming trend (2.K/yr)
 starting at $`0.^oC`$ plus a simplistic seasonal cycle, with only 2 records per year,
 alternating -2.K / + 2.K. In all 4 tests, the simulation starts (nIter0=0) 300.days
-after the starting point of the SST time-series, which can be interpreted as
-starting the simulation at the beginning of the year following
-March first when SST time-series starts (NH winter), assuming a 360.days year
+after the starting point of the SST time-series; this can be interpreted as
+starting the simulation at the beginning of the year while SST time-series starts 
+on March 01 (NH winter) of the previous year, assuming a 360.days year
 ("TheCalendar='model'," in `data.cal`).
 The relaxation time scale is set to 100.days (8640000.s), either in `data.exf`
 (`climsstfile`, `climsstTauRelax`) if using `pkg/exf` ("useEXF=.TRUE.," in `data.pkg`)
