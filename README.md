@@ -62,5 +62,9 @@ they do in `verification`, allowing to use, e.g., `testreport`:
      simple test with `pkg/streamice` and evolving ice-shelf geometry
      (`pkg/shelfice`, `SHELFICEremeshFrequency > 0`)
 
+ 12. **small_toy**:
+     Tiny set-up (single grid-cell) to test time-dependent forcing, with or without `pkg/exf`,
+     `pkg/cal` or `pkg/ctrl`.
+
 ### Unsupported old set-up
     got removed in August 2025
