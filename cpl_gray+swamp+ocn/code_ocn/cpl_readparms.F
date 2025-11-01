@@ -28,28 +28,30 @@ C     == Global variables ===
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine Arguments ==
 C     myThid     :: my Thread Id. number
       INTEGER myThid
 CEOP
 
 #ifdef COMPONENT_MODULE
-
 C     !FUNCTIONS:
 c     INTEGER ILNBLNK
 
 C     !LOCAL VARIABLES:
-C     == Local Variables ==
 C     msgBuf     :: Informational/error message buffer
 C     iUnit      :: Work variable for IO unit number
 C     k          :: loop counter
 C     iL         :: Work variable for length of file-name
-C     cpl_earlyExpImpCall :: retired; always call coupler early in call sequence
-
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
 c     INTEGER k, iL
+
+C-    retired parameters:
+C     cpl_earlyExpImpCall :: retired; always call coupler early in call sequence
+C     cpl_timeave_mnc :: retired;
+C     cpl_taveFreq    :: retired; Frequency^-1 for time-Aver. output (s)
       LOGICAL cpl_earlyExpImpCall
+      LOGICAL cpl_timeave_mnc
+      _RL cpl_taveFreq
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -65,7 +67,6 @@ C     useImportSltPlm :: True => use the Imported Salt-Plume flux from coupler
 C     useImportFice   :: True => use the Imported Seaice fraction (DIC-only)
 C     useImportCO2    :: True => use the Imported atmos. CO2 from coupler
 C     useImportWSpd   :: True => use the Imported surf. Wind speed from coupler
-C     cpl_taveFreq  :: Frequency^-1 for time-Aver. output (s)
       NAMELIST /CPL_OCN_PARAM/
      &    cpl_earlyExpImpCall,
      &    useImportHFlx, useImportFW, useImportTau,
@@ -87,7 +88,6 @@ C--   Open the data file
      O                          iUnit, myThid )
 
 C-    Set default value:
-      cpl_earlyExpImpCall = .TRUE.
       useImportHFlx   = .TRUE.
       useImportFW     = .TRUE.
       useImportTau    = .TRUE.
@@ -102,14 +102,15 @@ c    &             .OR. cpl_exchange2W_sIce.EQ.3
       useImportCO2    =  cpl_exchange_DIC .EQ. 3
       useImportWSpd   =  cpl_exchange_DIC .EQ. 3
       minDepth_exclWind = 0. _d 0
-      cpl_taveFreq    = taveFreq
 #ifdef ALLOW_MNC
-      cpl_snapshot_mnc = snapshot_mnc
-      cpl_timeave_mnc  = timeave_mnc
+      cpl_snapshot_mnc = useMNC .AND. snapshot_mnc
 #else
       cpl_snapshot_mnc = .FALSE.
-      cpl_timeave_mnc  = .FALSE.
 #endif
+C-    retired params default:
+      cpl_earlyExpImpCall = .TRUE.
+      cpl_timeave_mnc = .FALSE.
+      cpl_taveFreq    = UNSET_RL
 
 C--   Read parameters from open data file:
 
@@ -135,6 +136,24 @@ C--   Check for retired parameters:
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
      &   '=> always call coupler early in sequence of calls'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        cplErrorCount = cplErrorCount + 1
+      ENDIF
+      IF ( cpl_taveFreq .NE. UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: "cpl_taveFreq"',
+     &    ' is no longer allowed in file "data.cpl"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        cplErrorCount = cplErrorCount + 1
+      ENDIF
+      IF ( cpl_timeave_mnc ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: "cpl_timeave_mnc"',
+     &    ' is no longer allowed in file "data.cpl"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
         CALL PRINT_ERROR( msgBuf, myThid )
         cplErrorCount = cplErrorCount + 1
       ENDIF
@@ -185,19 +204,6 @@ C--   Check parameters and model configuration
         cplErrorCount = cplErrorCount + 1
       ENDIF
 #endif /* ndef ALLOW_DIC */
-
-C-    If cpl_taveFreq is positive, then must compile the timeave pkg code
-#ifndef ALLOW_TIMEAVE
-      IF (cpl_taveFreq.GT.0.) THEN
-        WRITE(msgBuf,'(A)')
-     &  'CPL_READPARMS: cpl_taveFreq > 0 but not compiled pkg/timeave'
-        CALL PRINT_ERROR( msgBuf, myThid)
-        WRITE(msgBuf,'(A)')
-     &  'Re-compile with pkg "timeave" in packages.conf'
-        CALL PRINT_ERROR( msgBuf, myThid)
-        cplErrorCount = cplErrorCount + 1
-      ENDIF
-#endif /* ndef ALLOW_TIMEAVE */
 
 #ifndef ATMOSPHERIC_LOADING
       iUnit = errorMessageUnit
@@ -281,14 +287,10 @@ C        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
 
 C     Set IO flags
       cpl_snapshot_mdsio = .TRUE.
-      cpl_timeave_mdsio  = .TRUE.
 #ifdef ALLOW_MNC
-      IF (useMNC) THEN
-        IF ( .NOT.outputTypesInclusive
-     &       .AND. cpl_snapshot_mnc )  cpl_snapshot_mdsio = .FALSE.
-        IF ( .NOT.outputTypesInclusive
-     &       .AND. cpl_timeave_mnc )   cpl_timeave_mdsio  = .FALSE.
-      ENDIF
+      cpl_snapshot_mnc = useMNC .AND. cpl_snapshot_mnc
+      cpl_snapshot_mdsio = ( .NOT.cpl_snapshot_mnc )
+     &                     .OR. outputTypesInclusive
 #endif
 
 C-    derive other parameters:
@@ -377,14 +379,6 @@ C-    print namelist parameter value:
        CALL WRITE_0D_RL( minDepth_exclWind, INDEX_NONE,
      &                  'minDepth_exclWind =',
      &   ' /* Minimun Depth where Wind-Stress applies (m) */')
-       CALL WRITE_0D_RL( cpl_taveFreq, INDEX_NONE, 'cpl_taveFreq =',
-     &   ' /* Frequency^-1 for time-Aver. output (s) */')
-       CALL WRITE_0D_L( cpl_timeave_mnc , INDEX_NONE,
-     &                 'cpl_timeave_mnc =',
-     &   ' /* write TimeAv to MNC file on/off flag */')
-       CALL WRITE_0D_L( cpl_timeave_mdsio , INDEX_NONE,
-     &                 'cpl_timeave_mdsio =',
-     &   ' /* write TimeAv to MDSIO file on/off flag */')
 
       WRITE(msgBuf,'(A)') '// ==================================='
       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )

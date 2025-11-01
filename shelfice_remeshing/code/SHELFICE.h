@@ -84,9 +84,7 @@ C     SHELFICEHeatCapacity_Cp  :: heat capacity of ice shelf (def: 2000 J/K/kg)
 C     rhoShelfIce              :: density of ice shelf (def: 917.0 kg/m^3)
 C
 C     SHELFICE_dump_mnc        :: use netcdf for snapshot output
-C     SHELFICE_tave_mnc        :: use netcdf for time-averaged output
 C     SHELFICE_dumpFreq        :: analoguous to dumpFreq (= default)
-C     SHELFICE_taveFreq        :: analoguous to taveFreq (= default)
 C
 C--   Fields
 C     kTopC                  :: index of the top "wet cell" (2D)
@@ -130,9 +128,7 @@ CEOP
      &     no_slip_shelfice,
      &     SHELFICEwriteState,
      &     SHELFICE_dump_mdsio,
-     &     SHELFICE_tave_mdsio,
      &     SHELFICE_dump_mnc,
-     &     SHELFICE_tave_mnc,
      &     SHELFICEadvDiffHeatFlux,
      &     SHELFICEuseGammaFrict,
      &     SHELFICE_oldCalcUStar,
@@ -148,9 +144,7 @@ CEOP
       LOGICAL no_slip_shelfice
       LOGICAL SHELFICEwriteState
       LOGICAL SHELFICE_dump_mdsio
-      LOGICAL SHELFICE_tave_mdsio
       LOGICAL SHELFICE_dump_mnc
-      LOGICAL SHELFICE_tave_mnc
       LOGICAL SHELFICEadvDiffHeatFlux
       LOGICAL SHELFICEuseGammaFrict
       LOGICAL SHELFICE_oldCalcUStar
@@ -163,20 +157,21 @@ CEOP
       INTEGER SHELFICEselectDragQuadr
 
       COMMON /SHELFICE_PARMS_R/
-     &     SHELFICE_dumpFreq, SHELFICE_taveFreq,
+     &     SHELFICE_dumpFreq,
      &     SHELFICEsaltToHeatRatio,
      &     SHELFICEheatTransCoeff, SHELFICEsaltTransCoeff,
      &     rhoShelfice, SHELFICEkappa,
      &     SHELFICElatentHeat,
      &     SHELFICEheatCapacity_Cp,
      &     SHELFICEthetaSurface,
+     &     SHELFICEsalinity,
      &     SHELFICEDragLinear, SHELFICEDragQuadratic,
      &     shiCdrag, shiZetaN, shiRc,
      &     shiPrandtl, shiSchmidt, shiKinVisc,
      &     SHELFICEremeshFrequency,
      &     SHELFICEsplitThreshold, SHELFICEmergeThreshold
 
-      _RL SHELFICE_dumpFreq, SHELFICE_taveFreq
+      _RL SHELFICE_dumpFreq
       _RL SHELFICEsaltToHeatRatio
       _RL SHELFICEheatTransCoeff
       _RL SHELFICEsaltTransCoeff
@@ -192,6 +187,7 @@ CEOP
       _RL SHELFICEremeshFrequency
       _RL SHELFICEsplitThreshold
       _RL SHELFICEmergeThreshold
+      _RL SHELFICEsalinity
 
       COMMON /SHELFICE_PARM_C/
      &     SHELFICEloadAnomalyFile,
@@ -214,7 +210,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &     shelficeMass, shelficeMassInit,
      &     shelficeLoadAnomaly,
      &     shelficeForcingT, shelficeForcingS,
-     &     shiTransCoeffT, shiTransCoeffS,
      &     shiCDragFld, shiDragQuadFld
 
       _RL shelficeMass          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -222,10 +217,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       _RL shelficeLoadAnomaly   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeForcingT      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeForcingS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL shiTransCoeffT        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL shiTransCoeffS        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shiCDragFld           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shiDragQuadFld        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      COMMON /SHELFICE_GAMMA_RL/
+     &     shiTransCoeffT, shiTransCoeffS
+       _RL shiTransCoeffT       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+       _RL shiTransCoeffS       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON /SHELFICE_FIELDS_RS/
      &     R_shelfIce,

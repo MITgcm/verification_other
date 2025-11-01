@@ -36,6 +36,9 @@ C  iUnit                :: unit number for I/O
 C  msgBuf               :: message buffer
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+C-    retired parameters:
+      _RL SHELFICE_taveFreq
+      LOGICAL SHELFICE_tave_mnc
 CEOP
 
       NAMELIST /SHELFICE_PARM01/
@@ -47,7 +50,7 @@ CEOP
      &     SHELFICElatentHeat, SHELFICEHeatCapacity_Cp,
      &     no_slip_shelfice, SHELFICEDragLinear,
      &     SHELFICEDragQuadratic, SHELFICEselectDragQuadr,
-     &     SHELFICEthetaSurface,
+     &     SHELFICEthetaSurface, SHELFICEsalinity,
      &     useISOMIPTD,
      &     SHELFICEconserve, SHELFICEboundaryLayer,
      &     SHI_withBL_realFWflux, SHI_withBL_uStarTopDz,
@@ -120,15 +123,16 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICEsaltToHeatRatio  =   5.05 _d -03
       SHELFICEheatTransCoeff   =    1.0 _d -04
       SHELFICEsaltTransCoeff   = UNSET_RL
+C--   Molecular thermal conductivity ice shelf (m^2/s)
       SHELFICEkappa            =   1.54 _d -06
       SHELFICEthetaSurface     = - 20.0 _d 0
+      SHELFICEsalinity         = 0.0 _d 0
       no_slip_shelfice         = no_slip_bottom
       SHELFICEDragLinear       = bottomDragLinear
       SHELFICEDragQuadratic    = UNSET_RL
       SHELFICEselectDragQuadr  = -1
       SHELFICEwriteState       = .FALSE.
       SHELFICE_dumpFreq        = dumpFreq
-      SHELFICE_taveFreq        = taveFreq
       SHELFICEadvDiffHeatFlux  = .FALSE.
       SHELFICEuseGammaFrict    = .FALSE.
       SHELFICE_oldCalcUStar    = .FALSE.
@@ -162,12 +166,13 @@ C these params. are default of Holland and Jenkins (1999)
       shifwflx_errfile         = ' '
 #endif
 #ifdef ALLOW_MNC
-      SHELFICE_tave_mnc = timeave_mnc
       SHELFICE_dump_mnc = snapshot_mnc
 #else
-      SHELFICE_tave_mnc = .FALSE.
       SHELFICE_dump_mnc = .FALSE.
 #endif
+C-    retired params:
+      SHELFICE_taveFreq = UNSET_RL
+      SHELFICE_tave_mnc = .FALSE.
 
 C Open and read the data.shelfice file
       WRITE(msgBuf,'(A)') ' SHELFICE_READPARMS: opening data.shelfice'
@@ -189,6 +194,29 @@ C Close the open data file
 #else
       CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Check for retired parameters:
+      IF ( SHELFICE_taveFreq .NE. UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)') 'SHELFICE_READPARMS: "SHELFICE_taveFreq"',
+     &    ' is no longer allowed in file "data.shelfice"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'SHELFICE_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+c       errCount = errCount + 1
+        STOP 'ABNORMAL END: S/R SHELFICE_READPARMS'
+      ENDIF
+      IF ( SHELFICE_tave_mnc ) THEN
+        WRITE(msgBuf,'(2A)') 'SHELFICE_READPARMS: "SHELFICE_tave_mnc"',
+     &    ' is no longer allowed in file "data.shelfice"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'SHELFICE_READPARMS: ',
+     &    ' since "pkg/timeave" has been removed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+c       errCount = errCount + 1
+        STOP 'ABNORMAL END: S/R SHELFICE_READPARMS'
+      ENDIF
 
 C Now set-up any remaining parameters that result from the input parameters
       IF ( SHELFICEsaltTransCoeff .EQ. UNSET_RL )
@@ -225,12 +253,9 @@ C-    reset SHI_update_kTopC to avoid having to test for both:
       SHI_update_kTopC = SHI_update_kTopC .AND. SHELFICEMassStepping
 
 C-    Set Output type flags :
-      SHELFICE_tave_mdsio = .TRUE.
       SHELFICE_dump_mdsio = .TRUE.
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
-        IF ( .NOT.outputTypesInclusive
-     &       .AND. SHELFICE_tave_mnc ) SHELFICE_tave_mdsio = .FALSE.
         IF ( .NOT.outputTypesInclusive
      &       .AND. SHELFICE_dump_mnc ) SHELFICE_dump_mdsio = .FALSE.
       ENDIF
