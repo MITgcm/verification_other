@@ -1,4 +1,28 @@
 #! /usr/bin/env bash
 
-../input.core2/prepare_run
+#- first take parameter files from main input dir (i.e., from ../input/)
+fromDir="../input"
+#  and do a symbolic link in the current directory (if the file does not already exist)
+fileList="eedata data.cal data.cost data.ecco data.exch2 data.ggl90 data.optim data.profiles"
 
+if test -d $fromDir ; then
+  lnkList='files:'
+  for xx in $fileList
+  do
+    if test -r ${fromDir}/$xx ; then
+      if test ! -r $xx ; then
+        lnkList=${lnkList}" "$xx
+        ln -sf ${fromDir}/$xx .
+      fi
+    fi
+  done
+  echo ' link' $lnkList "from dir:" $fromDir
+else
+  echo " Error:" $fromDir "not a directory"
+fi
+
+#- and take other bin files using forward-test prepare_run (from ../input.core2):
+fromDir="../input.core2"
+if test -x ${fromDir}/prepare_run ; then
+  ${fromDir}/prepare_run
+fi
