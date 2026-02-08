@@ -1,14 +1,11 @@
 #! /usr/bin/env bash
 
-dirList="../input"
+#- first take parameter files from forward-test input dir (i.e., from ../input/)
+fromDir="../input"
+#  and do a symbolic link in the current directory (if the file does not already exist)
+fileList="eedata data.cal data.cost data.ecco data.exch2 data.exf data.ggl90 data.optim data.profiles"
 
-for fromDir in $dirList
-do
-
-#- and do a symbolic link in the current directory
-#   (if the file does not already exist)
 if test -d $fromDir ; then
-  fileList="eedata data.cal data.cost data.ecco data.exch2 data.exf data.ggl90 data.optim data.profiles"
   lnkList='files:'
   for xx in $fileList
   do
@@ -23,8 +20,8 @@ if test -d $fromDir ; then
 else
   echo " Error:" $fromDir "not a directory"
 fi
-done
 
-#- and link input-file (as currently done for forward primary test):
-../input/prepare_run
-
+#- and take other bin files using forward-test prepare_run (from ../input):
+if test -x ${fromDir}/prepare_run ; then
+  ${fromDir}/prepare_run
+fi
