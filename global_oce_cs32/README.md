@@ -56,14 +56,13 @@ The following lines exempify the general instruction found in the [online-manual
 cd run ; rm -f *
 ln -s ../build/mitgcmuv
 ln -s ../input/* .
-../input/prepare_run
+./prepare_run
 ```
 Run the model with:
 
 ```
 ./mitgcmuv > output.txt
 ```
-
 
 ### AD experiments: the generic integral function test case
 
@@ -73,7 +72,7 @@ This verification experiment also contains a test of the [generic integral funct
 cd run ; rm -f *
 ln -s ../build/mitgcmuv_ad
 ln -s ../input_ad/* .
-../input_ad/prepare_run
+./prepare_run
 ```
 or similarly for the second AD experiment:
 
@@ -81,9 +80,8 @@ or similarly for the second AD experiment:
 cd run ; rm -f *
 ln -s ../build/mitgcmuv_ad
 ln -s ../input_ad.sens/* .
-../input_ad.sens/prepare_run
 ln -s ../input_ad/* .
-../input_ad/prepare_run
+./prepare_run
 ```
 
 Note that the `ln` command as executed above does not overwrite old links, so it will produce some errors related to not being able to overwrite old files. These errors can be ignored.
