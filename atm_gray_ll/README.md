@@ -55,7 +55,6 @@ If run successfully, the results (`output.txt` file) will be compared with reref
   cd ../run
   # if done after a previous run, clean-up all files: "/bin/rm -f *"
   ln -s ../input/* .
-  ../input/prepare_run
   ln -s ../build/mitgcmuv .
   mitgcmuv >& output.txt
 ```
