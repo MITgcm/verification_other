@@ -1,0 +1,113 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=15*0.,
+ sRef=15*34.,
+ viscAz=0.00001,
+ viscC2smag=2.2,
+ diffKzT=0.00001,
+ diffKzS=0.00001,
+ diffKhT=20.,
+ diffKhS=20.,
+# diffKhT=0.
+# diffKhS=0.
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.TRUE.,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+ staggerTimeStep=.TRUE.,
+ tempAdvScheme=33,
+ saltAdvScheme=33,
+ eosType='JMD95Z',
+ f0=0.e-4,
+ beta=0.E-11,
+ selectAddFluid=1,
+ useSingleCpuIO=.TRUE.,
+ gravity=9.81,
+ rhonil=1029.,
+ rhoConst=1029.,
+ rhoConstFresh=1000.,
+ exactConserv=.TRUE.,
+#
+#set nlfs rfwf:
+ select_rStar=2,
+ nonlinFreeSurf=4,
+ useRealFreshWaterFlux=.TRUE.,
+#set lfs virtual salt:
+# nonlinFreeSurf=0,
+# useRealFreshWaterFlux=.FALSE.,
+# linFSconserveTr=.FALSE.,
+#
+ debugLevel=1,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+# cg2dMaxIters=300,
+# cg2dTargetResidual=1.E-13,
+ cg3dMaxIters=20,
+ cg3dTargetResidual=1.E-8,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=0,
+# endTime=200.,
+# endTime=10000.,
+ nTimeSteps=8,
+#3 hrs
+# nTimeSteps=432,
+#14hrs
+# nTimeSteps=2016,
+#2 days
+# endTime=172800.,
+# nTimeSteps=6912.,
+#3 days
+# nTimeSteps=10368.,
+#(31+30+31)*24*3600/25
+# nTimeSteps=317952.,
+ deltaT=25.,
+ abEps=0.01,
+ pChkptFreq=0.,
+ chkptFreq=0.,
+# dumpFreq=1000,
+ monitorSelect=1,
+# monitorFreq=1000.,
+ monitorFreq=1.,
+#when periodicExternalForcing is F, we read only 1 record in from 
+#iceplume_init_fixed and treat the input as constant forcing in time
+ periodicExternalForcing=.FALSE.,
+#when periodicExternalForcing is T, we read in from external_fields_load
+#and need accompanied variables to tell period and cycle.
+#Potentially, we prefer iceplume to have its own period/cycle/flags so
+#that we dont have conflict of these flags on at the same time of pkg/exf
+# periodicExternalForcing=.TRUE.,
+# externForcingPeriod=25.,
+# externForcingCycle=225.,
+#cycle: how many records before we loop back to beginning, 
+#e.g. 1 yr at monthly then at rec 13 we loop to beginning
+#see get_periodic_rec in matlab folder for duplicates.
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+ delXfile='delx_tiny.bin',
+ delYfile='dely_tiny.bin',
+ delZ= 15*10.,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile='bathymetry_tiny_closed.bin',
+ hydrogThetaFile='tempini_tiny.bin',
+ hydrogSaltFile ='saltini_tiny.bin',
+# uVelInitFile = 'zeros_3d_real8.bin',
+# vVelInitFile = 'vvel_init_1mps_ix19_iy6.bin',
+ &
